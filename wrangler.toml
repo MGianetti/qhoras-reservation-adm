@@ -1,0 +1,17 @@
+name = "qhoras-reservation-adm"
+type = "javascript"
+account_id = "34c17ad56adf9b31f825a71197f13fec"
+workers_dev = true
+compatibility_date = "2025-01-07"
+
+[build]
+command = "yarn install --immutable && yarn build"
+cwd = "."
+upload_format = "modules"
+upload_dir = "./dist"
+
+[env.production]
+vars = { NODE_ENV = "production" }
+
+[site]
+bucket = "./dist"
