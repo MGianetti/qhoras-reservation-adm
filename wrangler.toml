@@ -11,7 +11,7 @@ upload_format = "modules"
 upload_dir = "./dist"
 
 [env.production]
-vars = { NODE_ENV = "production" }
+vars = { NODE_ENV = "production", NODE_VERSION = "18" }
 
 [site]
 bucket = "./dist"
