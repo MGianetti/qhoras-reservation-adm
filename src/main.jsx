@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { ThemeProvider } from '@mui/material/styles';
 
@@ -9,12 +9,13 @@ import { qHorasTheme } from './theme/theme';
 import store from './infraestructure/store/store';
 import { SnackbarProvider } from 'notistack';
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+ReactDOM.render(
     <Provider store={store}>
         <ThemeProvider theme={qHorasTheme}>
             <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
                 <App />
             </SnackbarProvider>
         </ThemeProvider>
-    </Provider>
+    </Provider>,
+    document.getElementById('root')
 );

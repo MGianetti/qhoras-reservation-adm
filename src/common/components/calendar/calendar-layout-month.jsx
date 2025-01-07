@@ -1,6 +1,6 @@
 import { useContext, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
-import { purple } from '@mui/material/colors';
+import { blue } from '@mui/material/colors';
 import format from 'date-fns/format';
 import { Grid, Typography } from '@mui/material';
 import clsx from 'clsx';
@@ -81,7 +81,7 @@ const Root = styled('div')(({ theme }) => ({
 
     [`& .${classes.today}`]: {
         color: theme.palette.background.paper,
-        backgroundColor: purple[700],
+        backgroundColor: blue[700],
         borderRadius: '50%',
         minWidth: 33,
         minHeight: 33,
@@ -90,7 +90,7 @@ const Root = styled('div')(({ theme }) => ({
         alignItems: 'center',
         justifyContent: 'center',
         '&:hover': {
-            backgroundColor: purple[800]
+            backgroundColor: blue[800]
         }
     },
 

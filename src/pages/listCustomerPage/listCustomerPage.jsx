@@ -17,7 +17,7 @@ const ListCustomerPage = () => {
         <LoggedLayout>
             <Grid container spacing={2}>
                 <Grid item xs={12}>
-                    <ListActionsBar handleOpen={setOpen} setValuesLine={setValuesLine} icon="addClient" labelSearch="Pesquisar Clientes" setSearch={setSearch} />
+                    <ListActionsBar handleOpen={setOpen} setValuesLine={setValuesLine} icon="addClient" labelSearch="Pesquisar membros" setSearch={setSearch} />
                 </Grid>
                 <Grid item xs={12}>
                     <LoadingOverlay isLoading={isLoading} />

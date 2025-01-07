@@ -51,7 +51,7 @@ const ServiceModal = (props) => {
     return (
         <>
             <Dialog maxWidth="sm" fullWidth={true} open={open} onClose={handleClose}>
-                <DialogTitle id="responsive-dialog-title">{valuesLine ? 'Editar Serviço' : 'Novo Serviço'}</DialogTitle>
+                <DialogTitle id="responsive-dialog-title">{valuesLine ? 'Editar sala' : 'Nova sala'}</DialogTitle>
                 <DialogContent>
                     <Box component="form" onSubmit={formik.handleSubmit} sx={{ display: 'flex', flexDirection: 'column', m: 'auto', pt: 2, gap: 3 }}>
                         <Grid container spacing={2}>
@@ -79,7 +79,7 @@ const ServiceModal = (props) => {
                             <Grid item xs={8} sx={{ display: 'flex', alignItems: 'center' }}>
                                 <FormControl fullWidth>
                                     <InputLabel htmlFor="price" size="small">
-                                        Preço
+                                        Taxa
                                     </InputLabel>
                                     <OutlinedInput
                                         id="price"
@@ -100,56 +100,6 @@ const ServiceModal = (props) => {
                                 </FormControl>
                             </Grid>
 
-                            <Grid item xs={4}>
-                                <FormControl>
-                                    <FormLabel component="legend">A partir de</FormLabel>
-                                    <FormControlLabel
-                                        control={
-                                            <Switch
-                                                name="startingFrom"
-                                                checked={formik.values.startingFrom}
-                                                onChange={(e) => formik.setFieldValue('startingFrom', e.target.checked)}
-                                                error={formik.touched.startingFrom && formik.errors.startingFrom}
-                                            />
-                                        }
-                                        label={formik.values.startingFrom ? 'Sim' : 'Não'}
-                                    />
-                                </FormControl>
-                            </Grid>
-
-                            <Grid item xs={8} sx={{ display: 'flex', alignItems: 'center' }}>
-                                <FormControl fullWidth>
-                                    <InputLabel htmlFor="duration" size="small">
-                                        Tempo
-                                    </InputLabel>
-                                    <Select
-                                        labelId="duration-select-label"
-                                        id="duration"
-                                        label="Tempo"
-                                        size="small"
-                                        value={formik.values.duration}
-                                        onChange={(e) => formik.setFieldValue('duration', e.target.value)}
-                                        error={formik.touched.duration && Boolean(formik.errors.duration)}
-                                    >
-                                        {Array.from({ length: 288 }, (_, i) => {
-                                            const hours = Math.floor(i / 12);
-                                            const minutes = (i % 12) * 5;
-                                            const value = hours * 60 + minutes;
-                                            const label = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-                                            return (
-                                                <MenuItem key={value} value={value}>
-                                                    {label}
-                                                </MenuItem>
-                                            );
-                                        })}
-                                    </Select>
-                                    {formik.touched.duration && formik.errors.duration ? (
-                                        <Typography variant="caption" color="error">
-                                            {formik.errors.duration}
-                                        </Typography>
-                                    ) : null}
-                                </FormControl>
-                            </Grid>
 
                             <Grid item xs={4}>
                                 <FormControl>
@@ -171,11 +121,11 @@ const ServiceModal = (props) => {
                             <Grid item xs={4} sx={{ display: 'flex', alignItems: 'center' }}>
                                 <FormControl fullWidth>
                                     <InputLabel htmlFor="loyaltyPoints" size="small">
-                                        Pts Fidelidade
+                                        Capacidade
                                     </InputLabel>
                                     <OutlinedInput
                                         id="loyaltyPoints"
-                                        label="Pts Fidelidade"
+                                        label="Capacidade de membros"
                                         size="small"
                                         type="number"
                                         value={formik.values.loyaltyPoints}
@@ -195,7 +145,7 @@ const ServiceModal = (props) => {
                                 Cancelar
                             </Button>
                             <Button autoFocus type="submit" variant="contained">
-                                {valuesLine ? 'Editar Serviço' : 'Cadastrar Serviço'}
+                                {valuesLine ? 'Editar sala' : 'Cadastrar sala'}
                             </Button>
                         </DialogActions>
                     </Box>

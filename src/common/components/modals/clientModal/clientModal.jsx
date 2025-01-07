@@ -21,7 +21,6 @@ const ClientModal = (props) => {
         initialValues: {
             name: valuesLine?.name || '',
             phone: phoneMask(valuesLine?.phone) || '',
-            loyaltyPoints: valuesLine?.loyaltyPoints || 0
         },
         enableReinitialize: true,
         validationSchema: validationSchema,
@@ -45,7 +44,7 @@ const ClientModal = (props) => {
     return (
         <>
             <Dialog maxWidth="sm" fullWidth={true} open={open} onClose={handleClose}>
-                <DialogTitle id="responsive-dialog-title">{valuesLine ? 'Editar Cliente' : 'Novo Cliente'}</DialogTitle>
+                <DialogTitle id="responsive-dialog-title">{valuesLine ? 'Editar Membro' : 'Novo Membro'}</DialogTitle>
                 <DialogContent>
                     <Box component="form" onSubmit={formik.handleSubmit} sx={{ display: 'flex', flexDirection: 'column', m: 'auto', pt: 2, gap: 3 }}>
                         <FormControl>
@@ -89,25 +88,12 @@ const ClientModal = (props) => {
                             ) : null}
                         </FormControl>
 
-                        <FormControl>
-                            <Typography component="legend">Fidelidade</Typography>
-                            <Rating
-                                name="half-rating-read"
-                                precision={0.5}
-                                sx={{ width: 'fit-content' }}
-                                value={formik.values.loyaltyPoints}
-                                onChange={(event, newValue) => {
-                                    formik.setFieldValue('loyaltyPoints', newValue);
-                                }}
-                            />
-                        </FormControl>
-
                         <DialogActions>
                             <Button autoFocus onClick={handleClose}>
                                 Cancelar
                             </Button>
                             <Button autoFocus type="submit" variant="contained">
-                                {valuesLine ? 'Editar Dados' : 'Cadastrar Cliente'}
+                                {valuesLine ? 'Editar Dados' : 'Cadastrar Membro'}
                             </Button>
                         </DialogActions>
                     </Box>

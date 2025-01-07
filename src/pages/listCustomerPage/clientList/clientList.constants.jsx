@@ -40,7 +40,7 @@ function getRandomImage() {
 
 function createData(name, phone, lastAppointmentt, loyaltyPoints) {
     const image = getRandomImage();
-    const lastAppointment = lastAppointmentt ?? 'Sem Agendamento';
+    const lastAppointment = lastAppointmentt ?? 'Sem reservas';
     return { image, name, phone, lastAppointment, loyaltyPoints };
 }
 

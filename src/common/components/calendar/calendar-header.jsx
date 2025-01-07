@@ -7,7 +7,7 @@ import { ptBR } from 'date-fns/locale';
 import { Box, Grid } from '@mui/material';
 import { CalendarContext } from './context/calendar-context';
 import { createStyles, makeStyles } from '@mui/styles';
-import { grey, purple } from '@mui/material/colors';
+import { grey, blue } from '@mui/material/colors';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) =>
             alignItems: 'center',
             justifyContent: 'center',
             fontSize: 24,
-            color: '#70757a',
+            color: '#',
             [theme.breakpoints.down('md')]: {
                 fontSize: 16
             }
@@ -68,8 +68,8 @@ const useStyles = makeStyles((theme) =>
             minHeight: 43,
             // lineHeight: '45px',
             padding: 7,
-            borderColor: purple[700],
-            backgroundColor: purple[700],
+            borderColor: blue[700],
+            backgroundColor: blue[700],
             color: '#ffffff',
             border: '1px solid',
             borderRadius: '100%',
@@ -77,8 +77,8 @@ const useStyles = makeStyles((theme) =>
             cursor: 'pointer',
             lineHeight: 'normal',
             '&:hover': {
-                borderColor: purple[800],
-                backgroundColor: purple[800]
+                borderColor: blue[800],
+                backgroundColor: blue[800]
             }
         },
         headerLabelNotToday: {

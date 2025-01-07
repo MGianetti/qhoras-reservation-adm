@@ -9,7 +9,7 @@ import { ptBR } from 'date-fns/locale';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 import { IoCalendarClearOutline } from 'react-icons/io5';
 
-import { deepPurple } from '@mui/material/colors';
+import { blue } from '@mui/material/colors';
 import getWeekDays from './common/getWeekDays';
 
 const useStyles = makeStyles((theme) => ({
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
     dayHeader: {
         textAlign: 'center',
         fontSize: 12,
-        color: deepPurple[800],
+        color: blue[800],
         lineHeight: '26px',
         padding: theme.spacing(0.2),
         borderColor: theme.palette.background.paper,
@@ -56,9 +56,9 @@ const useStyles = makeStyles((theme) => ({
         background: theme.palette.background.paper,
         borderColor: theme.palette.background.paper,
         borderStyle: 'solid',
-        backgroundColor: deepPurple[700],
+        backgroundColor: blue[700],
         '&:hover': {
-            backgroundColor: deepPurple[800]
+            backgroundColor: blue[800]
         }
     },
     notToday: {
@@ -74,10 +74,10 @@ const useStyles = makeStyles((theme) => ({
     },
     selected: {
         borderStyle: 'solid',
-        boxShadow: `inset 0 0 0 2px ${deepPurple[500]}`,
+        boxShadow: `inset 0 0 0 2px ${blue[500]}`,
         '&:hover': {
             color: '#ffffff',
-            backgroundColor: deepPurple[600]
+            backgroundColor: blue[600]
         }
     },
     notCurrentMonth: {
