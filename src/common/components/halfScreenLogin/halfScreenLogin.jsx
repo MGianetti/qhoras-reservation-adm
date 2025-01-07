@@ -14,13 +14,21 @@ const HalfScreenLogin = () => {
     const selectedImage = images[getRandomNumber()];
     return (
         <Paper sx={{ position: 'relative' }}>
-            <CardMedia component="img" sx={{ height: '100vh' }} image={selectedImage} alt="Imagem de Login" />
+            <CardMedia
+                component="img"
+                sx={{
+                    height: '100vh',
+                    filter: 'opacity(0.8) hue-rotate(200deg)'
+                }}
+                image={selectedImage}
+                alt="Imagem de Login"
+            />
             <Stack className={styles.stackTitle}>
                 <Typography variant="h4" sx={{ py: 1, fontWeight: 700 }}>
-                    Seu tempo, sua beleza, <br />
-                    nossa Prioridade
+                    Organize suas reuniões e eventos, <br />
+                    com facilidade e eficiência
                 </Typography>
-                <Typography variant="subtitle1">Simplifique sua agenda com a QHoras!</Typography>
+                <Typography variant="subtitle1">Gerencie suas reservas de salas com a QHoras!</Typography>
             </Stack>
         </Paper>
     );

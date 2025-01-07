@@ -21,13 +21,7 @@ export const columns = [
     },
     {
         id: 'lastAppointment',
-        label: 'Último Agendamento',
-        minWidth: 170,
-        align: 'left'
-    },
-    {
-        id: 'loyaltyPoints',
-        label: 'Fidelidade',
+        label: 'Última Reserva',
         minWidth: 170,
         align: 'left'
     },

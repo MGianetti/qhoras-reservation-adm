@@ -24,12 +24,12 @@ const pages = [
         path: '/'
     },
     {
-        label: 'clientes',
-        path: '/clientes'
+        label: 'Membros',
+        path: '/membros'
     },
     {
-        label: 'serviços',
-        path: '/servicos'
+        label: 'Salas',
+        path: '/salas'
     },
     // {
     //     label: 'financeiro',

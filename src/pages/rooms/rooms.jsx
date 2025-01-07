@@ -8,7 +8,7 @@ import LoggedLayout from '../../common/layouts/loggedLayout/loggedLayout';
 import LoadingOverlay from '../../common/components/LoadingOverlay/LoadingOverlay';
 import { useSelector } from 'react-redux';
 
-const Services = () => {
+const Rooms = () => {
     const [open, setOpen] = useState(false);
     const [valuesLine, setValuesLine] = useState(null);
     const [search, setSearch] = useState('');
@@ -30,4 +30,4 @@ const Services = () => {
     );
 };
 
-export default Services;
+export default Rooms;
