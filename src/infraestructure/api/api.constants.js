@@ -9,7 +9,7 @@ const timeOutAmount = {
 };
 
 const axiosConfig = {
-    baseURL: apiURL[import.meta.env.MODE] || 'http://104.248.235.54',
+    baseURL: apiURL[import.meta.env.MODE] || 'http://157.230.2.51',
     headers: {
         'Content-Type': 'application/json'
     },
