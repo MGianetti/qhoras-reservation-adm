@@ -28,25 +28,28 @@ export const columns = [
         minWidth: 170,
         align: 'center'
     },
-    
-   
     {
-        id: 'duration',
-        label: 'Duração',
+        id: 'price',
+        label: 'Taxa',
+        minWidth: 170,
+        align: 'center'
+    },
+    {
+        id: 'capacity',
+        label: 'Capacidade',
         minWidth: 170,
         align: 'center'
     },
 ];
 
-function createData(name, statusBoolean, priceNumber, loyaltyPointsNumber, durationNumber) {
+function createData(name, statusBoolean, priceNumber, capacityNumber) {
 
     const price = moneyMask(priceNumber);
-    const loyaltyPoints = `${loyaltyPointsNumber} pts`;
-    const duration = formatDuration(durationNumber);
+    const capacity = `${capacityNumber} pessoas`;
     const status = statusBoolean ? 'Ativo' : 'Inativo';
-    return { name, status, price, duration, loyaltyPoints };
+    return { name, status, price, capacity };
 }
 
-export const rows = (serviceList = []) => {
-    return serviceList.map((service) => createData(service.name, service.status, service.price, service.loyaltyPoints, service.duration));
+export const rows = (roomList = []) => {
+    return roomList.map((room) => createData(room.name, room.status, room.price, room.capacity));
 };

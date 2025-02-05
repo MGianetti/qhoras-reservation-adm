@@ -12,7 +12,8 @@ const ListCustomerPage = () => {
     const [open, setOpen] = useState(false);
     const [valuesLine, setValuesLine] = useState(null);
     const [search, setSearch] = useState('');
-    const isLoading = useSelector((state) => state?.clients.isLoading);
+    // const isLoading = useSelector((state) => state?.clients.isLoading);
+    const isLoading = false;
     return (
         <LoggedLayout>
             <Grid container spacing={2}>

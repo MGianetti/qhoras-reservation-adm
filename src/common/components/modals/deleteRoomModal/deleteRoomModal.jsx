@@ -5,14 +5,14 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import { Box, Typography } from '@mui/material';
 
-import roomService from '../../../../domains/room/roomService';
+import roomsService from '../../../../domains/room/roomService';
 
 const DeleteRoomModal = (props) => {
     const { isOpen, deleteRowValues, handleClose } = props;
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        roomService.deleteRoom(deleteRowValues.id);
+        roomsService.deleteRoom(deleteRowValues.id);
         handleClose();
     };
 
@@ -22,7 +22,7 @@ const DeleteRoomModal = (props) => {
                 <DialogTitle id="responsive-dialog-title">Confirmar exclusão</DialogTitle>
                 <DialogContent>
                     <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', m: 'auto', pt: 2, gap: 3 }}>
-                        <Typography variant="body1">Tem certeza que deseja excluir o serviço <strong>{deleteRowValues?.name}</strong>?</Typography>
+                        <Typography variant="body1">Tem certeza que deseja excluir a sala <strong>{deleteRowValues?.name}</strong>?</Typography>
                         <DialogActions>
                             <Button autoFocus onClick={handleClose}>
                                 Cancelar

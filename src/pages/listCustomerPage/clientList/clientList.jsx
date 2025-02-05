@@ -12,8 +12,10 @@ const ClientList = (props) => {
     const { handleOpenModal, setValuesLine, search } = props;
     const theme = useTheme();
 
-    const { id: businessId } = useSelector((state) => state?.auth.user) || { businessId: undefined };
+    const { businessId } = useSelector((state) => state?.auth.user) || { businessId: undefined };
     const { data: clientList, pagination } = useSelector((state) => state?.clients) || { data: [], pagination: {} };
+
+    // const { data: clientList, pagination } = { data: [], pagination: {} };
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
