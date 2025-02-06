@@ -1,11 +1,11 @@
 import addClient from './add-client.svg';
-import addService from './add-service.svg';
+import addRoom from './add-room.svg';
 import block from './block.svg';
 import whatsapp from './whatsapp.svg';
 
 export default {
     addClient,
-    addService,
+    addRoom,
     block,
     whatsapp
 };

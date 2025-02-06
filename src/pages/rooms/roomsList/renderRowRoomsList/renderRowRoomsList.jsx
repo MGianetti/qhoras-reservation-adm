@@ -1,7 +1,7 @@
 import { Button, Chip, Grid, Stack, TableCell, TableRow } from '@mui/material';
 import { IoTrash } from 'react-icons/io5';
 
-const RenderServiceCell = ({ column, value, handleOpenDeleteModal }) => {
+const RenderRoomCell = ({ column, value, handleOpenDeleteModal }) => {
     if (column.id === 'status') {
         return (
             <Stack direction="row" justifyContent="center" spacing={1}>
@@ -64,14 +64,14 @@ const RenderServiceCell = ({ column, value, handleOpenDeleteModal }) => {
     return value;
 };
 
-export const RenderRowServicesList = ({ row, columns, handleClickLine, unformattedData, rowIndex, handleOpenDeleteModal }) => {
+export const RenderRowRoomsList = ({ row, columns, handleClickLine, unformattedData, rowIndex, handleOpenDeleteModal }) => {
     return (
         <TableRow hover role="checkbox" tabIndex={-1} onClick={() => handleClickLine(unformattedData[rowIndex])} key={row.id}>
             {columns.map((column) => {
                 const value = row[column.id];
                 return (
                     <TableCell key={column.id} align={column.align}>
-                        <RenderServiceCell column={column} value={value} handleOpenDeleteModal={(e) => handleOpenDeleteModal(e, unformattedData[rowIndex])} />
+                        <RenderRoomCell column={column} value={value} handleOpenDeleteModal={(e) => handleOpenDeleteModal(e, unformattedData[rowIndex])} />
                     </TableCell>
                 );
             })}

@@ -75,8 +75,6 @@ export const validationSchema = (appointments, servicesList, eventID, userData, 
 
                 const appointmentsFiltered = appointments.filter((appointment) => appointment.id !== eventID);
 
-                console.log(calendarBlocks);
-
                 for (let appointment of appointmentsFiltered) {
                     const appointmentStart = dayjs(appointment.begin, 'YYYY-MM-DD HH:mm:ss').add(1, 'minute');
                     const appointmentEnd = dayjs(appointment.end, 'YYYY-MM-DD HH:mm:ss').subtract(1, 'minute');

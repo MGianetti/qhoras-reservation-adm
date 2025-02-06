@@ -51,10 +51,10 @@ const create = async (businessId, newClientPayload) => {
     }
 };
 
-const update = async (businessId, updateClientPayload) => {
+const update = async (clientId, updateClientPayload) => {
     try {
         dispatch(setLoading(true));
-        const response = await clientRepository.updateClient(businessId, updateClientPayload);
+        const response = await clientRepository.updateClient(clientId, updateClientPayload);
         dispatch(updateItem(response));
         notification(updatedClientSuccess);
     } catch (error) {

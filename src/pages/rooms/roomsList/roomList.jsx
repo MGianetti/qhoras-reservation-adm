@@ -3,29 +3,29 @@ import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useTheme } from '@mui/material/styles';
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material';
 
-import servicesService from '../../../domains/services/servicesService';
-import { RenderRowServicesList } from './renderRowServicesList/renderRowServicesList';
-import { columns } from './servicesList.constants';
-import DeleteServiceModal from '../../../common/components/modals/deleteServiceModal/deleteServiceModal';
-import { clear } from '../../../domains/services/servicesSlice';
+import roomService from '../../../domains/room/roomService';
+import { RenderRowRoomsList } from './renderRowRoomsList/renderRowRoomsList';
+import { columns } from './roomList.constants';
+import DeleteRoomModal from '../../../common/components/modals/deleteRoomModal/deleteRoomModal';
+import { clear } from '../../../domains/room/roomSlice';
 
-const ServicesList = (props) => {
+const RoomList = (props) => {
     const { handleOpenModal, setValuesLine, search } = props;
 
     const dispatch = useDispatch();
     const theme = useTheme();
 
-    const { id: businessId } = useSelector((state) => state?.auth.user) || {};
-    const { data: servicesList, pagination } = useSelector((state) => state?.services) || { data: [], pagination: {} };
+    const { businessId } = useSelector((state) => state?.auth.user) || {};
+    const { data: roomList, pagination } = useSelector((state) => state?.rooms) || { data: [], pagination: {} };
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [deleteRowValues, setDeleteRowValues] = useState(null);
 
-    const fetchServices = useCallback(() => {
+    const fetchRooms = useCallback(() => {
         if (businessId) {
-            servicesService.read({businessId, page: page + 1, limit: rowsPerPage});
+            roomService.read({businessId, page: page + 1, limit: rowsPerPage});
         }
     }, [businessId, page, rowsPerPage, dispatch]);
     
@@ -34,8 +34,8 @@ const ServicesList = (props) => {
     }, []);
 
     useEffect(() => {
-        fetchServices();
-    }, [fetchServices]);
+        fetchRooms();
+    }, [fetchRooms]);
 
     useEffect(() => {
         setPage(0);
@@ -60,8 +60,8 @@ const ServicesList = (props) => {
 
     const filteredList = useMemo(() => {
         const lowercasedSearch = search.trim().toLowerCase();
-        return servicesList.filter((service) => service.name.toLowerCase().includes(lowercasedSearch));
-    }, [servicesList, search]);
+        return roomList.filter((room) => room.name.toLowerCase().includes(lowercasedSearch));
+    }, [roomList, search]);
 
     const paginatedRows = filteredList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
@@ -81,7 +81,7 @@ const ServicesList = (props) => {
                         </TableHead>
                         <TableBody>
                             {paginatedRows.map((row, rowIndex) => (
-                                <RenderRowServicesList
+                                <RenderRowRoomsList
                                     key={rowIndex}
                                     row={row}
                                     columns={columns}
@@ -106,9 +106,9 @@ const ServicesList = (props) => {
                 />
             </Paper>
 
-            <DeleteServiceModal isOpen={deleteModalOpen} deleteRowValues={deleteRowValues} handleClose={() => setDeleteModalOpen(false)} />
+            <DeleteRoomModal isOpen={deleteModalOpen} deleteRowValues={deleteRowValues} handleClose={() => setDeleteModalOpen(false)} />
         </>
     );
 };
 
-export default ServicesList;
+export default RoomList;

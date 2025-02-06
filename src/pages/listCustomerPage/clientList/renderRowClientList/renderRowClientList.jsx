@@ -10,7 +10,7 @@ const RenderClientCell = ({ column, value, rowIndex, row, handleClickWhatsapp })
             </div>
         );
     }
-
+    
     if (column.id === 'loyaltyPoints') {
         return <Rating name="half-rating-read" value={value} precision={0.5} readOnly />;
     }
@@ -49,9 +49,12 @@ const RenderClientCell = ({ column, value, rowIndex, row, handleClickWhatsapp })
         );
     }
 
+    
     if (column.format && typeof value === 'number') {
         return column.format(value);
     }
+    
+    if(!value) return 'oi'
 
     return value;
 };
@@ -64,7 +67,7 @@ export const RenderRowClientList = ({ row, columns, rowIndex, handleOpenModal, s
 
     const handleClickWhatsapp = (e) => {
         e.stopPropagation();
-        const phoneOnlyNumbers = unformattedData[rowIndex].phone.replace(/\D/g, '');
+        const phoneOnlyNumbers = unformattedData[rowIndex].phoneNumber.replace(/\D/g, '');
         window.open(`https://wa.me/${phoneOnlyNumbers}`);
     };
 

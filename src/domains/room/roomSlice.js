@@ -9,9 +9,9 @@ const initialState = {
     isLoading: false,
 };
 
-const sliceName = 'services';
+const sliceName = 'rooms';
 
-const serviceSlice = createSlice({
+const roomsSlice = createSlice({
     name: sliceName,
     initialState,
     reducers: {
@@ -34,16 +34,16 @@ const serviceSlice = createSlice({
                 },
             };
         },
-
+        
         deleteItem: (state, action) => {
-            const serviceId = action.payload;
-            state.data = state.data.filter((service) => service.id !== serviceId);
+            const roomId = action.payload;
+            state.data = state.data.filter((room) => room.id !== roomId);
         },
 
         clear: () => initialState
     }
 });
 
-export const { readItem, addItem, updateItem, deleteItem, setLoading, clear } = serviceSlice.actions;
+export const { readItem, addItem, updateItem, deleteItem, setLoading, clear } = roomsSlice.actions;
 
-export default serviceSlice.reducer;
+export default roomsSlice.reducer;

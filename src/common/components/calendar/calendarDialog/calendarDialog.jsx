@@ -33,7 +33,7 @@ import {
 
 import TimeSelect from '../time-select';
 import Datepicker from '../date-picker';
-import servicesService from '../../../../domains/services/servicesService';
+import roomService from '../../../../domains/room/roomService';
 import clientService from '../../../../domains/client/clientService';
 import appointmentService from '../../../../domains/appointment/appointmentService';
 
@@ -57,7 +57,8 @@ function CalendarEventDialog() {
 
     const { id: businessId } = useSelector((state) => state?.auth.user) || { id: undefined };
     const { data: servicesList } = useSelector((state) => state?.services) || { data: [] };
-    const { data: clientsList } = useSelector((state) => state?.clients) || { data: [] };
+    // const { data: clientsList } = useSelector((state) => state?.clients) || { data: [] };
+    const { data: clientsList } = { data: [] };
     const { data: appointments } = useSelector((state) => state?.appointments) || { data: [] };
     const { data: calendarBlocks } = useSelector((state) => state?.calendarBlocks) || { data: [] };
     const scheduleState = useSelector((state) => state?.user.schedule)  || [];
@@ -83,8 +84,8 @@ function CalendarEventDialog() {
 
     useEffect(() => {
         if (businessId) {
-            servicesService.read({businessId, limit: 1000, status: true});
-            clientService.read({businessId});
+            // roomService.read({businessId, limit: 1000, status: true});
+            // clientService.read({businessId});
         }
     }, [businessId]);
 
@@ -93,8 +94,8 @@ function CalendarEventDialog() {
     useEffect(() => {
         if (businessId) {
             const getClients = async () => {
-                const clients = await clientService.read({businessId, search: debouncedClientInput});
-                setFilteredClientsList(clients.data);
+                // const clients = await clientService.read({businessId, search: debouncedClientInput});
+                // setFilteredClientsList(clients.data);
             };
             getClients();
         }

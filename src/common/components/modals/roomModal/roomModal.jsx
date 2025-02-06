@@ -8,22 +8,20 @@ import DialogContent from '@mui/material/DialogContent';
 import { FormControl, InputLabel, OutlinedInput, Switch, Grid, FormControlLabel, FormLabel, Box, Typography, Select, MenuItem, Checkbox } from '@mui/material';
 
 import moneyMask from '../../../masks/moneyMask';
-import servicesService from '../../../../domains/services/servicesService';
+import roomService from '../../../../domains/room/roomService';
 
-import { formatServicePayload, validationSchema } from './serviceModal.constants';
+import { formatRoomPayload, validationSchema } from './roomModal.constants';
 
-const ServiceModal = (props) => {
+const RoomModal = (props) => {
     const { open, setOpen, valuesLine } = props;
-    const { id: businessId } = useSelector((state) => state?.auth.user) || { businessId: undefined };
+    const { businessId } = useSelector((state) => state?.auth.user) || { businessId: undefined };
 
     const formik = useFormik({
         initialValues: {
             name: valuesLine?.name || '',
             price: valuesLine ? moneyMask(valuesLine.price) : 'R$ 0,00',
             status: valuesLine?.status ?? true,
-            duration: valuesLine?.duration || '',
-            loyaltyPoints: valuesLine?.loyaltyPoints || 0,
-            startingFrom: valuesLine?.startingFrom
+            capacity: valuesLine?.capacity || 0,
         },
         enableReinitialize: true,
         validationSchema: validationSchema,
@@ -40,9 +38,9 @@ const ServiceModal = (props) => {
             price: parseInt(values.price.replace(/\D/g, ''), 10) || 0
         };
         if (valuesLine) {
-            servicesService.update(valuesLine.id, formatServicePayload(formattedValues));
+            roomService.update(valuesLine.id, formatRoomPayload(formattedValues));
         } else {
-            servicesService.create(businessId, formatServicePayload(formattedValues));
+            roomService.create(businessId, formatRoomPayload(formattedValues));
         }
 
         formik.resetForm();
@@ -55,7 +53,7 @@ const ServiceModal = (props) => {
                 <DialogContent>
                     <Box component="form" onSubmit={formik.handleSubmit} sx={{ display: 'flex', flexDirection: 'column', m: 'auto', pt: 2, gap: 3 }}>
                         <Grid container spacing={2}>
-                            <Grid item xs={12}>
+                            <Grid item xs={8}>
                                 <FormControl fullWidth>
                                     <InputLabel htmlFor="name" size="small">
                                         Nome
@@ -71,6 +69,28 @@ const ServiceModal = (props) => {
                                     {formik.touched.name && formik.errors.name ? (
                                         <Typography variant="caption" color="error">
                                             {formik.errors.name}
+                                        </Typography>
+                                    ) : null}
+                                </FormControl>
+                            </Grid>
+
+                            <Grid item xs={4} sx={{ display: 'flex', alignItems: 'center' }}>
+                                <FormControl fullWidth>
+                                    <InputLabel htmlFor="capacity" size="small">
+                                        Capacidade
+                                    </InputLabel>
+                                    <OutlinedInput
+                                        id="capacity"
+                                        label="Capacidade"
+                                        size="small"
+                                        type="number"
+                                        value={formik.values.capacity}
+                                        onChange={formik.handleChange}
+                                        error={formik.touched.capacity && Boolean(formik.errors.capacity)}
+                                    />
+                                    {formik.touched.capacity && formik.errors.capacity ? (
+                                        <Typography variant="caption" color="error">
+                                            {formik.errors.capacity}
                                         </Typography>
                                     ) : null}
                                 </FormControl>
@@ -118,27 +138,7 @@ const ServiceModal = (props) => {
                                 </FormControl>
                             </Grid>
 
-                            <Grid item xs={4} sx={{ display: 'flex', alignItems: 'center' }}>
-                                <FormControl fullWidth>
-                                    <InputLabel htmlFor="loyaltyPoints" size="small">
-                                        Capacidade
-                                    </InputLabel>
-                                    <OutlinedInput
-                                        id="loyaltyPoints"
-                                        label="Capacidade de membros"
-                                        size="small"
-                                        type="number"
-                                        value={formik.values.loyaltyPoints}
-                                        onChange={formik.handleChange}
-                                        error={formik.touched.loyaltyPoints && Boolean(formik.errors.loyaltyPoints)}
-                                    />
-                                    {formik.touched.loyaltyPoints && formik.errors.loyaltyPoints ? (
-                                        <Typography variant="caption" color="error">
-                                            {formik.errors.loyaltyPoints}
-                                        </Typography>
-                                    ) : null}
-                                </FormControl>
-                            </Grid>
+                            
                         </Grid>
                         <DialogActions>
                             <Button autoFocus onClick={handleClose}>
@@ -155,4 +155,4 @@ const ServiceModal = (props) => {
     );
 };
 
-export default ServiceModal;
+export default RoomModal;
