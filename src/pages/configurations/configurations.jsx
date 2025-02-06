@@ -54,26 +54,26 @@ export default function Configurations() {
             <Box sx={{ width: '100%', pt: 2 }}>
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                     <Tabs value={value} onChange={handleChange} aria-label="icon position tabs example" sx={{ minHeight: 'unset' }}>
-                        <Tab
+                        {/* <Tab
                             icon={<GoGear size={17} />}
                             iconPosition="start"
                             label="Configurações"
                             sx={{ fontSize: 14, textTransform: 'none', minHeight: 20, fontWeight: 'unset' }}
                             {...a11yProps(0)}
-                        />
+                        /> */}
                         <Tab
                             icon={<IoStorefrontOutline size={17} />}
                             iconPosition="start"
                             label="Estabelecimento"
                             sx={{ fontSize: 14, textTransform: 'none', minHeight: 20, fontWeight: 'unset' }}
-                            {...a11yProps(1)}
+                            {...a11yProps(0)}
                         />
                     </Tabs>
                 </Box>
-                <CustomTabPanel value={value} index={0}>
+                {/* <CustomTabPanel value={value} index={0}>
                     <TabGeneralConfigs />
-                </CustomTabPanel>
-                <CustomTabPanel value={value} index={1}>
+                </CustomTabPanel> */}
+                <CustomTabPanel value={value} index={0}>
                     <TabEstablishment />
                 </CustomTabPanel>
             </Box>

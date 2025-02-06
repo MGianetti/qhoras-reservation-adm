@@ -18,13 +18,13 @@ function App() {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/esqueci-senha" element={<ForgotPassword />} />
                 <Route path="/redefinir-senha" element={<ResetPassword />} />
-                <Route element={<ProtectedRoute />}>
                     <Route path="/" element={<Calendar />} />
                     <Route path="/membros" element={<ListCustomerPage />} />
                     <Route path="/salas" element={<Rooms />} />
                     <Route path="/updates" element={<Updates />} />
                     {/* <Route path="/financeiro" element={<Financeiro />} /> */}
                     <Route path="/configuracoes" element={<Configurations />} />
+                <Route element={<ProtectedRoute />}>
                 </Route>
             </Routes>
         </Router>
