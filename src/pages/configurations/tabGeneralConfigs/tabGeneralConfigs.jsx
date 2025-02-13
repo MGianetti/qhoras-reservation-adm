@@ -77,9 +77,9 @@ function TabGeneralConfigs() {
                 </form>
             </Grid>
 
-            <Grid item xs={12} sx={{ boxShadow: theme.shadows[0] }} className={styles.cardGroup}>
+            {/* <Grid item xs={12} sx={{ boxShadow: theme.shadows[0] }} className={styles.cardGroup}>
                 <BlockTimeGroup />
-            </Grid>
+            </Grid> */}
         </Grid>
     );
 }

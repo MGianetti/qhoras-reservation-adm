@@ -47,6 +47,7 @@ const { read, create, update, deleteRoom } = {
         try {
             dispatch(setLoading(true));
             const response = await roomRepository.updateRoom(roomId, updateRoomPayload);
+
             dispatch(updateItem(response));
             notification(updatedRoomSuccess);
         } catch (error) {

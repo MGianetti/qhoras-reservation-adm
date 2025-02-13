@@ -12,7 +12,7 @@ const WhatsappGroup = () => {
     const [error, setError] = useState(null);
     const [isClientActive, setIsClientActive] = useState(false);
 
-    const userId = useSelector((state) => state.auth.user.id);
+    const {id: userId} = useSelector((state) => state.auth.user) || { id: undefined };
 
     useEffect(() => {
         const checkClientStatus = async () => {

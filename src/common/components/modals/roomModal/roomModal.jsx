@@ -25,30 +25,42 @@ import Checkbox from "@mui/material/Checkbox";
 import moneyMask from "../../../masks/moneyMask";
 import roomService from "../../../../domains/room/roomService";
 
-import { formatRoomPayload, validationSchema } from "./roomModal.constants";
+import { formatRoomPayload, validationSchema, days } from "./roomModal.constants";
+import dayjs from "dayjs";
+import { useMemo } from "react";
 
 const RoomModal = ({ open, setOpen, valuesLine }) => {
   const { businessId } = useSelector((state) => state?.auth.user) || {
     businessId: undefined,
   };
 
+  const initialValues = useMemo(() => ({
+    name: valuesLine?.name || "",
+    price: valuesLine ? moneyMask(valuesLine.price) : "R$ 0,00",
+    status: valuesLine?.status ?? true,
+    capacity: valuesLine?.capacity || 0,
+    agendaConfigurations: valuesLine?.agendaConfigurations
+      ? valuesLine.agendaConfigurations.map((config) => ({
+          day: config.day,
+          isActive: config.isActive,
+          // Store as dayjs objects for later formatting
+          timeRange: [dayjs(`1970-01-01T${config.startTime}`), dayjs(`1970-01-01T${config.endTime}`)],
+        }))
+      : days.map((day) => ({
+          day: day.value,
+          isActive: false,
+          timeRange: [dayjs('1970-01-01T08:00'), dayjs('1970-01-01T18:00')],
+        })),
+  }), [valuesLine]);
+
   const formik = useFormik({
-    initialValues: {
-      name: valuesLine?.name || "",
-      price: valuesLine?.price ? parseFloat(valuesLine.price) : 0,
-      status: valuesLine?.status ?? true,
-      capacity: valuesLine?.capacity || 0,
-      agendaConfigurations: valuesLine?.agendaConfigurations || [],
-    },
+    initialValues: initialValues,
     enableReinitialize: true,
-    // TODO FIX
     // validationSchema,
     onSubmit: (values) => {
-      alert(); 
       handleSubmit(values);
     },
   });
-  
 
   const handleClose = () => {
     setOpen(false);
@@ -58,31 +70,29 @@ const RoomModal = ({ open, setOpen, valuesLine }) => {
     const formattedValues = {
       ...values,
       price: parseInt(values.price.replace(/\D/g, ""), 10) || 0,
-      agendaConfigurations: (values.agendaConfigurations || []) // Ensure it's an array
-        .filter((config) => config && config.timeRange) // Remove undefined/null entries
-        .map((config, index) => ({
-          day: index,
-          startTime: config.timeRange?.[0]
-            ? config.timeRange[0].format("HH:mm")
-            : null,
-          endTime: config.timeRange?.[1]
-            ? config.timeRange[1].format("HH:mm")
-            : null,
-          isActive: config.isActive ?? false, // Default to false if undefined
-        })),
+      agendaConfigurations: (values.agendaConfigurations || []).map((config, index) => ({
+        day: days[index].value,
+        startTime: config.timeRange?.[0]
+          ? config.timeRange[0].format("HH:mm")
+          : "08:00",
+        endTime: config.timeRange?.[1]
+          ? config.timeRange[1].format("HH:mm")
+          : "18:00",
+        isActive: config.isActive ?? false,
+      })),
     };
   
     try {
       if (valuesLine) {
-        await roomService.update({
-          ...formatRoomPayload(formattedValues),
-          id: valuesLine.id,
-        });
+        await roomService.update(
+          valuesLine.id,
+          formatRoomPayload(formattedValues)
+        );
       } else {
-        await roomService.create({
-          ...formatRoomPayload(formattedValues),
+        await roomService.create(
           businessId,
-        });
+          formatRoomPayload(formattedValues)
+        );
       }
       formik.resetForm();
       setOpen(false);
@@ -90,6 +100,7 @@ const RoomModal = ({ open, setOpen, valuesLine }) => {
       console.error("Error submitting room data:", error);
     }
   };
+  
   
 
   return (
@@ -163,7 +174,7 @@ const RoomModal = ({ open, setOpen, valuesLine }) => {
                   error={formik.touched.price && Boolean(formik.errors.price)}
                 />
                 {formik.touched.price && formik.errors.price && (
-                  <Typography variant="caption" color="error">
+                  <Typography variant="cdayaption" color="error">
                     {formik.errors.price}
                   </Typography>
                 )}
@@ -204,15 +215,6 @@ const RoomModal = ({ open, setOpen, valuesLine }) => {
 };
 
 const OperationGroup = ({ formik }) => {
-  const days = [
-    "Segunda-feira",
-    "Terça-feira",
-    "Quarta-feira",
-    "Quinta-feira",
-    "Sexta-feira",
-    "Sábado",
-    "Domingo",
-  ];
 
   return (
     <div>
@@ -242,7 +244,7 @@ const OperationGroup = ({ formik }) => {
                     }
                   />
                 }
-                label={day}
+                label={day.name}
               />
             </Grid>
 

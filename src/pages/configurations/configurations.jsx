@@ -45,9 +45,9 @@ export default function Configurations() {
         setValue(newValue);
     };
 
-    useEffect(() => {
-        userService.read(businessId)
-    }, [businessId]);
+    // useEffect(() => {
+    //     userService.read(businessId)
+    // }, [businessId]);
 
     return (
         <LoggedLayout>

@@ -96,7 +96,7 @@ const Calendar = () => {
 
     useEffect(() => {
         if (!selectedEmployee?.id) return;
-        userService.read(selectedEmployee.id);
+        // userService.read(selectedEmployee.id);
 
         if (selectedEmployee.role === 'ADMINISTRATOR') {
             userService.readBusinessEmployees(auth?.user?.businessId);

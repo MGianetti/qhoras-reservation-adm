@@ -53,3 +53,33 @@ export const formatRoomPayload = (values) => {
     };
   };
   
+export const days = [
+  {
+    name: "Segunda-feira",
+    value: "MONDAY",
+  },
+  {
+    name: "Terça-feira",
+    value: "TUESDAY",
+  },
+  {
+    name: "Quarta-feira",
+    value: "WEDNESDAY",
+    },
+  {
+    name: "Quinta-feira",
+    value: "THURSDAY",
+  },
+  {
+    name: "Sexta-feira",
+    value: "FRIDAY",
+  },
+  {
+    name: "Sábado",
+    value: "SATURDAY",
+  },
+  {
+    name: "Domingo",
+    value: "SUNDAY",
+  },
+];

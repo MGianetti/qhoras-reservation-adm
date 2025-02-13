@@ -16,7 +16,6 @@ const endpoints = {
         clients: 'clients/${BUSINESS-ID}',
         rooms: 'rooms/${BUSINESS-ID}',
         appointments: 'appointments/${APPOINTMENT-ID}',
-        schedule: 'users/schedule/${USER-ID}',
         calendarBlocks: 'calendar-blocks/${BLOCK-ID}',
         employees: 'users/${BUSINESS-ID}/employees',
         userConfig: 'users/user-config/${USER-ID}'
@@ -35,7 +34,7 @@ const endpoints = {
         appointments: 'appointments/${APPOINTMENT-ID}',
         schedule: 'users/update-schedule/${USER-ID}',
         userConfig: 'users/update-user-config/${BUSINESS-ID}',
-        company: 'users/update-company/${BUSINESS-ID}'
+        company: 'users/update-company/${USER-ID}'
     },
 
     delete: {

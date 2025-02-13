@@ -12,7 +12,7 @@ const { read, updateUserConfig, updateCompany, readBusinessEmployees } = {
     read: async (businessId) => {
         try {
             dispatch(setLoading(true));
-            const scheduleResponse = await userRepository.readSchedule(businessId);
+            // const scheduleResponse = await userRepository.readSchedule(businessId);
             const userConfigResponse = await userRepository.readUserConfig(businessId);
 
             dispatch(readItem({ schedule: scheduleResponse, suggestionTime: userConfigResponse.suggestionTime }));
