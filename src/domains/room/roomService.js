@@ -23,6 +23,7 @@ const { read, create, update, deleteRoom } = {
                     totalCount: response.totalCount
                 })
             );
+            return response.rooms;
         } catch (error) {
             console.error('Error reading rooms with pagination:', error);
             return false;

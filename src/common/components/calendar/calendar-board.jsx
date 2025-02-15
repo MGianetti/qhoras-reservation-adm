@@ -124,7 +124,7 @@ function CalendarBoard(props) {
     const { selectedWeekIndex, selectedWeek } = props;
 
     const { stateCalendar, setStateCalendar } = useContext(CalendarContext);
-    const { selectedDate, layout, defaultEventDuration, draggingEventId } = stateCalendar;
+    const { selectedDate, layout, defaultEventDuration, draggingEventId, selectedRoom } = stateCalendar;
 
     const [currentTimePosition, setCurrentTimePosition] = useState();
 
@@ -141,7 +141,9 @@ function CalendarBoard(props) {
 
     const appointments = useSelector((state) => state?.appointments?.data) || [];
     const calendarBlocks = useSelector((state) => state?.calendarBlocks?.data) || [];
-    const scheduleState = useSelector((state) => state?.user.schedule)  || [];
+    const rooms = useSelector((state) => state?.rooms?.data)  || [];
+
+    const scheduleState = rooms.find((room) => room.id === selectedRoom)?.agendaConfigurations;
 
     const getEventData = (day) => {
         const monthEvents =

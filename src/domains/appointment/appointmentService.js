@@ -24,13 +24,13 @@ dayjs.extend(timezone);
 const dispatch = (action) => store.dispatch(action);
 
 const { read, create, update, remove } = {
-    read: async (userId, start, end) => {
+    read: async (roomId, start, end) => {
         dispatch(setLoading(true));
         try {
-            const response = await appointmentRepository.readAllAppointments(userId, start, end);
+            const response = await appointmentRepository.readAllAppointments(roomId, start, end);
             const responseSorted = response.sort((a, b) => dayjs(b.createdAt).diff(dayjs(a.createdAt)));
             dispatch(readItem({ data: responseSorted }));
-            return true;
+            return responseSorted;
         } catch (error) {
             return false;
         } finally {

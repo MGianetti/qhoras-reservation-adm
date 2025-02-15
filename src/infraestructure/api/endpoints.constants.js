@@ -15,8 +15,8 @@ const endpoints = {
     read: {
         clients: 'clients/${BUSINESS-ID}',
         rooms: 'rooms/${BUSINESS-ID}',
-        appointments: 'appointments/${APPOINTMENT-ID}',
-        calendarBlocks: 'calendar-blocks/${BLOCK-ID}',
+        appointments: 'appointments/${ROOM-ID}',
+        calendarBlocks: 'calendar-blocks/${ROOM-ID}',
         employees: 'users/${BUSINESS-ID}/employees',
         userConfig: 'users/user-config/${USER-ID}'
     },

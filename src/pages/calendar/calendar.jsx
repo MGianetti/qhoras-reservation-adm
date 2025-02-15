@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { styled } from '@mui/material/styles';
-import { CssBaseline, FormControl, InputLabel, MenuItem, Select, useTheme } from '@mui/material';
+import { CssBaseline, useTheme } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import { addMonths, addWeeks, addDays, subMonths, subWeeks, subDays } from 'date-fns';
 
@@ -16,233 +16,211 @@ import notification from '../../common/utils/notification';
 import { refreshCalendarSuccess } from '../../domains/appointment/appointment.constants';
 import LoadingOverlay from '../../common/components/LoadingOverlay/LoadingOverlay';
 import BlockDialog from '../../common/components/calendar/calendarDialog/blockDialog';
-import userService from '../../domains/user/userService';
+import roomsService from '../../domains/room/roomService';
 
 const PREFIX = 'Calendar';
 
 const classes = {
-    root: `${PREFIX}-root`
+  root: `${PREFIX}-root`
 };
 
 const StyledCalendarContextProvider = styled(CalendarContext.Provider)(() => ({
-    [`& .${classes.root}`]: {
-        display: 'flex',
-        height: '100%',
-        width: '100%',
-        boxShadow: '0px 1px 8px rgb(154 154 154 / 9%), 0px 1px 8px rgb(124 124 124 / 6%)'
-    }
+  [`& .${classes.root}`]: {
+    display: 'flex',
+    height: '100%',
+    width: '100%',
+    boxShadow: '0px 1px 8px rgb(154 154 154 / 9%), 0px 1px 8px rgb(124 124 124 / 6%)'
+  }
 }));
 
-const selectedDate = new Date();
-const layout = 'day';
-const openDialog = false;
-const openViewDialog = false;
-const defaultEventDuration = 60; // in minutes
+const defaultEventDuration = 60; // em minutos
+const initialSelectedDate = new Date();
+const initialLayout = 'day';
+const initialOpenDialog = false;
+const initialOpenViewDialog = false;
 
 const Calendar = () => {
-    const theme = useTheme();
+  const theme = useTheme();
+  const isLoading = useSelector((state) => state.appointments.isLoading);
+  const auth = useSelector((state) => state.auth);
 
-    const [stateCalendar, setStateCalendar] = useState({
-        actions: '',
-        allowFullScreen: false,
-        calendarEvent: {},
-        content: '',
-        defaultEventDuration,
-        draggingEventId: -1,
-        eventBeginDate: null,
-        eventBeginTime: { value: null, label: null },
-        eventDialogMaxWidth: 'md',
-        eventEndDate: null,
-        eventEndTime: { value: null, label: null },
-        fullscreen: false,
-        ghostProperties: { width: 0, height: 0, date: new Date() },
-        layout,
-        modal: false,
-        openDialog,
-        openViewDialog,
-        selectedDate,
-        startDragging: false,
-        title: '',
-        withCloseIcon: true,
-        miniCalendarOpen: false
-    });
+  const [stateCalendar, setStateCalendar] = useState({
+    actions: '',
+    allowFullScreen: false,
+    calendarEvent: {},
+    content: '',
+    defaultEventDuration,
+    draggingEventId: -1,
+    eventBeginDate: null,
+    eventBeginTime: { value: null, label: null },
+    eventDialogMaxWidth: 'md',
+    eventEndDate: null,
+    eventEndTime: { value: null, label: null },
+    fullscreen: false,
+    ghostProperties: { width: 0, height: 0, date: new Date() },
+    layout: initialLayout,
+    modal: false,
+    openDialog: initialOpenDialog,
+    openViewDialog: initialOpenViewDialog,
+    selectedDate: initialSelectedDate,
+    startDragging: false,
+    title: '',
+    withCloseIcon: true,
+    miniCalendarOpen: false,
+    selectedRoom: null
+  });
 
-    const [runAnimation, setRunAnimation] = useState(true);
-    const [open, setOpen] = useState(true);
-    const [getScheduleData, setGetScheduleData] = useState(null);
-    const isLoading = useSelector((state) => state.appointments.isLoading);
-    const auth = useSelector((state) => state.auth);
-    const [employees, setEmployees] = useState([]);
-    const [selectedEmployee, setSelectedEmployee] = useState(null);
-    const [appointments, setAppointments] = useState([]);
+  const [runAnimation, setRunAnimation] = useState(true);
+  const [drawerOpen, setDrawerOpen] = useState(true);
+  const [getScheduleData, setGetScheduleData] = useState(null);
 
-    useEffect(() => {
-        const fetchEmployees = async () => {
-            try {
-                const today = new Date();
-                const data = await userService.readBusinessEmployees(auth?.user?.businessId);
+  // Estados para as salas
+  const [rooms, setRooms] = useState([]);
+  const [selectedRoom, setSelectedRoom] = useState(null);
 
-                setEmployees(data);
-                if (data.length > 0 && !selectedEmployee) {
-                    setSelectedEmployee(data[0].id);
-                }
-            } catch (error) {
-                console.error('Failed to fetch employees:', error);
-            }
-        };
+  // Função para buscar as salas
+  const fetchRooms = useCallback(async () => {
+    try {
+      if (!auth?.user?.businessId) return;
+      const data = await roomsService.read({ businessId: auth.user.businessId, page: 1, limit: 1000 });
+      setRooms(data);
+      if (data.length > 0 && !selectedRoom) {
+        setSelectedRoom(data[0].id);
+      }
+    } catch (error) {
+      console.error('Failed to fetch rooms:', error);
+    }
+  }, [auth?.user?.businessId, selectedRoom]);
 
-        fetchEmployees();
-    }, [auth?.user?.businessId, selectedEmployee]);
+  useEffect(() => {
+    fetchRooms();
+  }, [fetchRooms]);
 
-    useEffect(() => {
-        if (!selectedEmployee?.id) return;
-        // userService.read(selectedEmployee.id);
+  // Atualiza o calendário sempre que a sala selecionada mudar
+  useEffect(() => {
+    if (selectedRoom) {
+      refreshCalendar();
+      setStateCalendar({ ...stateCalendar, selectedRoom: selectedRoom });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedRoom]);
 
-        if (selectedEmployee.role === 'ADMINISTRATOR') {
-            userService.readBusinessEmployees(auth?.user?.businessId);
-        }
-    }, [selectedEmployee?.id]);
+  const handleDrawerOpen = () => setDrawerOpen(true);
+  const handleDrawerClose = () => setDrawerOpen(false);
 
-    const fetchEmployees = async () => {
-        try {
-            const today = new Date();
-            const startDate = new Date(today.setHours(0, 0, 0, 0));
-            const endDate = new Date(today.setHours(23, 59, 59, 999));
-            const data = await userService.readBusinessEmployees(auth?.user?.businessId, { dateRange: { start: startDate.toISOString(), end: endDate.toISOString() } });
-            setEmployees(data);
-        } catch (error) {
-            console.error('Failed to fetch employees:', error);
-        }
-    };
+  const goToToday = () => {
+    setRunAnimation(false);
+    setStateCalendar({ ...stateCalendar, selectedDate: new Date() });
+  };
 
-    useEffect(() => {
-        fetchEmployees();
-    }, [selectedEmployee, stateCalendar.selectedDate]);
+  const next = () => {
+    setRunAnimation(false);
+    let newDate;
+    switch (stateCalendar.layout) {
+      case 'week':
+        newDate = addWeeks(stateCalendar.selectedDate, 1);
+        break;
+      case 'day':
+        newDate = addDays(stateCalendar.selectedDate, 1);
+        break;
+      default:
+        newDate = addMonths(stateCalendar.selectedDate, 1);
+        break;
+    }
+    setStateCalendar({ ...stateCalendar, selectedDate: newDate });
+  };
 
-    const handleDrawerOpen = () => {
-        setOpen(true);
-    };
+  const previous = () => {
+    setRunAnimation(false);
+    let newDate;
+    switch (stateCalendar.layout) {
+      case 'week':
+        newDate = subWeeks(stateCalendar.selectedDate, 1);
+        break;
+      case 'day':
+        newDate = subDays(stateCalendar.selectedDate, 1);
+        break;
+      default:
+        newDate = subMonths(stateCalendar.selectedDate, 1);
+        break;
+    }
+    setStateCalendar({ ...stateCalendar, selectedDate: newDate });
+  };
 
-    const handleDrawerClose = () => {
-        setOpen(false);
-    };
+  const openCalendar = () => {
+    setStateCalendar({ ...stateCalendar, miniCalendarOpen: !stateCalendar.miniCalendarOpen });
+  };
 
-    const goToToday = () => {
-        setRunAnimation(false);
-        const newDate = new Date();
-        setStateCalendar({ ...stateCalendar, selectedDate: newDate });
-    };
+  const handleLayoutChange = ({ value }) => {
+    setStateCalendar({ ...stateCalendar, layout: value });
+  };
 
-    const openCalendar = () => {
-        setStateCalendar({ ...stateCalendar, miniCalendarOpen: !stateCalendar.miniCalendarOpen });
-    };
+  const handleRoomChange = (event) => {
+    const selectedRoomId = event.target.value;
+    setSelectedRoom(selectedRoomId);
+  };
 
-    const handleLayoutChange = (args) => {
-        const { value } = args;
-        setStateCalendar({ ...stateCalendar, layout: value });
-    };
+  const refreshCalendar = async () => {
+    console.log("getScheduleData", getScheduleData)
+    console.log("selectedRoom", selectedRoom)
+    if (getScheduleData && selectedRoom) {
+      const { appointments: refreshedAppointments, calendarBlocks: refreshedCalendarBlocks } = await getScheduleData(selectedRoom);
+      if (refreshedAppointments && refreshedCalendarBlocks) {
+        notification(refreshCalendarSuccess);
+      }
+    }
+  };
 
-    const next = () => {
-        setRunAnimation(false);
-        let newDate;
+  return (
+    <LoggedLayout>
+      <StyledCalendarContextProvider value={{ stateCalendar, setStateCalendar }}>
+        <ThemeProvider theme={theme}>
+          <div
+            className={classes.root}
+            style={{
+              overflow: 'hidden',
+              borderRadius: '4px',
+              boxShadow: '0px 1px 8px rgb(154 154 154 / 9%), 0px 1px 8px rgb(124 124 124 / 6%)'
+            }}
+          >
+            <CssBaseline />
+            <CalendarToolbar
+              openCalendar={openCalendar}
+              miniCalendarOpen={stateCalendar.miniCalendarOpen}
+              goToToday={goToToday}
+              next={next}
+              previous={previous}
+              open={drawerOpen}
+              handleDrawerOpen={handleDrawerOpen}
+              handleDrawerClose={handleDrawerClose}
+              handleLayoutChange={handleLayoutChange}
+              refreshCalendar={refreshCalendar}
+              isLoading={isLoading}
+              // Propriedades para seleção de sala
+              selectedRoom={selectedRoom}
+              rooms={rooms}
+              handleRoomChange={handleRoomChange}
+            />
 
-        switch (stateCalendar.layout) {
-            case 'week':
-                newDate = addWeeks(stateCalendar.selectedDate, 1);
-                break;
-
-            case 'day':
-                newDate = addDays(stateCalendar.selectedDate, 1);
-                break;
-
-            default:
-                // month
-                newDate = addMonths(stateCalendar.selectedDate, 1);
-                break;
-        }
-        setStateCalendar({ ...stateCalendar, selectedDate: newDate });
-        // applyLink(newDate)
-    };
-
-    const previous = () => {
-        setRunAnimation(false);
-        let newDate;
-
-        switch (stateCalendar.layout) {
-            case 'week':
-                newDate = subWeeks(stateCalendar.selectedDate, 1);
-                break;
-
-            case 'day':
-                newDate = subDays(stateCalendar.selectedDate, 1);
-                break;
-
-            default:
-                newDate = subMonths(stateCalendar.selectedDate, 1);
-                break;
-        }
-        setStateCalendar({ ...stateCalendar, selectedDate: newDate });
-    };
-
-    const handleEmployeeChange = (event) => {
-        const selectedEmployeeId = event.target.value;
-        setSelectedEmployee(selectedEmployeeId);
-    };
-
-    const refreshCalendar = async () => {
-        if (getScheduleData) {
-            const { appointments: refreshedAppointments, calendarBlocks: refreshedCalendarBlocks } = await getScheduleData();
-            refreshedAppointments && refreshedCalendarBlocks && notification(refreshCalendarSuccess);
-        }
-    };
-
-    return (
-        <LoggedLayout>
-            <StyledCalendarContextProvider value={{ stateCalendar, setStateCalendar }}>
-                <ThemeProvider theme={theme}>
-                    <div
-                        className={classes.root}
-                        style={{ overflow: 'hidden', borderRadius: '4px', boxShadow: '0px 1px 8px rgb(154 154 154 / 9%), 0px 1px 8px rgb(124 124 124 / 6%)' }}
-                    >
-                        <CssBaseline />
-                        <CalendarToolbar
-                            openCalendar={openCalendar}
-                            miniCalendarOpen={stateCalendar.miniCalendarOpen}
-                            goToToday={goToToday}
-                            next={next}
-                            previous={previous}
-                            open={open}
-                            handleDrawerOpen={handleDrawerOpen}
-                            handleDrawerClose={handleDrawerClose}
-                            handleLayoutChange={handleLayoutChange}
-                            refreshCalendar={refreshCalendar}
-                            isLoading={isLoading}
-                        />
-                        {Array.isArray(employees) &&
-                            employees.map((employee) => (
-                                <MenuItem key={employee.id} value={employee.id}>
-                                    {employee.email}
-                                </MenuItem>
-                            ))}
-                        <div style={{ display: 'flex', width: '100%', position: 'relative' }}>
-                            <LoadingOverlay isLoading={isLoading} />
-                            <CalendarDrawer
-                                selectedDate={selectedDate}
-                                next={next}
-                                previous={previous}
-                                open={open}
-                                layout={'month'}
-                                miniCalendarOpen={stateCalendar.miniCalendarOpen}
-                            />
-                            <CalendarMain isLoading={isLoading} open={open} runAnimation={runAnimation} setGetScheduleData={setGetScheduleData} />
-                            <CalendarEventDialog isLoading={isLoading} />
-                            <BlockDialog isLoading={isLoading} />
-                        </div>
-                    </div>
-                </ThemeProvider>
-            </StyledCalendarContextProvider>
-        </LoggedLayout>
-    );
+            <div style={{ display: 'flex', width: '100%', position: 'relative' }}>
+              <LoadingOverlay isLoading={isLoading} />
+              <CalendarDrawer
+                selectedDate={stateCalendar.selectedDate}
+                next={next}
+                previous={previous}
+                open={drawerOpen}
+                layout={'month'}
+                miniCalendarOpen={stateCalendar.miniCalendarOpen}
+              />
+              <CalendarMain isLoading={isLoading} open={drawerOpen} runAnimation={runAnimation} setGetScheduleData={setGetScheduleData} />
+              <CalendarEventDialog isLoading={isLoading} />
+              <BlockDialog isLoading={isLoading} />
+            </div>
+          </div>
+        </ThemeProvider>
+      </StyledCalendarContextProvider>
+    </LoggedLayout>
+  );
 };
 
 export default Calendar;

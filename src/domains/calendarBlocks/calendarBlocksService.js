@@ -23,9 +23,10 @@ const { create, read, remove } = {
     read: async (userId, start, end) => {
         dispatch(setLoading(true));
         try {
-            const response = await calendarBlocksRepository.readCalendarBlocks(userId, start, end);
-            const responseSorted = response.sort((a, b) => dayjs(b.createdAt).diff(dayjs(a.createdAt)));
-            dispatch(readItem({ data: responseSorted }));
+            // TODO: Implementar a leitura dos bloqueios de acordo com o horário e a sala
+            // const response = await calendarBlocksRepository.readCalendarBlocks(userId, start, end);
+            // const responseSorted = response.sort((a, b) => dayjs(b.createdAt).diff(dayjs(a.createdAt)));
+            // dispatch(readItem({ data: responseSorted }));
             return true;
         } catch (error) {
             return false;

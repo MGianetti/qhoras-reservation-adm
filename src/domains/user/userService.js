@@ -42,6 +42,7 @@ const { read, updateUserConfig, updateCompany, readBusinessEmployees } = {
             const response = await userRepository.readBusinessEmployees(businessId);
             dispatch(setEmployees(response));
             notification(companyUpdatedSuccess);
+            return response;
         } catch (error) {
             notification(companyUpdatedFail);
             return false;
