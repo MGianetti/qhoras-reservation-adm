@@ -4,7 +4,7 @@ import { Button, FormControl, FormGroup, FormLabel, InputLabel, OutlinedInput } 
 import userService from '../../../../domains/user/userService';
 
 const CompanyGroup = () => {
-    const { id, insideBusinessName, address, whatsappNumber } = useSelector((state) => state?.auth.user) || { email: undefined };
+    const {business} = useSelector((state) => state?.auth.user) || { email: undefined };
 
     const handleSubmit = (values) => {
         const companyData = {
@@ -13,14 +13,14 @@ const CompanyGroup = () => {
             address: values.address
         };
 
-        userService.updateCompany(id, companyData);
+        userService.updateCompany(business?.id, companyData);
     };
 
     const formik = useFormik({
         initialValues: {
-            companyName: insideBusinessName || '',
-            phone: whatsappNumber || '',
-            address: address || ''
+            companyName: business?.insideBusinessName || '',
+            phone: business?.whatsappNumber || '',
+            address: business?.address || ''
         },
         enableReinitialize: true,
         onSubmit: (values) => handleSubmit(values)

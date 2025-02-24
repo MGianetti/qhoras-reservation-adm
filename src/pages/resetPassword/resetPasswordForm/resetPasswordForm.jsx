@@ -62,7 +62,7 @@ const ResetPasswordForm = () => {
                         size="small"
                         required
                         type={showPassword ? 'text' : 'password'}
-                        label="Senha"
+                        label="Nova Senha"
                         {...formik.getFieldProps('password')}
                         endAdornment={
                             <InputAdornment position="end">

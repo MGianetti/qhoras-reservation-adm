@@ -36,7 +36,7 @@ const ForgotPasswordForm = () => {
                     <InputLabel size="small" required htmlFor="email">
                         Insira seu email de acesso
                     </InputLabel>
-                    <OutlinedInput id="email" size="small" type="email" label="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                    <OutlinedInput id="email" size="small" type="email" label="Insira seu email de acesso" value={email} onChange={(e) => setEmail(e.target.value)} required />
                 </FormControl>
                 <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
                     Resetar Senha

@@ -34,7 +34,7 @@ const endpoints = {
         appointments: 'appointments/${APPOINTMENT-ID}',
         schedule: 'users/update-schedule/${USER-ID}',
         userConfig: 'users/update-user-config/${BUSINESS-ID}',
-        company: 'users/update-company/${USER-ID}'
+        company: 'users/update-company/${BUSINESS-ID}'
     },
 
     delete: {
