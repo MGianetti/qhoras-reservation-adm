@@ -197,7 +197,7 @@ function CalendarBoard(props) {
                             end: new Date(block.endTime),
                             title: 'Bloqueado',
                             status: 'BLOCKED',
-                            service: null,
+                            room: null,
                             client: null
                         }}
                         sq={index}

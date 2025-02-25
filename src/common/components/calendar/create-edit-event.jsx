@@ -13,7 +13,7 @@ export default function createEditEvent(props) {
 
     let title = '';
     let description = '';
-    let service = null;
+    let room = null;
     let client = null;
     let status = 'SCHEDULED';
     let isPaidWithLoyaltyPoints = false;
@@ -28,7 +28,7 @@ export default function createEditEvent(props) {
         title = calendarEvent.title;
         description = calendarEvent.description;
 
-        service = calendarEvent?.service?.id;
+        room = calendarEvent?.room?.id;
         client = calendarEvent?.client?.id;
         status = calendarEvent?.status;
         isPaidWithLoyaltyPoints = calendarEvent?.isPaidWithLoyaltyPoints;
@@ -70,7 +70,7 @@ export default function createEditEvent(props) {
         eventID: (calendarEvent && calendarEvent.id) || 0,
         title,
         description,
-        service,
+        room,
         client,
         status,
         isPaidWithLoyaltyPoints,

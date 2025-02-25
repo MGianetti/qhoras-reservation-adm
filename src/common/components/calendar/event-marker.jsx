@@ -171,13 +171,13 @@ function EventMark(props) {
 
     // Quando for um bloco, não haverá cliente/serviço, então usamos dados padrão.
     const clientName = calendarEvent.client?.name || '';
-    const serviceName = calendarEvent.service?.name || '';
+    const roomName = calendarEvent.room?.name || '';
     const title = calendarEvent.title || (calendarEvent.status === 'BLOCKED' ? 'Bloqueado' : '');
 
     const beginDate = calendarEvent.begin;
     const endDate = calendarEvent.end;
 
-    const descriptionFormatted = clientName && serviceName ? `${clientName} - ${serviceName}` : title;
+    const descriptionFormatted = clientName && roomName ? `${clientName} - ${roomName}` : title;
 
     const currentDay = beginDate;
     const initTime = new Date(format(currentDay, 'yyyy/MM/dd 0:0:0', { locale: ptBR }));
@@ -197,7 +197,7 @@ function EventMark(props) {
         let beginTime = format(eventBeginDate, 'H:mm', { locale: ptBR });
         let endTime = format(eventEndDate, 'H:mm', { locale: ptBR });
 
-        let service = calendarEvent?.service?.id;
+        let room = calendarEvent?.room?.id;
         let client = calendarEvent?.client?.id;
         let status = calendarEvent?.status;
         let isPaidWithLoyaltyPoints = calendarEvent?.isPaidWithLoyaltyPoints;
@@ -209,7 +209,7 @@ function EventMark(props) {
             eventBeginDate: eventBeginDate,
             eventBeginTime: { value: beginTime, label: beginTime },
             eventEndTime: { value: endTime, label: endTime },
-            service,
+            room,
             client,
             status,
             isPaidWithLoyaltyPoints,

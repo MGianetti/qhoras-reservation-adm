@@ -24,8 +24,8 @@ const endpoints = {
     create: {
         clients: 'clients/${BUSINESS-ID}',
         rooms: 'rooms/${BUSINESS-ID}',
-        appointments: 'appointments/${USER-ID}',
-        calendarBlock: 'calendar-blocks/${USER-ID}'
+        appointments: 'appointments/${BUSINESS-ID}',
+        calendarBlock: 'calendar-blocks/${BUSINESS-ID}'
     },
 
     update: {

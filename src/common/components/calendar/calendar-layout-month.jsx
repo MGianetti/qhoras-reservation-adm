@@ -186,7 +186,7 @@ function CalendarLayoutMonth(props) {
         let endTime;
 
         let title = '';
-        let service = null;
+        let room = null;
         let client = null;
         let status = 'SCHEDULED';
         let isPaidWithLoyaltyPoints = false;
@@ -199,7 +199,7 @@ function CalendarLayoutMonth(props) {
             beginTime = format(eventBeginDate, 'H:mm', { locale: ptBR });
             endTime = format(eventEndDate, 'H:mm', { locale: ptBR });
 
-            service = calendarEvent?.service?.id;
+            room = calendarEvent?.room?.id;
             client = calendarEvent?.client?.id;
             status = calendarEvent?.status;
             isPaidWithLoyaltyPoints = calendarEvent?.isPaidWithLoyaltyPoints;
@@ -212,7 +212,7 @@ function CalendarLayoutMonth(props) {
             eventBeginDate: eventBeginDate,
             eventBeginTime: { value: beginTime, label: beginTime },
             eventEndTime: { value: endTime, label: endTime },
-            service,
+            room,
             client,
             status,
             isPaidWithLoyaltyPoints,
@@ -284,7 +284,7 @@ function CalendarLayoutMonth(props) {
                             })
                         }
                     >
-                        {`${event.client?.name} - ${event.service?.name}`}
+                        {`${event.client?.name} - ${event.room?.name}`}
                     </div>
                 ));
         });
