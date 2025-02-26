@@ -21,8 +21,9 @@ const getDayOfWeek = {
 };
 
 export const getInitialAndEndTime = (userData, weekDay) => {
-  if (!userData.length) return { initialTime: "08:00", endTime: "17:00" };
+  if (!userData.length) return { initialTime: "07:00", endTime: "18:00" };
 
+  return { initialTime: "07:00", endTime: "18:00" };
   const block = userData.filter(
     (block) => block?.day === weekDay.toUpperCase()
   );
@@ -36,10 +37,10 @@ export const timeToMinutes = (timeStr) => {
 
 export const validationSchema = (
   appointments,
-  servicesList,
+  roomsList,
   eventID,
-  userData,
-  calendarBlocks
+  calendarBlocks,
+  weekDay
 ) =>
   Yup.object({
     roomTF: Yup.string().required("Escolha uma sala."),
@@ -48,7 +49,7 @@ export const validationSchema = (
       "is-empty",
       "Escolha um cliente.",
       function (value) {
-        return value.value;
+        return value?.value;
       }
     ),
     statusTF: Yup.string().required("Escolha um status."),
@@ -59,78 +60,58 @@ export const validationSchema = (
         "conflict",
         "O horário selecionado conflita com outro agendamento.",
         function (value) {
-          const { beginDate, serviceTF } = this.parent;
-          const initialTime = value.value;
-
-          if (!beginDate || !initialTime || !serviceTF) {
+          const { beginDate, endTime, roomTF } = this.parent;
+          const initialTime = value?.value;
+          if (!beginDate || !initialTime || !endTime?.value || !roomTF) {
             return true;
           }
-
           const formattedDate = dayjs(beginDate).format("YYYY-MM-DD");
-          const serviceDuration = getServiceDuration(serviceTF, servicesList);
+          const startDateTime = dayjs(`${formattedDate} ${initialTime}`, "YYYY-MM-DD HH:mm");
+          const endDateTime = dayjs(`${formattedDate} ${endTime.value}`, "YYYY-MM-DD HH:mm");
 
-          const startDateTime = dayjs(
-            `${formattedDate} ${initialTime}`,
-            "YYYY-MM-DD HH:mm"
+          const appointmentsFiltered = appointments.filter(
+            (appointment) =>
+              appointment.id !== eventID && appointment.roomId === roomTF
           );
-          const endDateTime = startDateTime.add(serviceDuration, "minute");
-
-          const startDateWeek = getDayOfWeek[dayjs(beginDate).day()];
-          const endDateWeek = getDayOfWeek[dayjs(endDateTime).day()];
-
-          const initialBlock = userData.filter(
-            (block) => block.day === startDateWeek
-          );
-          const endBlock = userData.filter(
-            (block) => block.day === endDateWeek
-          );
-
-          if (initialBlock.length && endBlock.length) {
-            const blockStartTime = dayjs(
-              `${formattedDate} ${initialBlock[0].startTime}`,
-              "YYYY-MM-DD HH:mm"
-            );
-            const blockEndTime = dayjs(
-              `${formattedDate} ${initialBlock[0].endTime}`,
-              "YYYY-MM-DD HH:mm"
-            );
-
+          for (let appointment of appointmentsFiltered) {
+            const appointmentStart = dayjs(appointment.begin, "YYYY-MM-DD HH:mm:ss").add(1, "minute");
+            const appointmentEnd = dayjs(appointment.end, "YYYY-MM-DD HH:mm:ss").subtract(1, "minute");
             if (
-              startDateTime.isBefore(blockStartTime) ||
-              endDateTime.isAfter(blockEndTime)
+              (startDateTime.isBefore(appointmentEnd) && startDateTime.isAfter(appointmentStart)) ||
+              (endDateTime.isBefore(appointmentEnd) && endDateTime.isAfter(appointmentStart)) ||
+              (appointmentStart.isBefore(endDateTime) && appointmentEnd.isAfter(startDateTime))
             ) {
               return this.createError({
-                message:
-                  "O horário selecionado está fora do horário de funcionamento permitido.",
+                message: "O horário selecionado conflita com outro agendamento na mesma sala.",
               });
             }
           }
 
-          const appointmentsFiltered = appointments.filter(
-            (appointment) => appointment.id !== eventID
-          );
-
-          for (let appointment of appointmentsFiltered) {
-            const appointmentStart = dayjs(
-              appointment.begin,
-              "YYYY-MM-DD HH:mm:ss"
-            ).add(1, "minute");
-            const appointmentEnd = dayjs(
-              appointment.end,
-              "YYYY-MM-DD HH:mm:ss"
-            ).subtract(1, "minute");
-
-            if (
-              (startDateTime.isBefore(appointmentEnd) &&
-                startDateTime.isAfter(appointmentStart)) ||
-              (endDateTime.isBefore(appointmentEnd) &&
-                endDateTime.isAfter(appointmentStart)) ||
-              (appointmentStart.isBefore(endDateTime) &&
-                appointmentEnd.isAfter(startDateTime))
-            ) {
+          const room = roomsList.find((r) => r.id === roomTF);
+          if (room && room.agendaConfigurations && room.agendaConfigurations.length) {
+            const portugueseToEnglish = {
+              "segunda-feira": "MONDAY",
+              "terça-feira": "TUESDAY",
+              "quarta-feira": "WEDNESDAY",
+              "quinta-feira": "THURSDAY",
+              "sexta-feira": "FRIDAY",
+              "sábado": "SATURDAY",
+              "domingo": "SUNDAY"
+            };
+            const englishWeekDay = portugueseToEnglish[weekDay.toLowerCase()] || weekDay.toUpperCase();
+            const agendaForDay = room.agendaConfigurations.find(
+              (ac) => ac.day === englishWeekDay && ac.isActive
+            );
+            if (!agendaForDay) {
               return this.createError({
-                message:
-                  "O horário selecionado conflita com outro agendamento.",
+                message: "Não há configuração de horário para a sala no dia selecionado.",
+              });
+            }
+            const agendaStart = dayjs(`${formattedDate} ${agendaForDay.startTime}`, "YYYY-MM-DD HH:mm");
+            const agendaEnd = dayjs(`${formattedDate} ${agendaForDay.endTime}`, "YYYY-MM-DD HH:mm");
+            if (startDateTime.isBefore(agendaStart) || endDateTime.isAfter(agendaEnd)) {
+              return this.createError({
+                message: "O horário selecionado está fora do horário de funcionamento da sala para o dia.",
               });
             }
           }
@@ -138,24 +119,19 @@ export const validationSchema = (
           const calendarBlocksFiltered = calendarBlocks.filter(
             (block) => block.deletedAt === null
           );
-
-          // Validar conflitos com bloqueios
           for (let block of calendarBlocksFiltered) {
             const blockStart = dayjs(block.initialTime).add(1, "minute");
             const blockEnd = dayjs(block.endTime).subtract(1, "minute");
-
             if (
-              (startDateTime.isBefore(blockEnd) &&
-                endDateTime.isAfter(blockStart)) || // Conflito total ou parcial
+              (startDateTime.isBefore(blockEnd) && endDateTime.isAfter(blockStart)) ||
               startDateTime.isSame(blockStart) ||
-              endDateTime.isSame(blockEnd) // Coincidência exata
+              endDateTime.isSame(blockEnd)
             ) {
               return this.createError({
                 message: "O horário selecionado conflita com um bloqueio.",
               });
             }
           }
-
           return true;
         }
       ),

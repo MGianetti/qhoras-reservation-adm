@@ -200,8 +200,8 @@ function EventMark(props) {
         let room = calendarEvent?.room?.id;
         let client = calendarEvent?.client?.id;
         let status = calendarEvent?.status;
-        let isPaidWithLoyaltyPoints = calendarEvent?.isPaidWithLoyaltyPoints;
         let isPaid = calendarEvent?.isPaid;
+        let description = calendarEvent?.description;
 
         setStateCalendar({
             ...stateCalendar,
@@ -212,8 +212,8 @@ function EventMark(props) {
             room,
             client,
             status,
-            isPaidWithLoyaltyPoints,
             isPaid,
+            description,
             eventID: (calendarEvent && calendarEvent.id) || 0
         });
     };

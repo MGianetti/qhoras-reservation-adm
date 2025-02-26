@@ -57,10 +57,10 @@ function CalendarEventDialog() {
     openDialog,
     eventBeginDate,
     eventBeginTime,
+    eventEndTime,
     room,
     client,
     status,
-    isPaidWithLoyaltyPoints,
     isPaid,
     description,
   } = stateCalendar;
@@ -109,7 +109,7 @@ function CalendarEventDialog() {
       isPaidTF: isPaid || false,
       beginDate: eventBeginDate,
       beginTime: eventBeginTime,
-      endTime: eventBeginTime, // novo campo para o horário final
+      endTime: eventEndTime, // novo campo para o horário final
     },
     enableReinitialize: true,
     // Mescla a validação base com a validação customizada para endTime
@@ -117,8 +117,8 @@ function CalendarEventDialog() {
       appointments,
       roomsList,
       eventID,
-      scheduleState,
       calendarBlocks,
+      format(new Date(eventBeginDate), "eeee", { locale: ptBR })
     ),
     onSubmit: (values) => handleSubmit(values),
   });
@@ -172,6 +172,7 @@ function CalendarEventDialog() {
   const handleSubmit = (values) => {
     const markerData = {
       clientId: values.clientTF.value,
+      businessId: business?.id,
       roomId: values.roomTF,
       description: values.descriptionTF,
       dateAndTime: format(
@@ -187,7 +188,6 @@ function CalendarEventDialog() {
       isPaid: values.isPaidTF,
       appointmentStatus: values.statusTF,
     };
-    console.log(markerData);
 
     if (eventID) {
       appointmentService.update(eventID, markerData);

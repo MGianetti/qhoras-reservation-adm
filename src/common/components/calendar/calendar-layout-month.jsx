@@ -189,7 +189,6 @@ function CalendarLayoutMonth(props) {
         let room = null;
         let client = null;
         let status = 'SCHEDULED';
-        let isPaidWithLoyaltyPoints = false;
         let isPaid = false;
 
         if (calendarEvent !== null) {
@@ -202,8 +201,9 @@ function CalendarLayoutMonth(props) {
             room = calendarEvent?.room?.id;
             client = calendarEvent?.client?.id;
             status = calendarEvent?.status;
-            isPaidWithLoyaltyPoints = calendarEvent?.isPaidWithLoyaltyPoints;
             isPaid = calendarEvent?.isPaid;
+            description = calendarEvent?.description;
+
         }
 
         setStateCalendar({
@@ -215,8 +215,8 @@ function CalendarLayoutMonth(props) {
             room,
             client,
             status,
-            isPaidWithLoyaltyPoints,
             isPaid,
+            description,
             eventID: (calendarEvent && calendarEvent.id) || 0
         });
     };

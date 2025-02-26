@@ -16,7 +16,6 @@ export default function createEditEvent(props) {
     let room = null;
     let client = null;
     let status = 'SCHEDULED';
-    let isPaidWithLoyaltyPoints = false;
     let isPaid = false;
 
     if (calendarEvent !== null) {
@@ -31,7 +30,7 @@ export default function createEditEvent(props) {
         room = calendarEvent?.room?.id;
         client = calendarEvent?.client?.id;
         status = calendarEvent?.status;
-        isPaidWithLoyaltyPoints = calendarEvent?.isPaidWithLoyaltyPoints;
+        description = calendarEvent?.description;
         isPaid = calendarEvent?.isPaid;
     } else {
         if (eventEl.target.dataset.date === undefined) return false;
@@ -73,7 +72,6 @@ export default function createEditEvent(props) {
         room,
         client,
         status,
-        isPaidWithLoyaltyPoints,
         isPaid,
     });
 }
