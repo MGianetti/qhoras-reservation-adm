@@ -129,11 +129,11 @@ const Root = styled('div')(({ theme }) => ({
         }
     },
     [`& .${classes.markerScheduled}`]: {
-        backgroundColor: '#8317b1d1',
-        border: '1px solid #64088bd1',
+        backgroundColor: '#1976D2d1',
+        border: '1px solid #1257d8c3',
         '&:hover': {
-            border: '1px solid #64088bd1',
-            backgroundColor: '#610788d1'
+            border: '1px solid #1257d8c3',
+            backgroundColor: '#1976D2d1'
         }
     },
 
