@@ -9,7 +9,7 @@ export const setToken = (refreshedToken) => {
     refreshedToken ? (apiService.defaults.headers.common['Authorization'] = `Bearer ${refreshedToken}`) : delete apiService.defaults.headers.common['Authorization'];
 };
 
-if (localStorage.getItem('token_qhoras')) apiService.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token_qhoras')}`;
+if (localStorage.getItem('token_qhoras_reservation')) apiService.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token_qhoras_reservation')}`;
 
 apiService.interceptors.response.use((response) => response, intercept401);
 

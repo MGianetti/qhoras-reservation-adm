@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-    token: localStorage.getItem('token_qhoras') ?? null,
+    token: localStorage.getItem('token_qhoras_reservation') ?? null,
     user: null
 };
 
@@ -11,8 +11,8 @@ const authSlice = createSlice({
     reducers: {
         logout: (state) => {
             state.user = initialState.user;
-            const idToken = localStorage.getItem('token_qhoras');
-            if (idToken) localStorage.removeItem('token_qhoras');
+            const idToken = localStorage.getItem('token_qhoras_reservation');
+            if (idToken) localStorage.removeItem('token_qhoras_reservation');
         },
         setToken: (state, action) => {
             state.token = action.payload;
