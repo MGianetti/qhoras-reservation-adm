@@ -5,6 +5,7 @@ import authRepository from './authRepository';
 import notification from '../../common/utils/notification';
 import persistAuthToken from './utils/setAuthToken';
 import store from '../store/store';
+import { useNavigate } from 'react-router-dom';
 
 const dispatch = (action) => store.dispatch(action);
 
@@ -75,7 +76,7 @@ const getUser = async () => {
         const user = await authRepository.getUser();
         dispatch(setUser(user));
     } catch (error) {
-        localStorage.removeItem('token_qhoras');
+        localStorage.removeItem('token_qhoras_reservation');
         const navigate = useNavigate();
         navigate('/login');
     }

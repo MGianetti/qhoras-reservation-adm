@@ -11,7 +11,7 @@ const intercept401 = async (error) => {
 
     if (error.response?.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
-        const oldToken = localStorage.getItem('token_qhoras');
+        const oldToken = localStorage.getItem('token_qhoras_reservation');
         const newToken = await refreshAccessToken(oldToken);
         setToken(newToken);
 
