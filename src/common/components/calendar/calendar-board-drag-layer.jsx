@@ -130,6 +130,8 @@ const CalendarBoardDragLayer = () => {
 
     const info = getItemStyles(initialOffset, currentOffset, clientOffset);
 
+    if (!dataDate) return null;
+
     function renderItem() {
         switch (itemType) {
             case 'box':

@@ -50,7 +50,7 @@ import {
 } from "./calendarDialog.constants";
 import { useDebounce } from "../../../utils/useDebounce";
 
-function CalendarEventDialog() {
+function CalendarEventDialog({ refreshCalendar }) {
   const { stateCalendar, setStateCalendar } = useContext(CalendarContext);
   const {
     eventID = 0,
@@ -191,6 +191,7 @@ function CalendarEventDialog() {
 
     if (eventID) {
       appointmentService.update(eventID, markerData);
+      refreshCalendar(false);
     } else {
       appointmentService.create(business?.id, markerData);
     }

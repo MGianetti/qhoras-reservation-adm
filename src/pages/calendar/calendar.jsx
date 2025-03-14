@@ -160,12 +160,10 @@ const Calendar = () => {
     setSelectedRoom(selectedRoomId);
   };
 
-  const refreshCalendar = async () => {
-    console.log("getScheduleData", getScheduleData)
-    console.log("selectedRoom", selectedRoom)
+  const refreshCalendar = async (needNotification = true) => {
     if (getScheduleData && selectedRoom) {
       const { appointments: refreshedAppointments, calendarBlocks: refreshedCalendarBlocks } = await getScheduleData(selectedRoom);
-      if (refreshedAppointments && refreshedCalendarBlocks) {
+      if (refreshedAppointments && refreshedCalendarBlocks && needNotification) {
         notification(refreshCalendarSuccess);
       }
     }
@@ -213,7 +211,7 @@ const Calendar = () => {
                 miniCalendarOpen={stateCalendar.miniCalendarOpen}
               />
               <CalendarMain isLoading={isLoading} open={drawerOpen} runAnimation={runAnimation} setGetScheduleData={setGetScheduleData} />
-              <CalendarEventDialog isLoading={isLoading} />
+              <CalendarEventDialog isLoading={isLoading} refreshCalendar={refreshCalendar} />
               <BlockDialog isLoading={isLoading} />
             </div>
           </div>

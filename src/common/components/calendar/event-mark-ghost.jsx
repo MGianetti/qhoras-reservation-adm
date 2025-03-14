@@ -26,11 +26,16 @@ const EventMarkGhost = (props) => {
         width: ghostProperties.width,
         height: ghostProperties.height
     };
+    
+    const handleFormat = (date) => {
+        return format(date, `yyyy/MM/dd hh:mm:ss`, { locale: ptBR });
+    };
+
     const Ghost = () => {
         return (
             <div style={{ ...stylesBox, backgroundColor }} data-ghost data-date={newDate}>
                 <p style={{ lineHeight: '8px' }}>{calendarEvent.title}</p>
-                <p style={{ lineHeight: '8px' }}>[{format(newDate, `yyyy/MM/dd hh:mm:ss`, { locale: ptBR })}]</p>
+                <p style={{ lineHeight: '8px' }}>[{handleFormat(newDate)}]</p>
             </div>
         );
     };

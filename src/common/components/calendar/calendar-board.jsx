@@ -124,7 +124,7 @@ function CalendarBoard(props) {
     const { selectedWeekIndex, selectedWeek } = props;
 
     const { stateCalendar, setStateCalendar } = useContext(CalendarContext);
-    const { selectedDate, layout, defaultEventDuration, draggingEventId, selectedRoom } = stateCalendar;
+    const { selectedDate, layout, defaultEventDuration, draggingEventId, selectedRoom, calendarEvent } = stateCalendar;
 
     const [currentTimePosition, setCurrentTimePosition] = useState();
 
@@ -228,8 +228,13 @@ function CalendarBoard(props) {
         const eventBeginDate = new Date(eventMarkGhost.dataset.date);
         if (!eventBeginDate) return;
 
-        const adjustedDate = format(new Date(eventBeginDate.getTime()), 'yyyy/MM/dd HH:mm:ss', { locale: ptBR });
-        appointmentService.update(eventID, { dateAndTime: adjustedDate });
+        const eventDuration = dayjs(calendarEvent.end).diff(dayjs(calendarEvent.date), 'minutes');
+        const eventDurationMillis = eventDuration * 60000;
+
+        const adjustedInitialDate = format(new Date(eventBeginDate.getTime()), 'yyyy/MM/dd HH:mm:ss', { locale: ptBR });
+        const adjustedEndDate = format(new Date(eventBeginDate.getTime() + eventDurationMillis), 'yyyy/MM/dd HH:mm:ss', { locale: ptBR });
+
+        appointmentService.update(eventID, { dateAndTime: adjustedInitialDate, endTime: adjustedEndDate });
 
         setStateCalendar({ ...stateCalendar, draggingEventId: -1 });
     };
