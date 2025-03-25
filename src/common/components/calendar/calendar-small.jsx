@@ -125,7 +125,6 @@ function CalendarSmall(props) {
 
         const selectDate = (props) => {
             const { newDate } = props;
-
             
             if (!isDatepicker) {
                 setStateCalendar({ ...stateCalendar, selectedDate: newDate, layout: 'day' });

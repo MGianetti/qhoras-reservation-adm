@@ -56,7 +56,7 @@ function CalendarMain(props) {
   const { selectedDate, layout } = stateCalendar;
   const businessId = useSelector((state) => state.auth.user?.businessId);
   const { data: allRooms } = useSelector((state) => state.rooms) || [];
-  const { runAnimation, setGetScheduleData } = props;
+  const { runAnimation, setGetScheduleData, fetchRooms, selectedRoom } = props;
   const [, setStartEndDates] = useState({ start: selectedDate, end: selectedDate });
 
   const getScheduleData = async (id) => {
@@ -78,12 +78,13 @@ function CalendarMain(props) {
     setStartEndDates({ start, end });
     const appointments = await appointmentService.read(id, start, end);
     const calendarBlocks = await calendarBlocksService.read(id, start, end);
+    fetchRooms();
     return { appointments, calendarBlocks };
   };
 
   useEffect(() => {
     if (allRooms.length > 0) {
-      getScheduleData(allRooms[0].id);
+      getScheduleData(selectedRoom);
       setGetScheduleData(() => getScheduleData);
     }
   }, [selectedDate, layout, businessId, allRooms]);
@@ -96,7 +97,7 @@ function CalendarMain(props) {
     <Root style={{ width: '100%' }}>
       {layout === 'month' && <CalendarLayoutMonth weeks={weeks} runAnimation={runAnimation} />}
       {(layout === 'week' || layout === 'day') && (
-        <CalendarLayoutDayWeek selectedWeekIndex={selectedWeekIndex} selectedWeek={selectedWeek} />
+        <CalendarLayoutDayWeek selectedWeekIndex={selectedWeekIndex} selectedWeek={selectedWeek} selectedRoom={selectedRoom} />
       )}
     </Root>
   );

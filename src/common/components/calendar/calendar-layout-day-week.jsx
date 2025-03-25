@@ -12,7 +12,7 @@ import CalendarBoardDragLayer from './calendar-board-drag-layer';
 
 function CalendarLayoutDayWeek(props) {
     const theme = useTheme();
-    const { selectedWeekIndex, selectedWeek } = props;
+    const { selectedWeekIndex, selectedWeek, selectedRoom } = props;
 
     const { stateCalendar } = useContext(CalendarContext);
     const { selectedDate, layout, defaultEventDuration } = stateCalendar;
@@ -126,7 +126,7 @@ function CalendarLayoutDayWeek(props) {
                         }}
                     >
                         <DndProvider backend={HTML5Backend}>
-                            <CalendarBoard selectedWeekIndex={selectedWeekIndex} selectedWeek={selectedWeek} />
+                            <CalendarBoard selectedWeekIndex={selectedWeekIndex} selectedWeek={selectedWeek} selectedRoom={selectedRoom} />
                             <CalendarBoardDragLayer />
                         </DndProvider>
                     </Grid>

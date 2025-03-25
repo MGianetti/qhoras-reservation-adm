@@ -121,10 +121,10 @@ const useStyles = makeStyles(() =>
 function CalendarBoard(props) {
     const classes = useStyles();
 
-    const { selectedWeekIndex, selectedWeek } = props;
+    const { selectedWeekIndex, selectedWeek, selectedRoom } = props;
 
     const { stateCalendar, setStateCalendar } = useContext(CalendarContext);
-    const { selectedDate, layout, defaultEventDuration, draggingEventId, selectedRoom, calendarEvent } = stateCalendar;
+    const { selectedDate, layout, defaultEventDuration, draggingEventId, calendarEvent } = stateCalendar;
 
     const [currentTimePosition, setCurrentTimePosition] = useState();
 
@@ -284,7 +284,7 @@ function CalendarBoard(props) {
             const blocksOfDay = getBlockData(day);
 
             const agendaOpenTime = isAgendaOpen(day);
-
+            
             return (
                 <Grid
                     item
