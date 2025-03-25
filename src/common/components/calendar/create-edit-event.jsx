@@ -49,10 +49,10 @@ export default function createEditEvent(props) {
         const minute = isHalfHour ? 15 : 0;
 
         eventBeginDate = new Date(getYear(datasetDate), getMonth(datasetDate), getDate(datasetDate), hour > 23 ? 23 : hour, hour > 23 ? 15 : minute);
-        eventEndDate = addMinutes(eventBeginDate, defaultEventDuration);
+        eventEndDate = addMinutes(eventBeginDate, 60);
 
         minutes = differenceInMinutes(eventEndDate, eventBeginDate);
-
+        
         beginTime = format(eventBeginDate, 'H:mm', { locale: ptBR });
         endTime = format(eventEndDate, 'H:mm', { locale: ptBR });
     }

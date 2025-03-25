@@ -95,6 +95,9 @@ function CalendarEventDialog({ refreshCalendar }) {
     )
   );
 
+  console.log('eventBeginDate', eventBeginTime);
+  console.log('endTime', eventEndTime);
+
   const formik = useFormik({
     initialValues: {
       roomTF: room || "",
@@ -148,21 +151,52 @@ function CalendarEventDialog({ refreshCalendar }) {
     if (
       formik.values.beginDate &&
       formik.values.beginTime &&
+      formik.values.endTime &&
       initialOptionTime.length > 0
     ) {
-      let beginTimeValue = formik.values.beginTime?.value;
-      if (beginTimeValue?.length === 4) {
+      let beginTimeValue = formik.values.beginTime.value;
+      if (beginTimeValue.length === 4) {
         beginTimeValue = "0" + beginTimeValue;
       }
-      const initialTimeOption = initialOptionTime.find(
+      const validBeginTime = initialOptionTime.find(
         (time) => time.value === beginTimeValue
       );
-      formik.setFieldValue("beginTime", initialTimeOption || initialOptionTime[0]);
-      if (timeToMinutes(formik.values.endTime.value) < timeToMinutes(formik.values.beginTime.value)) {
-        formik.setFieldValue("endTime", initialTimeOption || initialOptionTime[0]);
+      const correctedBeginTime = validBeginTime || initialOptionTime[0];
+  
+      if (formik.values.beginTime.value !== correctedBeginTime.value) {
+        formik.setFieldValue("beginTime", correctedBeginTime);
+      }
+  
+      let endTimeValue = formik.values.endTime.value;
+      if (endTimeValue.length === 4) {
+        endTimeValue = "0" + endTimeValue;
+      }
+      const validEndTime = initialOptionTime.find(
+        (time) => time.value === endTimeValue
+      );
+      let correctedEndTime = validEndTime || initialOptionTime[0];
+  
+      if (
+        timeToMinutes(correctedEndTime.value) <=
+        timeToMinutes(correctedBeginTime.value)
+      ) {
+        const nextValidOption = initialOptionTime.find(
+          (time) => timeToMinutes(time.value) > timeToMinutes(correctedBeginTime.value)
+        );
+        correctedEndTime = nextValidOption || correctedEndTime;
+      }
+  
+      if (formik.values.endTime.value !== correctedEndTime.value) {
+        formik.setFieldValue("endTime", correctedEndTime);
       }
     }
-  }, [formik.values.beginDate]);
+  }, [
+    formik.values.beginDate,
+    formik.values.beginTime,
+    formik.values.endTime,
+    initialOptionTime,
+  ]);
+  
 
   const handleClose = () => {
     handleCloseDialog();

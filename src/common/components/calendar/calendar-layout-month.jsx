@@ -1,9 +1,10 @@
 import { useContext, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import { blue } from '@mui/material/colors';
-import format from 'date-fns/format';
 import { Grid, Typography } from '@mui/material';
 import clsx from 'clsx';
+
+import { format, differenceInMinutes, getYear, getMonth, getDate, addMinutes } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 import { CalendarContext } from './context/calendar-context';
@@ -190,20 +191,44 @@ function CalendarLayoutMonth(props) {
         let client = null;
         let status = 'SCHEDULED';
         let isPaid = false;
+        let description = '';
 
         if (calendarEvent !== null) {
             eventBeginDate = new Date(calendarEvent.begin);
-
             eventEndDate = new Date(calendarEvent.end);
+            minutes = differenceInMinutes(eventEndDate, eventBeginDate);
             beginTime = format(eventBeginDate, 'H:mm', { locale: ptBR });
             endTime = format(eventEndDate, 'H:mm', { locale: ptBR });
-
+            title = calendarEvent.title;
+    
             room = calendarEvent?.room?.id;
             client = calendarEvent?.client?.id;
             status = calendarEvent?.status;
-            isPaid = calendarEvent?.isPaid;
             description = calendarEvent?.description;
-
+            isPaid = calendarEvent?.isPaid;
+        } else {
+            if (eventEl.target.dataset.date === undefined) return false;
+    
+            datasetDate = new Date(eventEl.target.dataset.date);
+    
+            let position = eventEl.clientY - eventEl.target.getBoundingClientRect().top;
+            if (Object.keys(eventEl.target.dataset).length === 0) {
+                position = eventEl.clientY - (eventEl.clientY - +eventEl.target.style.marginTop.replace('px', ''));
+                datasetDate = new Date(eventEl.target.parentElement.dataset);
+            }
+    
+            const hour = Math.trunc(position / 60);
+            const isHalfHour = Math.trunc(position / 15) % 2 === 0 ? false : true;
+    
+            const minute = isHalfHour ? 15 : 0;
+    
+            eventBeginDate = new Date(getYear(datasetDate), getMonth(datasetDate), getDate(datasetDate), hour > 23 ? 23 : hour, hour > 23 ? 15 : minute);
+            eventEndDate = addMinutes(eventBeginDate, 60);
+    
+            minutes = differenceInMinutes(eventEndDate, eventBeginDate);
+    
+            beginTime = format(eventBeginDate, 'H:mm', { locale: ptBR });
+            endTime = format(eventEndDate, 'H:mm', { locale: ptBR });
         }
 
         setStateCalendar({
@@ -211,6 +236,7 @@ function CalendarLayoutMonth(props) {
             openDialog: true,
             eventBeginDate: eventBeginDate,
             eventBeginTime: { value: beginTime, label: beginTime },
+            eventEndDate: eventEndDate,
             eventEndTime: { value: endTime, label: endTime },
             room,
             client,
@@ -274,7 +300,7 @@ function CalendarLayoutMonth(props) {
                             [classes.markerRescheduled]: event.status === 'RESCHEDULED',
                             [classes.markerNoShow]: event.status === 'NO_SHOW'
                         })}
-                        onClick={(eventEl) =>
+                        onClick={(eventEl) =>{
                             viewEvent({
                                 eventEl,
                                 calendarEvent: event,
@@ -282,6 +308,7 @@ function CalendarLayoutMonth(props) {
                                 stateCalendar,
                                 setStateCalendar
                             })
+                        }
                         }
                     >
                         {`${event.client?.name} - ${event.room?.name}`}
