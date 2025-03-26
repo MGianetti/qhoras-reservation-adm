@@ -95,9 +95,6 @@ function CalendarEventDialog({ refreshCalendar }) {
     )
   );
 
-  console.log('eventBeginDate', eventBeginTime);
-  console.log('endTime', eventEndTime);
-
   const formik = useFormik({
     initialValues: {
       roomTF: room || "",
@@ -343,6 +340,7 @@ function CalendarEventDialog({ refreshCalendar }) {
                     onChange={formik.handleChange}
                     error={formik.touched.statusTF && Boolean(formik.errors.statusTF)}
                   >
+                    <MenuItem value="PENDING">Pendente</MenuItem>
                     <MenuItem value="SCHEDULED">Agendado</MenuItem>
                     <MenuItem value="COMPLETED">Concluído</MenuItem>
                     <MenuItem value="CANCELLED">Cancelado</MenuItem>

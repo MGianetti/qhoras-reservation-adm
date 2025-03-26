@@ -23,6 +23,7 @@ const classes = {
     today: `${PREFIX}-today`,
     eventsContainer: `${PREFIX}-eventsContainer`,
     monthMarker: `${PREFIX}-monthMarker`,
+    markerPending: `${PREFIX}-markerPending`,
     markerScheduled: `${PREFIX}-markerScheduled`,
     markerCompleted: `${PREFIX}-markerCompleted`,
     markerCancelled: `${PREFIX}-markerCancelled`,
@@ -129,6 +130,17 @@ const Root = styled('div')(({ theme }) => ({
             zIndex: 1,
         }
     },
+
+    [`& .${classes.markerPending}`]: {
+        color: '#000',
+        backgroundColor: '#d2c619d1',
+        border: '1px solid #a79c06d1',
+        '&:hover': {
+            border: '1px solid #a79c06d1',
+            backgroundColor: '#d2c619d1'
+        }
+    },
+
     [`& .${classes.markerScheduled}`]: {
         backgroundColor: '#1976D2d1',
         border: '1px solid #1257d8c3',
@@ -294,6 +306,7 @@ function CalendarLayoutMonth(props) {
                     <div
                         key={`event-${event.id}`}
                         className={clsx(classes.monthMarker, {
+                            [classes.markerPending]: event.status === 'PENDING',
                             [classes.markerScheduled]: event.status === 'SCHEDULED',
                             [classes.markerCompleted]: event.status === 'COMPLETED',
                             [classes.markerCancelled]: event.status === 'CANCELLED',

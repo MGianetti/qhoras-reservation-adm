@@ -20,6 +20,7 @@ const classes = {
     formControlFlex: `${PREFIX}-formControlFlex`,
     icon: `${PREFIX}-icon`,
     optionsBar: `${PREFIX}-optionsBar`,
+    markerPending: `${PREFIX}-markerPending`,
     markerScheduled: `${PREFIX}-markerScheduled`,
     markerCompleted: `${PREFIX}-markerCompleted`,
     markerCancelled: `${PREFIX}-markerCancelled`,
@@ -56,7 +57,10 @@ const Root = styled('div')(({ theme }) => ({
     [`& .${classes.beginEnd}`]: {
         whiteSpace: 'nowrap',
         overflow: 'hidden',
-        fontSize: 12
+        fontSize: 12,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
     },
 
     [`& .${classes.extraInfo}`]: {
@@ -90,6 +94,16 @@ const Root = styled('div')(({ theme }) => ({
         alignItems: 'center',
         flexDirection: 'row',
         justifyContent: 'flex-end'
+    },
+
+    [`&.${classes.markerPending}`]: {
+        color: '#000',
+        backgroundColor: '#d2c619d1',
+        border: '1px solid #a79c06d1',
+        '&:hover': {
+            border: '1px solid #a79c06d1',
+            backgroundColor: '#d2c619d1'
+        }
     },
 
     [`&.${classes.markerScheduled}`]: {
@@ -177,7 +191,10 @@ function EventMark(props) {
     const beginDate = calendarEvent.begin;
     const endDate = calendarEvent.end;
 
-    const descriptionFormatted = clientName && roomName ? `${clientName} - ${roomName}` : title;
+    const titleFormatted = clientName ? `Solicitante: ${clientName}` : title;
+    const roomFormatted = roomName ? `Sala: ${roomName}` : '';
+    const descriptionFormatted = calendarEvent.description ? `Descrição: ${calendarEvent.description}` : '';
+
 
     const currentDay = beginDate;
     const initTime = new Date(format(currentDay, 'yyyy/MM/dd 0:0:0', { locale: ptBR }));
@@ -260,6 +277,7 @@ function EventMark(props) {
         <Root
             id={calendarEvent.id}
             className={clsx(classes.marker, {
+                [classes.markerPending]: calendarEvent.status === 'PENDING',
                 [classes.markerScheduled]: calendarEvent.status === 'SCHEDULED',
                 [classes.markerCompleted]: calendarEvent.status === 'COMPLETED',
                 [classes.markerCancelled]: calendarEvent.status === 'CANCELLED',
@@ -284,7 +302,9 @@ function EventMark(props) {
                 }
             }}
         >
-            <div className={classes.beginEnd}>
+            <div className={`${classes.beginEnd} event-marker`}>
+                <span>{titleFormatted}</span>
+                <span>{roomFormatted}</span>
                 <span>{descriptionFormatted}</span>
             </div>
             <div style={{ position: 'absolute', bottom: '-2px', width: '100%', height: '5px' }}/>
