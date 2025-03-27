@@ -78,7 +78,7 @@ function CalendarMain(props) {
     setStartEndDates({ start, end });
     const appointments = await appointmentService.read(id, start, end);
     const calendarBlocks = await calendarBlocksService.read(id, start, end);
-    fetchRooms();
+    fetchRooms(id);
     return { appointments, calendarBlocks };
   };
 

@@ -66,8 +66,7 @@ const Calendar = () => {
     startDragging: false,
     title: '',
     withCloseIcon: true,
-    miniCalendarOpen: false,
-    selectedRoom: null
+    miniCalendarOpen: false
   });
 
   const [runAnimation, setRunAnimation] = useState(true);
@@ -79,12 +78,12 @@ const Calendar = () => {
   const [selectedRoom, setSelectedRoom] = useState(null);
 
   // Função para buscar as salas
-  const fetchRooms = useCallback(async () => {
+  const fetchRooms = useCallback(async (room = selectedRoom) => {
     try {
       if (!auth?.user?.businessId) return;
       const data = await roomsService.read({ businessId: auth.user.businessId, page: 1, limit: 1000 });
       setRooms(data);
-      if (data.length > 0 && !selectedRoom) {
+      if (data.length > 0 && !room) {
         setSelectedRoom(data[0].id);
       }
     } catch (error) {
