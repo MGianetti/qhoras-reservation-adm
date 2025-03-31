@@ -21,7 +21,6 @@ const ClientModal = (props) => {
         initialValues: {
             name: valuesLine?.name || '',
             phoneNumber: phoneMask(valuesLine?.phoneNumber) || '',
-            email: valuesLine?.email || '',
         },
         enableReinitialize: true,
         validationSchema: validationSchema,
@@ -95,26 +94,6 @@ const ClientModal = (props) => {
                                 </FormControl>
                             </Grid>
                         </Grid>
-
-                        <FormControl>
-                            <InputLabel htmlFor="email" size="small">
-                                Email
-                            </InputLabel>
-                            <OutlinedInput
-                                id="email"
-                                name="email"
-                                label="Email"
-                                size="small"
-                                value={formik.values.email}
-                                onChange={formik.handleChange}
-                                error={formik.touched.email && Boolean(formik.errors.email)}
-                            />
-                            {formik.touched.email && formik.errors.email ? (
-                                <Typography variant="caption" color="error">
-                                    {formik.errors.email}
-                                </Typography>
-                            ) : null}
-                        </FormControl>
 
                         <DialogActions>
                             <Button autoFocus onClick={handleClose}>

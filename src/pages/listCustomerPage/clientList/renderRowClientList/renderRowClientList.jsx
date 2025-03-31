@@ -54,7 +54,7 @@ const RenderClientCell = ({ column, value, rowIndex, row, handleClickWhatsapp })
         return column.format(value);
     }
     
-    if(!value) return 'oi'
+    if(!value) return '-'
 
     return value;
 };

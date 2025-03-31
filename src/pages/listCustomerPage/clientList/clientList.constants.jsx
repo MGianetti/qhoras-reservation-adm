@@ -20,13 +20,7 @@ export const columns = [
         align: 'left'
     },
     {
-        id: 'email',
-        label: 'Email',
-        minWidth: 170,
-        align: 'left'
-    },
-    {
-        id: 'lastAppointment',
+        id: 'lastReservation',
         label: 'Última Reserva',
         minWidth: 170,
         align: 'left'
@@ -44,12 +38,13 @@ function getRandomImage() {
     return avatars[imageNumber];
 }
 
-function createData(name, phone, lastAppointmentt, email, loyaltyPoints) {
+function createData(name, phone, lastReservationDate, loyaltyPoints) {
     const image = getRandomImage();
-    const lastAppointment = lastAppointmentt ?? 'Sem reservas';
-    return { image, name, phone, lastAppointment, email, loyaltyPoints };
+    const lastReservation = lastReservationDate ? new Date(lastReservationDate).toLocaleDateString('pt-BR') : 'Sem reservas';
+    return { image, name, phone, lastReservation, loyaltyPoints };
 }
 
 export const rows = (clientList = []) => {
-    return clientList.map((client) => createData(client.name, client.phoneNumber, client.lastAppointment, client.email, client.loyaltyPoints));
+    console.log(clientList)
+    return clientList.map((client) => createData(client.name, client.phoneNumber, client.lastReservationDate, client.loyaltyPoints));
 };
