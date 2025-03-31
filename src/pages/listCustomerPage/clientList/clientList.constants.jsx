@@ -45,6 +45,5 @@ function createData(name, phone, lastReservationDate, loyaltyPoints) {
 }
 
 export const rows = (clientList = []) => {
-    console.log(clientList)
     return clientList.map((client) => createData(client.name, client.phoneNumber, client.lastReservationDate, client.loyaltyPoints));
 };
