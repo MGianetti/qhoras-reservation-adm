@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import createStandardReducers from '../../infraestructure/reducers/baseReducers';
 
-export const initialState = { data: [], isLoading: false };
+export const initialState = { data: [], roomId: null, isLoading: false };
 
 const sliceName = 'appointments';
 

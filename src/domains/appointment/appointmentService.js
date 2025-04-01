@@ -29,7 +29,7 @@ const { read, create, update, remove } = {
         try {
             const response = await appointmentRepository.readAllAppointments(roomId, start, end);
             const responseSorted = response.sort((a, b) => dayjs(b.createdAt).diff(dayjs(a.createdAt)));
-            dispatch(readItem({ data: responseSorted }));
+            dispatch(readItem({ data: responseSorted, roomId }));
             return responseSorted;
         } catch (error) {
             return false;
@@ -41,7 +41,10 @@ const { read, create, update, remove } = {
         dispatch(setLoading(true));
         try {
             const response = await appointmentRepository.createAppointment(businessId, newAppointmentPayload);
-            dispatch(addItem(response));
+            const actualRoomId = store.getState().appointments.roomId;
+            if (response.roomId == actualRoomId) {
+                dispatch(addItem(response));
+            }
             notification(createdAppointmentSuccess);
         } catch (error) {
             if (error?.response?.data?.error === 'The selected time conflicts with another schedule') {
@@ -58,7 +61,10 @@ const { read, create, update, remove } = {
         dispatch(setLoading(true));
         try {
             const response = await appointmentRepository.updateAppointment(appointmentId, updateAppointmentPayload);
-            dispatch(updateItem(response));
+            const actualRoomId = store.getState().appointments.roomId;
+            if (response.roomId == actualRoomId) {
+                dispatch(updateItem(response));
+            }
             notification(updatedAppointmentSuccess);
         } catch (error) {
             if (error?.response?.data?.error === 'The selected time conflicts with another schedule') {
