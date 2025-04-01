@@ -131,15 +131,19 @@ function CalendarEventDialog({ refreshCalendar }) {
 
   const debouncedClientInput = useDebounce(clientInput, 500);
 
+  const getClients = async () => {
+    const clients = await clientService.read({
+      businessId: business?.id,
+    });
+    setFilteredClientsList(clients.data);
+  };
+
+  useEffect(() => {
+    getClients();
+  }, []);
+
   useEffect(() => {
     if (business?.id) {
-      const getClients = async () => {
-        const clients = await clientService.read({
-          businessId: business?.id,
-          search: debouncedClientInput,
-        });
-        setFilteredClientsList(clients.data);
-      };
       getClients();
     }
   }, [business, debouncedClientInput]);
