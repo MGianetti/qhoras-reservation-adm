@@ -131,22 +131,27 @@ function CalendarEventDialog({ refreshCalendar }) {
 
   const debouncedClientInput = useDebounce(clientInput, 500);
 
-  const getClients = async () => {
-    const clients = await clientService.read({
-      businessId: business?.id,
-    });
+  const getClients = async (limit = 10) => {
+    const searchParams = { businessId: business?.id };
+    if (debouncedClientInput) searchParams.search = debouncedClientInput; 
+    if (limit) searchParams.limit = limit;
+
+    const clients = await clientService.read(searchParams);
     setFilteredClientsList(clients.data);
   };
 
   useEffect(() => {
-    getClients();
-  }, []);
+    if (business?.id) {
+      const timeoutId = setTimeout(() => {
+        getClients(1000);
+      }, 500);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [business?.id, client, debouncedClientInput, eventID]);
 
   useEffect(() => {
-    if (business?.id) {
-      getClients();
-    }
-  }, [business, debouncedClientInput]);
+    setClientInput('');
+  }, [eventID]);
 
   useEffect(() => {
     if (
