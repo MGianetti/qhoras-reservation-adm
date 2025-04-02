@@ -205,8 +205,6 @@ function CalendarLayoutMonth(props) {
         let isPaid = false;
         let description = '';
 
-        console.log('calendarEvent', calendarEvent);
-
         if (calendarEvent !== null) {
             eventBeginDate = new Date(calendarEvent.begin);
             eventEndDate = new Date(calendarEvent.end);

@@ -66,8 +66,6 @@ function CalendarEventDialog({ refreshCalendar }) {
     description,
   } = stateCalendar;
 
-  console.log('clientName', clientName);
-
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
   const [clientInput, setClientInput] = useState("");
 

@@ -19,8 +19,6 @@ export default function createEditEvent(props) {
     let status = 'SCHEDULED';
     let isPaid = false;
 
-    console.log('calendarEventedit', calendarEvent);
-
     if (calendarEvent !== null) {
         eventBeginDate = new Date(calendarEvent.begin);
         eventEndDate = new Date(calendarEvent.end);
