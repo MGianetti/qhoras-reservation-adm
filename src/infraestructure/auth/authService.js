@@ -54,6 +54,7 @@ const handleAuthFailure = () => {
 
 const refreshAccessToken = async (oldToken) => {
     if (!oldToken) {
+        handleAuthFailure();
         return false;
     }
 
