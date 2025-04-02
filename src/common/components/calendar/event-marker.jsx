@@ -216,6 +216,7 @@ function EventMark(props) {
 
         let room = calendarEvent?.room?.id;
         let client = calendarEvent?.client?.id;
+        let clientName = calendarEvent?.client?.name;
         let status = calendarEvent?.status;
         let isPaid = calendarEvent?.isPaid;
         let description = calendarEvent?.description;
@@ -228,6 +229,7 @@ function EventMark(props) {
             eventEndTime: { value: endTime, label: endTime },
             room,
             client,
+            clientName,
             status,
             isPaid,
             description,

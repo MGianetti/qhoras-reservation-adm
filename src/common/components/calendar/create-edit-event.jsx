@@ -15,8 +15,11 @@ export default function createEditEvent(props) {
     let description = '';
     let room = null;
     let client = null;
+    let clientName = null;
     let status = 'SCHEDULED';
     let isPaid = false;
+
+    console.log('calendarEventedit', calendarEvent);
 
     if (calendarEvent !== null) {
         eventBeginDate = new Date(calendarEvent.begin);
@@ -29,6 +32,7 @@ export default function createEditEvent(props) {
 
         room = calendarEvent?.room?.id;
         client = calendarEvent?.client?.id;
+        clientName = calendarEvent?.client?.name;
         status = calendarEvent?.status;
         description = calendarEvent?.description;
         isPaid = calendarEvent?.isPaid;
@@ -71,6 +75,7 @@ export default function createEditEvent(props) {
         description,
         room,
         client,
+        clientName,
         status,
         isPaid,
     });

@@ -205,6 +205,8 @@ function CalendarLayoutMonth(props) {
         let isPaid = false;
         let description = '';
 
+        console.log('calendarEvent', calendarEvent);
+
         if (calendarEvent !== null) {
             eventBeginDate = new Date(calendarEvent.begin);
             eventEndDate = new Date(calendarEvent.end);
@@ -215,6 +217,7 @@ function CalendarLayoutMonth(props) {
     
             room = calendarEvent?.room?.id;
             client = calendarEvent?.client?.id;
+            clientName = calendarEvent?.client?.name;
             status = calendarEvent?.status;
             description = calendarEvent?.description;
             isPaid = calendarEvent?.isPaid;
@@ -252,6 +255,7 @@ function CalendarLayoutMonth(props) {
             eventEndTime: { value: endTime, label: endTime },
             room,
             client,
+            clientName,
             status,
             isPaid,
             description,

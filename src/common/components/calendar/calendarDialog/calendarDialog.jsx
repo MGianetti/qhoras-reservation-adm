@@ -60,10 +60,13 @@ function CalendarEventDialog({ refreshCalendar }) {
     eventEndTime,
     room,
     client,
+    clientName,
     status,
     isPaid,
     description,
   } = stateCalendar;
+
+  console.log('clientName', clientName);
 
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
   const [clientInput, setClientInput] = useState("");
@@ -98,12 +101,7 @@ function CalendarEventDialog({ refreshCalendar }) {
   const formik = useFormik({
     initialValues: {
       roomTF: room || "",
-      clientTF: client
-        ? {
-            value: client,
-            label: clientsList.find((c) => c.id == client)?.name || "",
-          }
-        : { value: "", label: "" },
+      clientTF: client ? { value: client, label: clientName } : {value: '', label: ''},
       statusTF: status || "SCHEDULED",
       descriptionTF: description || "",
       isPaidTF: isPaid || false,
@@ -131,27 +129,18 @@ function CalendarEventDialog({ refreshCalendar }) {
 
   const debouncedClientInput = useDebounce(clientInput, 500);
 
-  const getClients = async (limit = 10) => {
-    const searchParams = { businessId: business?.id };
-    if (debouncedClientInput) searchParams.search = debouncedClientInput; 
-    if (limit) searchParams.limit = limit;
-
-    const clients = await clientService.read(searchParams);
-    setFilteredClientsList(clients.data);
-  };
-
   useEffect(() => {
     if (business?.id) {
-      const timeoutId = setTimeout(() => {
-        getClients(1000);
-      }, 500);
-      return () => clearTimeout(timeoutId);
+      const getClients = async () => {
+        const clients = await clientService.read({
+          businessId: business?.id,
+          search: debouncedClientInput,
+        });
+        setFilteredClientsList(clients.data);
+      };
+      getClients();
     }
-  }, [business?.id, client, debouncedClientInput, eventID]);
-
-  useEffect(() => {
-    setClientInput('');
-  }, [eventID]);
+  }, [business, debouncedClientInput]);
 
   useEffect(() => {
     if (
