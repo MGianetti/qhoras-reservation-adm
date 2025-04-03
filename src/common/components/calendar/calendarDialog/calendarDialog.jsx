@@ -50,7 +50,7 @@ import {
 } from "./calendarDialog.constants";
 import { useDebounce } from "../../../utils/useDebounce";
 
-function CalendarEventDialog({ refreshCalendar }) {
+function CalendarEventDialog({ refreshCalendar, roomsList }) {
   const { stateCalendar, setStateCalendar } = useContext(CalendarContext);
   const {
     eventID = 0,
@@ -78,10 +78,10 @@ function CalendarEventDialog({ refreshCalendar }) {
       openDialog: false,
       openViewDialog: false,
     });
+    setClientInput('');
   };
 
   const { business } = useSelector((state) => state?.auth.user) || { id: undefined };
-  const { data: roomsList } = useSelector((state) => state?.rooms) || { data: [] };
   const { data: clientsList } = useSelector((state) => state?.clients) || { data: [] };
   const { data: appointments } = useSelector((state) => state?.appointments) || { data: [] };
   const { data: calendarBlocks } = useSelector((state) => state?.calendarBlocks) || { data: [] };
@@ -124,6 +124,14 @@ function CalendarEventDialog({ refreshCalendar }) {
       clientService.read({ businessId: business?.id });
     }
   }, [business]);
+
+  useEffect(() => {
+    const getInitialClients = async () => {
+      const clients = await clientService.read({ businessId: business?.id });
+      setFilteredClientsList(clients.data);
+    };
+    getInitialClients();
+  }, [])
 
   const debouncedClientInput = useDebounce(clientInput, 500);
 

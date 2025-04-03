@@ -210,7 +210,7 @@ const Calendar = () => {
                 miniCalendarOpen={stateCalendar.miniCalendarOpen}
               />
               <CalendarMain isLoading={isLoading} open={drawerOpen} runAnimation={runAnimation} setGetScheduleData={setGetScheduleData} fetchRooms={fetchRooms} selectedRoom={selectedRoom} />
-              <CalendarEventDialog isLoading={isLoading} refreshCalendar={refreshCalendar} />
+              <CalendarEventDialog isLoading={isLoading} refreshCalendar={refreshCalendar} roomsList={rooms} />
               <BlockDialog isLoading={isLoading} />
             </div>
           </div>
