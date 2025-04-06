@@ -26,7 +26,7 @@ function DatepickerCalendar(props) {
 
     const popupCalendar = (
         <ClickAwayListener onClickAway={handleClickAway}>
-            <Collapse in={openCalendar} className={classes.collapseCalendar} style={{ top: calendarPosition.top, left: calendarPosition.left, zIndex: 10000, }}>
+            <Collapse in={openCalendar} className={classes.collapseCalendar} style={{ top: calendarPosition.top, left: calendarPosition.left, zIndex: 1300, }}>
                 <Paper className={classes.paper}>
                     <CalendarSmall isDatepicker={true} datepickerOnChange={handleChangeDateCalendar} datepickerValue={datepickerValue} />
                 </Paper>

@@ -18,7 +18,7 @@ const Rooms = () => {
         <LoggedLayout>
             <Grid container spacing={2}>
                 <Grid item xs={12}>
-                    <ListActionsBar handleOpen={setOpen} setValuesLine={setValuesLine} icon="addRoom" labelSearch="Pesquisar Salas" setSearch={setSearch} />
+                    <ListActionsBar handleOpen={setOpen} setValuesLine={setValuesLine} icon="plus" labelSearch="Pesquisar Salas" setSearch={setSearch} />
                 </Grid>
                 <Grid item xs={12}>
                     <LoadingOverlay isLoading={isLoading} />

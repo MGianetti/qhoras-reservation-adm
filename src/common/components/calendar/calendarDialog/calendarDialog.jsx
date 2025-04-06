@@ -31,6 +31,7 @@ import {
   useTheme,
   IconButton,
   OutlinedInput,
+  InputAdornment,
 } from "@mui/material";
 
 import TimeSelect from "../time-select";
@@ -78,13 +79,21 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
       openDialog: false,
       openViewDialog: false,
     });
-    setClientInput('');
+    setClientInput("");
   };
 
-  const { business } = useSelector((state) => state?.auth.user) || { id: undefined };
-  const { data: clientsList } = useSelector((state) => state?.clients) || { data: [] };
-  const { data: appointments } = useSelector((state) => state?.appointments) || { data: [] };
-  const { data: calendarBlocks } = useSelector((state) => state?.calendarBlocks) || { data: [] };
+  const { business } = useSelector((state) => state?.auth.user) || {
+    id: undefined,
+  };
+  const { data: clientsList } = useSelector((state) => state?.clients) || {
+    data: [],
+  };
+  const { data: appointments } = useSelector(
+    (state) => state?.appointments
+  ) || { data: [] };
+  const { data: calendarBlocks } = useSelector(
+    (state) => state?.calendarBlocks
+  ) || { data: [] };
   const scheduleState = useSelector((state) => state?.user.schedule) || [];
 
   const [filteredClientsList, setFilteredClientsList] = useState(clientsList);
@@ -99,7 +108,9 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
   const formik = useFormik({
     initialValues: {
       roomTF: room || "",
-      clientTF: client ? { value: client, label: clientName } : {value: '', label: ''},
+      clientTF: client
+        ? { value: client, label: clientName }
+        : { value: "", label: "" },
       statusTF: status || "SCHEDULED",
       descriptionTF: description || "",
       isPaidTF: isPaid || false,
@@ -131,7 +142,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
       setFilteredClientsList(clients.data);
     };
     getInitialClients();
-  }, [])
+  }, []);
 
   const debouncedClientInput = useDebounce(clientInput, 500);
 
@@ -163,11 +174,11 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
         (time) => time.value === beginTimeValue
       );
       const correctedBeginTime = validBeginTime || initialOptionTime[0];
-  
+
       if (formik.values.beginTime.value !== correctedBeginTime.value) {
         formik.setFieldValue("beginTime", correctedBeginTime);
       }
-  
+
       let endTimeValue = formik.values.endTime.value;
       if (endTimeValue.length === 4) {
         endTimeValue = "0" + endTimeValue;
@@ -176,17 +187,18 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
         (time) => time.value === endTimeValue
       );
       let correctedEndTime = validEndTime || initialOptionTime[0];
-  
+
       if (
         timeToMinutes(correctedEndTime.value) <=
         timeToMinutes(correctedBeginTime.value)
       ) {
         const nextValidOption = initialOptionTime.find(
-          (time) => timeToMinutes(time.value) > timeToMinutes(correctedBeginTime.value)
+          (time) =>
+            timeToMinutes(time.value) > timeToMinutes(correctedBeginTime.value)
         );
         correctedEndTime = nextValidOption || correctedEndTime;
       }
-  
+
       if (formik.values.endTime.value !== correctedEndTime.value) {
         formik.setFieldValue("endTime", correctedEndTime);
       }
@@ -197,7 +209,6 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
     formik.values.endTime,
     initialOptionTime,
   ]);
-  
 
   const handleClose = () => {
     handleCloseDialog();
@@ -256,9 +267,21 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
 
   return (
     <>
-      <StyledDialog maxWidth="sm" fullWidth open={openDialog} onClose={handleClose}>
+      <StyledDialog
+        maxWidth="sm"
+        fullWidth
+        open={openDialog}
+        onClose={handleClose}
+      >
         <DialogTitle id="responsive-dialog-title">
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 10,
+            }}
+          >
             {eventID ? "Editar Agendamento" : "Novo Agendamento"}
             {eventID ? (
               <MdDeleteOutline
@@ -272,7 +295,13 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
           <Box
             component="form"
             onSubmit={formik.handleSubmit}
-            sx={{ display: "flex", flexDirection: "column", m: "auto", pt: 2, gap: 3 }}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              m: "auto",
+              pt: 2,
+              gap: 3,
+            }}
           >
             {/* Campo de Sala */}
             <FormControl>
@@ -288,11 +317,13 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                 onChange={formik.handleChange}
                 error={formik.touched.roomTF && Boolean(formik.errors.roomTF)}
               >
-                {roomsList.map((room) => (
-                  <MenuItem key={room.id} value={room.id}>
-                    {room.name}
-                  </MenuItem>
-                ))}
+                {roomsList
+                  .sort((a, b) => a.name.localeCompare(b.name))
+                  .map((room) => (
+                    <MenuItem key={room.id} value={room.id}>
+                      {room.name}
+                    </MenuItem>
+                  ))}
               </Select>
               {formik.touched.roomTF && formik.errors.roomTF && (
                 <Typography variant="caption" color="error">
@@ -312,15 +343,24 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                     disableClearable
                     sx={{ width: "100%" }}
                     value={formik.values.clientTF}
-                    onChange={(e, value) => formik.setFieldValue("clientTF", value)}
+                    onChange={(e, value) =>
+                      formik.setFieldValue("clientTF", value)
+                    }
                     onInputChange={(e, value) => setClientInput(value)}
                     options={filteredClientsList.map((client) => {
-                      const name = client.name === "Novo Membro" ? `${client.name} - ${client.phone}` : client.name;
+                      const name =
+                        client.name === "Novo Membro"
+                          ? `${client.name} - ${client.phone}`
+                          : client.name;
                       return { value: client.id, label: name };
                     })}
                     getOptionLabel={(option) => option?.label}
-                    renderInput={(params) => <TextField {...params} label="Membro" />}
-                    isOptionEqualToValue={(option, value) => option?.value === value?.value}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Membro" />
+                    )}
+                    isOptionEqualToValue={(option, value) =>
+                      option?.value === value?.value
+                    }
                   />
                   {formik.touched.clientTF && formik.errors.clientTF && (
                     <Typography variant="caption" color="error">
@@ -342,14 +382,14 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                     size="small"
                     value={formik.values.statusTF}
                     onChange={formik.handleChange}
-                    error={formik.touched.statusTF && Boolean(formik.errors.statusTF)}
+                    error={
+                      formik.touched.statusTF && Boolean(formik.errors.statusTF)
+                    }
                   >
                     <MenuItem value="PENDING">Pendente</MenuItem>
                     <MenuItem value="SCHEDULED">Agendado</MenuItem>
                     <MenuItem value="COMPLETED">Concluído</MenuItem>
                     <MenuItem value="CANCELLED">Cancelado</MenuItem>
-                    <MenuItem value="RESCHEDULED">Reagendado</MenuItem>
-                    <MenuItem value="NO_SHOW">Não compareceu</MenuItem>
                   </Select>
                   {formik.touched.statusTF && formik.errors.statusTF && (
                     <Typography variant="caption" color="error">
@@ -360,48 +400,91 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
               </Grid>
             </Grid>
 
-            {/* Campo de Descrição */}
-            <FormControl fullWidth>
-              <InputLabel htmlFor="descriptionTF" size="small">
-                Descrição
-              </InputLabel>
-              <OutlinedInput
-                id="descriptionTF"
-                name="descriptionTF"
-                label="Descrição"
-                size="small"
-                multiline
-                rows={3}
-                value={formik.values.descriptionTF}
-                onChange={formik.handleChange}
-                error={formik.touched.descriptionTF && Boolean(formik.errors.descriptionTF)}
-              />
-              {formik.touched.descriptionTF && formik.errors.descriptionTF && (
-                <Typography variant="caption" color="error">
-                  {formik.errors.descriptionTF}
-                </Typography>
-              )}
-            </FormControl>
+
+{/* Campo de Descrição */}
+<FormControl fullWidth>
+  <InputLabel htmlFor="descriptionTF" size="small">
+    Descrição
+  </InputLabel>
+  <OutlinedInput
+    id="descriptionTF"
+    name="descriptionTF"
+    label="Descrição"
+    size="small"
+    multiline
+    rows={3}
+    value={formik.values.descriptionTF}
+    onChange={formik.handleChange}
+    error={
+      formik.touched.descriptionTF &&
+      Boolean(formik.errors.descriptionTF)
+    }
+    endAdornment={
+      <InputAdornment position="end">
+        <StyledTooltip
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "#1976D2",
+            borderRadius: "50%",
+            padding: 2
+          }}
+          placement="bottom-start"
+          title={`Quantas pessoas irão participar? Faz parte de algum ministério? Sobre o que será o evento?`}
+        >
+          <IconButton>
+            <FaRegCircleQuestion
+              fontSize={16}
+              style={{ color: "#ffffff", cursor: "pointer" }}
+            />
+          </IconButton>
+        </StyledTooltip>
+      </InputAdornment>
+    }
+  />
+  {formik.touched.descriptionTF && formik.errors.descriptionTF && (
+    <Typography variant="caption" color="error">
+      {formik.errors.descriptionTF}
+    </Typography>
+  )}
+</FormControl>
+
 
             {/* Data do agendamento e exibição do horário */}
-            <FormControl className={clsx(classes.formControl, classes.formControlFlex)}>
+            <FormControl
+              className={clsx(classes.formControl, classes.formControlFlex)}
+            >
               <Grid container spacing={2} alignItems="center">
                 <Grid item xs={12} sm={8} style={{ paddingBlock: 15 }}>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 10,
+                    }}
+                  >
                     <Typography>Data do agendamento</Typography>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <div
+                      style={{ display: "flex", alignItems: "center", gap: 10 }}
+                    >
                       <Datepicker
                         styleCls={classes.datepicker}
                         dateFormat={"dd/MM/yyyy"}
                         originalValue={new Date(formik.values.beginDate)}
                         onChange={(e) => {
                           formik.setFieldValue("beginDate", e);
-                          setStateCalendar({ ...stateCalendar, eventBeginDate: e });
+                          setStateCalendar({
+                            ...stateCalendar,
+                            eventBeginDate: e,
+                          });
                         }}
                       />
                       <Typography className={classes.dayOfWeek}>
                         {formik.values.beginDate !== null &&
-                          format(new Date(formik.values.beginDate), "eeee", { locale: ptBR })}
+                          format(new Date(formik.values.beginDate), "eeee", {
+                            locale: ptBR,
+                          })}
                       </Typography>
                     </div>
                     {formik.touched.beginDate && formik.errors.beginDate && (
@@ -421,15 +504,25 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                     paddingBlock: 15,
                   }}
                 >
-                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 10,
+                    }}
+                  >
                     <Typography>Horário</Typography>
-                    <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                    <div
+                      style={{ display: "flex", gap: 10, alignItems: "center" }}
+                    >
                       <TimeSelect
                         placeholder={""}
                         options={timeOptions(
                           getInitialAndEndTime(
                             scheduleState,
-                            format(new Date(formik.values.beginDate), "eeee", { locale: ptBR })
+                            format(new Date(formik.values.beginDate), "eeee", {
+                              locale: ptBR,
+                            })
                           )
                         )}
                         originalValue={{
@@ -440,19 +533,21 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                       />
                       -
                       <TimeSelect
-                    placeholder={""}
-                    options={timeOptions(
-                      getInitialAndEndTime(
-                        scheduleState,
-                        format(new Date(formik.values.beginDate), "eeee", { locale: ptBR })
-                      )
-                    )}
-                    originalValue={{
-                      value: formik.values.endTime.value,
-                      label: formik.values.endTime.label,
-                    }}
-                    onChange={(e) => formik.setFieldValue("endTime", e)}
-                  />
+                        placeholder={""}
+                        options={timeOptions(
+                          getInitialAndEndTime(
+                            scheduleState,
+                            format(new Date(formik.values.beginDate), "eeee", {
+                              locale: ptBR,
+                            })
+                          )
+                        )}
+                        originalValue={{
+                          value: formik.values.endTime.value,
+                          label: formik.values.endTime.label,
+                        }}
+                        onChange={(e) => formik.setFieldValue("endTime", e)}
+                      />
                       <IoMdTime />
                     </div>
                     {formik.touched.beginTime && formik.errors.beginTime && (
@@ -464,17 +559,23 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                 </Grid>
               </Grid>
             </FormControl>
-            
+
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12} sm={4}>
                 <FormControl
                   className={clsx(classes.formControl, classes.formControlFlex)}
-                  style={{ display: "flex", justifyContent: "flex-start", paddingTop: 0 }}
+                  style={{
+                    display: "flex",
+                    justifyContent: "flex-start",
+                    paddingTop: 0,
+                  }}
                 >
                   <Typography>Pago</Typography>
                   <Switch
                     checked={formik.values.isPaidTF}
-                    onChange={(e) => formik.setFieldValue("isPaidTF", e.target.checked)}
+                    onChange={(e) =>
+                      formik.setFieldValue("isPaidTF", e.target.checked)
+                    }
                     color="primary"
                   />
                 </FormControl>
@@ -499,10 +600,13 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{"Confirmar exclusão"}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">
+          {"Confirmar exclusão"}
+        </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Você tem certeza que deseja excluir este agendamento? Esta ação não pode ser desfeita.
+            Você tem certeza que deseja excluir este agendamento? Esta ação não
+            pode ser desfeita.
           </DialogContentText>
         </DialogContent>
         <DialogActions>

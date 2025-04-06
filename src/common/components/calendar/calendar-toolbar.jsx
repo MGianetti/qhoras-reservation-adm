@@ -194,7 +194,7 @@ function CalendarToolbar(props) {
             <InputLabel>Sala</InputLabel>
             <Select value={selectedRoom || ''} label="Sala" onChange={handleRoomChange}>
               {Array.isArray(rooms) &&
-                rooms.map((room) => (
+                rooms.sort((a, b) => a.name.localeCompare(b.name)).map((room) => (
                   <MenuItem key={room.id} value={room.id}>
                     {room.name}
                   </MenuItem>

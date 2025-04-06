@@ -155,12 +155,12 @@ function CalendarSmall(props) {
                                 </IconButton>
                             </Tooltip>
                         )}{' '}
-                        <Tooltip classes={{ tooltip: classes.tooltip }}>
+                        <Tooltip title="Mês anterior" classes={{ tooltip: classes.tooltip }}>
                             <IconButton size="small" onClick={(event) => findNewDate({ event, direction: '<' })}>
                                 <IoIosArrowBack />
                             </IconButton>
                         </Tooltip>{' '}
-                        <Tooltip classes={{ tooltip: classes.tooltip }}>
+                        <Tooltip title="Mês posterior" classes={{ tooltip: classes.tooltip }}>
                             <IconButton size="small" onClick={(event) => findNewDate({ event, direction: '>' })}>
                                 <IoIosArrowForward />
                             </IconButton>
