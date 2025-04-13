@@ -15,8 +15,7 @@ import { useSelector } from "react-redux";
 
 function App() {
   const role = useSelector((state) => state?.auth?.user?.role);
-
-  console.log(role);
+  
   return (
     <Router>
       <Routes>
