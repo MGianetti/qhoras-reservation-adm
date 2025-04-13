@@ -201,14 +201,17 @@ const Calendar = () => {
 
             <div style={{ display: 'flex', width: '100%', position: 'relative' }}>
               <LoadingOverlay isLoading={isLoading} />
-              <CalendarDrawer
-                selectedDate={stateCalendar.selectedDate}
-                next={next}
-                previous={previous}
-                open={drawerOpen}
-                layout={'month'}
-                miniCalendarOpen={stateCalendar.miniCalendarOpen}
-              />
+              {
+                stateCalendar.layout !== 'list' && (
+                  <CalendarDrawer
+                    selectedDate={stateCalendar.selectedDate}
+                    next={next}
+                    previous={previous}
+                    open={drawerOpen}
+                    layout={'month'}
+                  miniCalendarOpen={stateCalendar.miniCalendarOpen}
+                />
+              )}
               <CalendarMain isLoading={isLoading} open={drawerOpen} runAnimation={runAnimation} setGetScheduleData={setGetScheduleData} fetchRooms={fetchRooms} selectedRoom={selectedRoom} />
               <CalendarEventDialog isLoading={isLoading} refreshCalendar={refreshCalendar} roomsList={rooms} />
               <BlockDialog isLoading={isLoading} />

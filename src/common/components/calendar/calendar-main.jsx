@@ -11,6 +11,7 @@ import { CalendarContext } from './context/calendar-context';
 import getWeekDays from './common/getWeekDays';
 import userService from '../../../domains/user/userService';
 import calendarBlocksService from '../../../domains/calendarBlocks/calendarBlocksService';
+import CalendarLayoutList from './calendarLayout/CalendarLayoutList/calendar-list';
 
 const PREFIX = 'CalendarMain';
 
@@ -83,7 +84,7 @@ function CalendarMain(props) {
   };
 
   useEffect(() => {
-    if (allRooms.length > 0) {
+    if (allRooms.length > 0 && layout !== 'list') {
       getScheduleData(selectedRoom);
       setGetScheduleData(() => getScheduleData);
     }
@@ -98,6 +99,9 @@ function CalendarMain(props) {
       {layout === 'month' && <CalendarLayoutMonth weeks={weeks} runAnimation={runAnimation} />}
       {(layout === 'week' || layout === 'day') && (
         <CalendarLayoutDayWeek selectedWeekIndex={selectedWeekIndex} selectedWeek={selectedWeek} selectedRoom={selectedRoom} />
+      )}
+      {layout === 'list' && (
+        <CalendarLayoutList />
       )}
     </Root>
   );

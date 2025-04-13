@@ -8,10 +8,12 @@ const createAppointment = (businessId, appointmentData) => makeRequest(() => api
 const updateAppointment = (appointmentId, appointmentData) =>
     makeRequest(() => apiService.put(endpoints.update.appointments.replace('${APPOINTMENT-ID}', appointmentId), appointmentData));
 const deleteAppointment = (appointmentId) => makeRequest(() => apiService.delete(endpoints.delete.appointments.replace('${APPOINTMENT-ID}', appointmentId)));
+const readCalendarList = (businessId, page, limit, order, orderBy) => makeRequest(() => apiService.post(endpoints.read.calendarList.replace('${BUSINESS-ID}', businessId), { page, limit, order, orderBy }));
 
 export default {
     readAllAppointments,
     createAppointment,
     updateAppointment,
-    deleteAppointment
+    deleteAppointment,
+    readCalendarList
 };

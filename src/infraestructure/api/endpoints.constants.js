@@ -18,7 +18,8 @@ const endpoints = {
         appointments: 'appointments/${ROOM-ID}',
         calendarBlocks: 'calendar-blocks/${ROOM-ID}',
         employees: 'users/${BUSINESS-ID}/employees',
-        userConfig: 'users/user-config/${USER-ID}'
+        userConfig: 'users/user-config/${USER-ID}',
+        calendarList: 'appointments/calendar-list/${BUSINESS-ID}'
     },
 
     create: {

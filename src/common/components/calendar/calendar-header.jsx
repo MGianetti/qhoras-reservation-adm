@@ -188,9 +188,7 @@ function CalendarHeader(props) {
                 }}
             >
                 <Box item xs={1} className={clsx(classes.timeColumnContainer, classes.timeColumn)}>
-                    {/* <div className={classes.timeColumn}> */}
                     <div className={clsx(classes.timeColumnElement)} />
-                    {/* </div> */}
                 </Box>
 
                 <Grid item xs>

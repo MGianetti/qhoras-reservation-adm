@@ -23,7 +23,7 @@ dayjs.extend(timezone);
 
 const dispatch = (action) => store.dispatch(action);
 
-const { read, create, update, remove } = {
+const { read, create, update, remove, readCalendarList } = {
     read: async (roomId, start, end) => {
         dispatch(setLoading(true));
         try {
@@ -91,6 +91,17 @@ const { read, create, update, remove } = {
         } finally {
             dispatch(setLoading(false));
         }
+    },
+    readCalendarList: async ({businessId, page = 1, limit = 10, order = 'asc', orderBy = 'date'}) => {
+        try {
+            const response = await appointmentRepository.readCalendarList(businessId, page, limit, order, orderBy);
+            const { reservations, ...pageData } = response;
+
+            dispatch(readItem({ data: reservations, roomId: null, pageData }));
+            return response;
+        } catch (error) {
+            return false;
+        }
     }
 };
 
@@ -98,7 +109,8 @@ const appointmentService = {
     read,
     create,
     update,
-    remove
+    remove,
+    readCalendarList
 };
 
 export default appointmentService;

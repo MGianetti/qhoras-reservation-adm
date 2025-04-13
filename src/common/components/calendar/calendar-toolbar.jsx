@@ -3,7 +3,10 @@ import format from 'date-fns/format';
 import { ptBR } from 'date-fns/locale';
 import { Toolbar, Tooltip, Typography, IconButton, FormControl, InputLabel, MenuItem, Select, Box } from '@mui/material';
 
-import { MdOutlineViewModule, MdOutlineViewWeek, MdOutlineToday, MdOutlineCalendarViewDay } from 'react-icons/md';
+import { MdOutlineViewModule, MdOutlineViewWeek, MdOutlineToday, MdOutlineCalendarViewDay, MdOutlineFormatListBulleted } from 'react-icons/md';
+import { FaList } from "react-icons/fa6";
+
+
 import { IoIosArrowBack, IoIosArrowForward, IoMdRefresh } from 'react-icons/io';
 
 import { styled } from '@mui/material/styles';
@@ -149,6 +152,10 @@ function CalendarToolbar(props) {
     return (
       <StyledRoot>
         <Toolbar>
+          <></>
+          {
+            layout !== 'list' ? (
+            <>
           <StyledTooltip title="Hoje" className={classes.miniCalendarToday} style={{ marginRight: 0 }}>
             <StyledMenuButton disabled={isLoading} color="inherit" aria-label="Hoje" onClick={goToToday} edge="start">
               <MdOutlineToday />
@@ -201,6 +208,10 @@ function CalendarToolbar(props) {
                 ))}
             </Select>
           </FormControl>
+            </>
+          ) : (
+            <h3 style={{ width: '100%', fontWeight: 500 }}> Lista de Eventos</h3>
+          )}
 
           <StyledTooltip title="Visualização Diária">
             <IconButton
@@ -235,6 +246,18 @@ function CalendarToolbar(props) {
               edge="start"
             >
               <MdOutlineViewModule />
+            </IconButton>
+          </StyledTooltip>
+
+          <StyledTooltip title="Visualização Por Lista">
+            <IconButton
+              disabled={isLoading}
+              color="inherit"
+              aria-label="Visualização Por Lista"
+              onClick={() => setLayout({ option: 'list' })}
+              edge="start"
+            >
+              <FaList size={16} style={{ marginLeft: '3px' }} />
             </IconButton>
           </StyledTooltip>
         </Toolbar>
