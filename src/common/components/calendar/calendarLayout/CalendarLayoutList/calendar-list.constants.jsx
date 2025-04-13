@@ -82,7 +82,7 @@ export const rowsCalendarList = (calendarList = []) => {
       calendar?.status,
       calendar?.begin,
       calendar?.end,
-      calendar?.createdAt
-    )
+      calendar?.createdAt,
+    ),
   );
 };

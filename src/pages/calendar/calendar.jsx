@@ -1,41 +1,49 @@
-import { useEffect, useState, useCallback } from 'react';
-import { useSelector } from 'react-redux';
-import { styled } from '@mui/material/styles';
-import { CssBaseline, useTheme } from '@mui/material';
-import { ThemeProvider } from '@mui/material/styles';
-import { addMonths, addWeeks, addDays, subMonths, subWeeks, subDays } from 'date-fns';
+import { useEffect, useState, useCallback } from "react";
+import { useSelector } from "react-redux";
+import { styled } from "@mui/material/styles";
+import { CssBaseline, useTheme } from "@mui/material";
+import { ThemeProvider } from "@mui/material/styles";
+import {
+  addMonths,
+  addWeeks,
+  addDays,
+  subMonths,
+  subWeeks,
+  subDays,
+} from "date-fns";
 
-import LoggedLayout from '../../common/layouts/loggedLayout/loggedLayout';
-import CalendarMain from '../../common/components/calendar/calendar-main';
-import CalendarDrawer from '../../common/components/calendar/calendar-drawer';
-import CalendarToolbar from '../../common/components/calendar/calendar-toolbar';
-import { CalendarContext } from '../../common/components/calendar/context/calendar-context';
-import CalendarEventDialog from '../../common/components/calendar/calendarDialog/calendarDialog';
-import notification from '../../common/utils/notification';
+import LoggedLayout from "../../common/layouts/loggedLayout/loggedLayout";
+import CalendarMain from "../../common/components/calendar/calendar-main";
+import CalendarDrawer from "../../common/components/calendar/calendar-drawer";
+import CalendarToolbar from "../../common/components/calendar/calendar-toolbar";
+import { CalendarContext } from "../../common/components/calendar/context/calendar-context";
+import CalendarEventDialog from "../../common/components/calendar/calendarDialog/calendarDialog";
+import notification from "../../common/utils/notification";
 
-import { refreshCalendarSuccess } from '../../domains/appointment/appointment.constants';
-import LoadingOverlay from '../../common/components/LoadingOverlay/LoadingOverlay';
-import BlockDialog from '../../common/components/calendar/calendarDialog/blockDialog';
-import roomsService from '../../domains/room/roomService';
+import { refreshCalendarSuccess } from "../../domains/appointment/appointment.constants";
+import LoadingOverlay from "../../common/components/LoadingOverlay/LoadingOverlay";
+import BlockDialog from "../../common/components/calendar/calendarDialog/blockDialog";
+import roomsService from "../../domains/room/roomService";
 
-const PREFIX = 'Calendar';
+const PREFIX = "Calendar";
 
 const classes = {
-  root: `${PREFIX}-root`
+  root: `${PREFIX}-root`,
 };
 
 const StyledCalendarContextProvider = styled(CalendarContext.Provider)(() => ({
   [`& .${classes.root}`]: {
-    display: 'flex',
-    height: '100%',
-    width: '100%',
-    boxShadow: '0px 1px 8px rgb(154 154 154 / 9%), 0px 1px 8px rgb(124 124 124 / 6%)'
-  }
+    display: "flex",
+    height: "100%",
+    width: "100%",
+    boxShadow:
+      "0px 1px 8px rgb(154 154 154 / 9%), 0px 1px 8px rgb(124 124 124 / 6%)",
+  },
 }));
 
 const defaultEventDuration = 60; // em minutos
 const initialSelectedDate = new Date();
-const initialLayout = 'day';
+const initialLayout = "day";
 const initialOpenDialog = false;
 const initialOpenViewDialog = false;
 
@@ -45,15 +53,15 @@ const Calendar = () => {
   const auth = useSelector((state) => state.auth);
 
   const [stateCalendar, setStateCalendar] = useState({
-    actions: '',
+    actions: "",
     allowFullScreen: false,
     calendarEvent: {},
-    content: '',
+    content: "",
     defaultEventDuration,
     draggingEventId: -1,
     eventBeginDate: null,
     eventBeginTime: { value: null, label: null },
-    eventDialogMaxWidth: 'md',
+    eventDialogMaxWidth: "md",
     eventEndDate: null,
     eventEndTime: { value: null, label: null },
     fullscreen: false,
@@ -64,9 +72,9 @@ const Calendar = () => {
     openViewDialog: initialOpenViewDialog,
     selectedDate: initialSelectedDate,
     startDragging: false,
-    title: '',
+    title: "",
     withCloseIcon: true,
-    miniCalendarOpen: false
+    miniCalendarOpen: false,
   });
 
   const [runAnimation, setRunAnimation] = useState(true);
@@ -78,18 +86,25 @@ const Calendar = () => {
   const [selectedRoom, setSelectedRoom] = useState(null);
 
   // Função para buscar as salas
-  const fetchRooms = useCallback(async (room = selectedRoom) => {
-    try {
-      if (!auth?.user?.businessId) return;
-      const data = await roomsService.read({ businessId: auth.user.businessId, page: 1, limit: 1000 });
-      setRooms(data);
-      if (data.length > 0 && !room) {
-        setSelectedRoom(data[0].id);
+  const fetchRooms = useCallback(
+    async (room = selectedRoom) => {
+      try {
+        if (!auth?.user?.businessId) return;
+        const data = await roomsService.read({
+          businessId: auth.user.businessId,
+          page: 1,
+          limit: 1000,
+        });
+        setRooms(data);
+        if (data.length > 0 && !room) {
+          setSelectedRoom(data[0].id);
+        }
+      } catch (error) {
+        console.error("Failed to fetch rooms:", error);
       }
-    } catch (error) {
-      console.error('Failed to fetch rooms:', error);
-    }
-  }, [auth?.user?.businessId, selectedRoom]);
+    },
+    [auth?.user?.businessId, selectedRoom],
+  );
 
   useEffect(() => {
     fetchRooms();
@@ -116,10 +131,10 @@ const Calendar = () => {
     setRunAnimation(false);
     let newDate;
     switch (stateCalendar.layout) {
-      case 'week':
+      case "week":
         newDate = addWeeks(stateCalendar.selectedDate, 1);
         break;
-      case 'day':
+      case "day":
         newDate = addDays(stateCalendar.selectedDate, 1);
         break;
       default:
@@ -133,10 +148,10 @@ const Calendar = () => {
     setRunAnimation(false);
     let newDate;
     switch (stateCalendar.layout) {
-      case 'week':
+      case "week":
         newDate = subWeeks(stateCalendar.selectedDate, 1);
         break;
-      case 'day':
+      case "day":
         newDate = subDays(stateCalendar.selectedDate, 1);
         break;
       default:
@@ -147,7 +162,10 @@ const Calendar = () => {
   };
 
   const openCalendar = () => {
-    setStateCalendar({ ...stateCalendar, miniCalendarOpen: !stateCalendar.miniCalendarOpen });
+    setStateCalendar({
+      ...stateCalendar,
+      miniCalendarOpen: !stateCalendar.miniCalendarOpen,
+    });
   };
 
   const handleLayoutChange = ({ value }) => {
@@ -161,8 +179,15 @@ const Calendar = () => {
 
   const refreshCalendar = async (needNotification = true) => {
     if (getScheduleData && selectedRoom) {
-      const { appointments: refreshedAppointments, calendarBlocks: refreshedCalendarBlocks } = await getScheduleData(selectedRoom);
-      if (refreshedAppointments && refreshedCalendarBlocks && needNotification) {
+      const {
+        appointments: refreshedAppointments,
+        calendarBlocks: refreshedCalendarBlocks,
+      } = await getScheduleData(selectedRoom);
+      if (
+        refreshedAppointments &&
+        refreshedCalendarBlocks &&
+        needNotification
+      ) {
         notification(refreshCalendarSuccess);
       }
     }
@@ -170,14 +195,17 @@ const Calendar = () => {
 
   return (
     <LoggedLayout>
-      <StyledCalendarContextProvider value={{ stateCalendar, setStateCalendar }}>
+      <StyledCalendarContextProvider
+        value={{ stateCalendar, setStateCalendar }}
+      >
         <ThemeProvider theme={theme}>
           <div
             className={classes.root}
             style={{
-              overflow: 'hidden',
-              borderRadius: '4px',
-              boxShadow: '0px 1px 8px rgb(154 154 154 / 9%), 0px 1px 8px rgb(124 124 124 / 6%)'
+              overflow: "hidden",
+              borderRadius: "4px",
+              boxShadow:
+                "0px 1px 8px rgb(154 154 154 / 9%), 0px 1px 8px rgb(124 124 124 / 6%)",
             }}
           >
             <CssBaseline />
@@ -199,21 +227,33 @@ const Calendar = () => {
               handleRoomChange={handleRoomChange}
             />
 
-            <div style={{ display: 'flex', width: '100%', position: 'relative' }}>
+            <div
+              style={{ display: "flex", width: "100%", position: "relative" }}
+            >
               <LoadingOverlay isLoading={isLoading} />
-              {
-                stateCalendar.layout !== 'list' && (
-                  <CalendarDrawer
-                    selectedDate={stateCalendar.selectedDate}
-                    next={next}
-                    previous={previous}
-                    open={drawerOpen}
-                    layout={'month'}
+              {stateCalendar.layout !== "list" && (
+                <CalendarDrawer
+                  selectedDate={stateCalendar.selectedDate}
+                  next={next}
+                  previous={previous}
+                  open={drawerOpen}
+                  layout={"month"}
                   miniCalendarOpen={stateCalendar.miniCalendarOpen}
                 />
               )}
-              <CalendarMain isLoading={isLoading} open={drawerOpen} runAnimation={runAnimation} setGetScheduleData={setGetScheduleData} fetchRooms={fetchRooms} selectedRoom={selectedRoom} />
-              <CalendarEventDialog isLoading={isLoading} refreshCalendar={refreshCalendar} roomsList={rooms} />
+              <CalendarMain
+                isLoading={isLoading}
+                open={drawerOpen}
+                runAnimation={runAnimation}
+                setGetScheduleData={setGetScheduleData}
+                fetchRooms={fetchRooms}
+                selectedRoom={selectedRoom}
+              />
+              <CalendarEventDialog
+                isLoading={isLoading}
+                refreshCalendar={refreshCalendar}
+                roomsList={rooms}
+              />
               <BlockDialog isLoading={isLoading} />
             </div>
           </div>

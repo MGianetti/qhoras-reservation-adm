@@ -1,5 +1,7 @@
+import { ptBR } from "date-fns/locale";
 import { useSelector } from "react-redux";
 import { useTheme } from "@mui/material/styles";
+import { format, differenceInMinutes } from "date-fns";
 import { useCallback, useEffect, useState, useMemo, useContext } from "react";
 import {
   Paper,
@@ -19,7 +21,10 @@ import DeleteRoomModal from "../../../modals/deleteRoomModal/deleteRoomModal";
 import { RenderRowCalendarList } from "./renderRowCalendarList/renderRowCalendarList";
 import appointmentService from "../../../../../domains/appointment/appointmentService";
 
-import { columnsCalendarList, rowsCalendarList } from "./calendar-list.constants";
+import {
+  columnsCalendarList,
+  rowsCalendarList,
+} from "./calendar-list.constants";
 
 const CalendarLayoutList = () => {
   const theme = useTheme();
@@ -41,7 +46,7 @@ const CalendarLayoutList = () => {
   const { stateCalendar, setStateCalendar } = useContext(CalendarContext);
 
   const [order, setOrder] = useState("desc");
-  const [orderBy, setOrderBy] = useState("date");
+  const [orderBy, setOrderBy] = useState("createdAt");
 
   const fetchCalendarList = useCallback(async () => {
     if (businessId) {
@@ -54,8 +59,8 @@ const CalendarLayoutList = () => {
           orderBy === "member"
             ? "client.name"
             : orderBy === "room"
-            ? "room.name"
-            : orderBy,
+              ? "room.name"
+              : orderBy,
       });
     }
   }, [businessId, page, rowsPerPage, order, orderBy]);
@@ -80,13 +85,33 @@ const CalendarLayoutList = () => {
   }, [pageAppointments]);
 
   const handleClickLine = (rowData) => {
-    console.log(rowData);
+    const eventBeginDate = new Date(rowData.begin);
+    const eventEndDate = new Date(rowData.end);
+    const beginTime = format(eventBeginDate, "H:mm", { locale: ptBR });
+    const endTime = format(eventEndDate, "H:mm", { locale: ptBR });
+
+    const room = rowData?.room?.id;
+    const client = rowData?.client?.id;
+    const clientName = rowData?.client?.name;
+    const status = rowData?.status;
+    const description = rowData?.description;
+    const isPaid = rowData?.isPaid;
+
     setStateCalendar({
       ...stateCalendar,
       openDialog: true,
-      
+      eventBeginDate: eventBeginDate,
+      eventBeginTime: { value: beginTime, label: beginTime },
+      eventEndDate: eventEndDate,
+      eventEndTime: { value: endTime, label: endTime },
+      room,
+      client,
+      clientName,
+      status,
+      isPaid,
+      description,
+      eventID: (rowData && rowData.id) || 0,
     });
-    // Implemente a ação desejada ao clicar na linha
   };
 
   const handleOpenDeleteModal = (e, rowValues) => {
@@ -103,7 +128,7 @@ const CalendarLayoutList = () => {
 
   const formattedRows = useMemo(
     () => rowsCalendarList(reservations),
-    [reservations]
+    [reservations],
   );
 
   return (
@@ -149,7 +174,9 @@ const CalendarLayoutList = () => {
                   key={rowIndex}
                   row={row}
                   columns={columnsCalendarList}
-                  handleClickLine={() => handleClickLine(reservations[rowIndex])}
+                  handleClickLine={() =>
+                    handleClickLine(reservations[rowIndex])
+                  }
                   unformattedData={reservations}
                   rowIndex={rowIndex}
                 />

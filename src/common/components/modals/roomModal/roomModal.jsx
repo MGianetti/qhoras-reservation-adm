@@ -25,7 +25,11 @@ import Checkbox from "@mui/material/Checkbox";
 import moneyMask from "../../../masks/moneyMask";
 import roomService from "../../../../domains/room/roomService";
 
-import { formatRoomPayload, validationSchema, days } from "./roomModal.constants";
+import {
+  formatRoomPayload,
+  validationSchema,
+  days,
+} from "./roomModal.constants";
 import dayjs from "dayjs";
 import { useMemo } from "react";
 
@@ -34,24 +38,30 @@ const RoomModal = ({ open, setOpen, valuesLine }) => {
     businessId: undefined,
   };
 
-  const initialValues = useMemo(() => ({
-    name: valuesLine?.name || "",
-    price: valuesLine ? moneyMask(valuesLine.price) : "R$ 0,00",
-    status: valuesLine?.status ?? true,
-    capacity: valuesLine?.capacity || 0,
-    agendaConfigurations: valuesLine?.agendaConfigurations
-      ? valuesLine.agendaConfigurations.map((config) => ({
-          day: config.day,
-          isActive: config.isActive,
-          // Store as dayjs objects for later formatting
-          timeRange: [dayjs(`1970-01-01T${config.startTime}`), dayjs(`1970-01-01T${config.endTime}`)],
-        }))
-      : days.map((day) => ({
-          day: day.value,
-          isActive: false,
-          timeRange: [dayjs('1970-01-01T08:00'), dayjs('1970-01-01T18:00')],
-        })),
-  }), [valuesLine]);
+  const initialValues = useMemo(
+    () => ({
+      name: valuesLine?.name || "",
+      price: valuesLine ? moneyMask(valuesLine.price) : "R$ 0,00",
+      status: valuesLine?.status ?? true,
+      capacity: valuesLine?.capacity || 0,
+      agendaConfigurations: valuesLine?.agendaConfigurations
+        ? valuesLine.agendaConfigurations.map((config) => ({
+            day: config.day,
+            isActive: config.isActive,
+            // Store as dayjs objects for later formatting
+            timeRange: [
+              dayjs(`1970-01-01T${config.startTime}`),
+              dayjs(`1970-01-01T${config.endTime}`),
+            ],
+          }))
+        : days.map((day) => ({
+            day: day.value,
+            isActive: false,
+            timeRange: [dayjs("1970-01-01T08:00"), dayjs("1970-01-01T18:00")],
+          })),
+    }),
+    [valuesLine],
+  );
 
   const formik = useFormik({
     initialValues: initialValues,
@@ -70,28 +80,30 @@ const RoomModal = ({ open, setOpen, valuesLine }) => {
     const formattedValues = {
       ...values,
       price: parseInt(values.price.replace(/\D/g, ""), 10) || 0,
-      agendaConfigurations: (values.agendaConfigurations || []).map((config, index) => ({
-        day: days[index].value,
-        startTime: config.timeRange?.[0]
-          ? config.timeRange[0].format("HH:mm")
-          : "08:00",
-        endTime: config.timeRange?.[1]
-          ? config.timeRange[1].format("HH:mm")
-          : "18:00",
-        isActive: config.isActive ?? false,
-      })),
+      agendaConfigurations: (values.agendaConfigurations || []).map(
+        (config, index) => ({
+          day: days[index].value,
+          startTime: config.timeRange?.[0]
+            ? config.timeRange[0].format("HH:mm")
+            : "08:00",
+          endTime: config.timeRange?.[1]
+            ? config.timeRange[1].format("HH:mm")
+            : "18:00",
+          isActive: config.isActive ?? false,
+        }),
+      ),
     };
-  
+
     try {
       if (valuesLine) {
         await roomService.update(
           valuesLine.id,
-          formatRoomPayload(formattedValues)
+          formatRoomPayload(formattedValues),
         );
       } else {
         await roomService.create(
           businessId,
-          formatRoomPayload(formattedValues)
+          formatRoomPayload(formattedValues),
         );
       }
       formik.resetForm();
@@ -100,8 +112,6 @@ const RoomModal = ({ open, setOpen, valuesLine }) => {
       console.error("Error submitting room data:", error);
     }
   };
-  
-  
 
   return (
     <Dialog maxWidth="sm" fullWidth={true} open={open} onClose={handleClose}>
@@ -215,7 +225,6 @@ const RoomModal = ({ open, setOpen, valuesLine }) => {
 };
 
 const OperationGroup = ({ formik }) => {
-
   return (
     <div>
       <FormLabel component="legend" sx={{ mb: 2 }}>
@@ -239,7 +248,7 @@ const OperationGroup = ({ formik }) => {
                     onChange={(e) =>
                       formik.setFieldValue(
                         `agendaConfigurations.${index}.isActive`,
-                        e.target.checked
+                        e.target.checked,
                       )
                     }
                   />
@@ -273,7 +282,7 @@ const OperationGroup = ({ formik }) => {
                   onChange={(newValue) =>
                     formik.setFieldValue(
                       `agendaConfigurations.${index}.timeRange`,
-                      newValue
+                      newValue,
                     )
                   }
                 />

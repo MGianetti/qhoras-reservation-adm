@@ -1,55 +1,61 @@
-import { useContext, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, format } from 'date-fns';
-import { styled } from '@mui/material/styles';
+import { useContext, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  startOfWeek,
+  endOfWeek,
+  startOfMonth,
+  endOfMonth,
+  format,
+} from "date-fns";
+import { styled } from "@mui/material/styles";
 
-import appointmentService from '../../../domains/appointment/appointmentService';
-import CalendarLayoutDayWeek from './calendar-layout-day-week';
-import CalendarLayoutMonth from './calendar-layout-month';
-import getSelectedWeekIndex from './common/getSelectedWeekIndex';
-import { CalendarContext } from './context/calendar-context';
-import getWeekDays from './common/getWeekDays';
-import userService from '../../../domains/user/userService';
-import calendarBlocksService from '../../../domains/calendarBlocks/calendarBlocksService';
-import CalendarLayoutList from './calendarLayout/CalendarLayoutList/calendar-list';
+import appointmentService from "../../../domains/appointment/appointmentService";
+import CalendarLayoutDayWeek from "./calendar-layout-day-week";
+import CalendarLayoutMonth from "./calendar-layout-month";
+import getSelectedWeekIndex from "./common/getSelectedWeekIndex";
+import { CalendarContext } from "./context/calendar-context";
+import getWeekDays from "./common/getWeekDays";
+import userService from "../../../domains/user/userService";
+import calendarBlocksService from "../../../domains/calendarBlocks/calendarBlocksService";
+import CalendarLayoutList from "./calendarLayout/CalendarLayoutList/calendar-list";
 
-const PREFIX = 'CalendarMain';
+const PREFIX = "CalendarMain";
 
 const classes = {
   drawerHeader: `${PREFIX}-drawerHeader`,
   content: `${PREFIX}-content`,
-  contentShift: `${PREFIX}-contentShift`
+  contentShift: `${PREFIX}-contentShift`,
 };
 
 const drawerWidth = 260;
 
-const Root = styled('div')(({ theme }) => ({
+const Root = styled("div")(({ theme }) => ({
   [`& .${classes.drawerHeader}`]: {
-    display: 'flex',
-    alignItems: 'center',
+    display: "flex",
+    alignItems: "center",
     ...theme.mixins.toolbar,
-    justifyContent: 'flex-center'
+    justifyContent: "flex-center",
   },
 
   [`&.${classes.content}`]: {
     flexGrow: 1,
-    transition: theme.transitions.create('margin', {
+    transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
+      duration: theme.transitions.duration.leavingScreen,
     }),
     marginLeft: -drawerWidth,
-    height: '100%',
-    width: '100%',
-    minWidth: 1000
+    height: "100%",
+    width: "100%",
+    minWidth: 1000,
   },
 
   [`&.${classes.contentShift}`]: {
-    transition: theme.transitions.create('margin', {
+    transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen
+      duration: theme.transitions.duration.enteringScreen,
     }),
-    marginLeft: 0
-  }
+    marginLeft: 0,
+  },
 }));
 
 function CalendarMain(props) {
@@ -58,22 +64,28 @@ function CalendarMain(props) {
   const businessId = useSelector((state) => state.auth.user?.businessId);
   const { data: allRooms } = useSelector((state) => state.rooms) || [];
   const { runAnimation, setGetScheduleData, fetchRooms, selectedRoom } = props;
-  const [, setStartEndDates] = useState({ start: selectedDate, end: selectedDate });
+  const [, setStartEndDates] = useState({
+    start: selectedDate,
+    end: selectedDate,
+  });
 
   const getScheduleData = async (id) => {
     let start, end;
 
     if (!id) return;
 
-    if (layout === 'day') {
-      start = format(selectedDate, 'yyyy-MM-dd 00:00:00');
-      end = format(selectedDate, 'yyyy-MM-dd 23:59:59');
-    } else if (layout === 'week') {
-      start = format(startOfWeek(selectedDate), 'yyyy-MM-dd 00:00:00');
-      end = format(endOfWeek(selectedDate), 'yyyy-MM-dd 23:59:59');
-    } else if (layout === 'month') {
-      start = format(startOfWeek(startOfMonth(selectedDate)), 'yyyy-MM-dd 00:00:00');
-      end = format(endOfWeek(endOfMonth(selectedDate)), 'yyyy-MM-dd 23:59:59');
+    if (layout === "day") {
+      start = format(selectedDate, "yyyy-MM-dd 00:00:00");
+      end = format(selectedDate, "yyyy-MM-dd 23:59:59");
+    } else if (layout === "week") {
+      start = format(startOfWeek(selectedDate), "yyyy-MM-dd 00:00:00");
+      end = format(endOfWeek(selectedDate), "yyyy-MM-dd 23:59:59");
+    } else if (layout === "month") {
+      start = format(
+        startOfWeek(startOfMonth(selectedDate)),
+        "yyyy-MM-dd 00:00:00",
+      );
+      end = format(endOfWeek(endOfMonth(selectedDate)), "yyyy-MM-dd 23:59:59");
     }
 
     setStartEndDates({ start, end });
@@ -84,7 +96,7 @@ function CalendarMain(props) {
   };
 
   useEffect(() => {
-    if (allRooms.length > 0 && layout !== 'list') {
+    if (allRooms.length > 0 && layout !== "list") {
       getScheduleData(selectedRoom);
       setGetScheduleData(() => getScheduleData);
     }
@@ -95,14 +107,18 @@ function CalendarMain(props) {
   const selectedWeek = weeks[selectedWeekIndex];
 
   return (
-    <Root style={{ width: '100%' }}>
-      {layout === 'month' && <CalendarLayoutMonth weeks={weeks} runAnimation={runAnimation} />}
-      {(layout === 'week' || layout === 'day') && (
-        <CalendarLayoutDayWeek selectedWeekIndex={selectedWeekIndex} selectedWeek={selectedWeek} selectedRoom={selectedRoom} />
+    <Root style={{ width: "100%" }}>
+      {layout === "month" && (
+        <CalendarLayoutMonth weeks={weeks} runAnimation={runAnimation} />
       )}
-      {layout === 'list' && (
-        <CalendarLayoutList />
+      {(layout === "week" || layout === "day") && (
+        <CalendarLayoutDayWeek
+          selectedWeekIndex={selectedWeekIndex}
+          selectedWeek={selectedWeek}
+          selectedRoom={selectedRoom}
+        />
       )}
+      {layout === "list" && <CalendarLayoutList />}
     </Root>
   );
 }

@@ -25,7 +25,7 @@ export const getInitialAndEndTime = (userData, weekDay) => {
 
   return { initialTime: "07:00", endTime: "18:00" };
   const block = userData.filter(
-    (block) => block?.day === weekDay.toUpperCase()
+    (block) => block?.day === weekDay.toUpperCase(),
   );
   return { initialTime: block[0].startTime, endTime: block[0].endTime };
 };
@@ -40,7 +40,7 @@ export const validationSchema = (
   roomsList,
   eventID,
   calendarBlocks,
-  weekDay
+  weekDay,
 ) =>
   Yup.object({
     roomTF: Yup.string().required("Escolha uma sala."),
@@ -50,7 +50,7 @@ export const validationSchema = (
       "Escolha um cliente.",
       function (value) {
         return value?.value;
-      }
+      },
     ),
     statusTF: Yup.string().required("Escolha um status."),
     beginDate: Yup.string().required("Escolha uma data."),
@@ -66,64 +66,98 @@ export const validationSchema = (
             return true;
           }
           const formattedDate = dayjs(beginDate).format("YYYY-MM-DD");
-          const startDateTime = dayjs(`${formattedDate} ${initialTime}`, "YYYY-MM-DD HH:mm");
-          const endDateTime = dayjs(`${formattedDate} ${endTime.value}`, "YYYY-MM-DD HH:mm");
+          const startDateTime = dayjs(
+            `${formattedDate} ${initialTime}`,
+            "YYYY-MM-DD HH:mm",
+          );
+          const endDateTime = dayjs(
+            `${formattedDate} ${endTime.value}`,
+            "YYYY-MM-DD HH:mm",
+          );
 
           const appointmentsFiltered = appointments.filter(
             (appointment) =>
-              appointment.id !== eventID && appointment.roomId === roomTF
+              appointment.id !== eventID && appointment.roomId === roomTF,
           );
           for (let appointment of appointmentsFiltered) {
-            const appointmentStart = dayjs(appointment.begin, "YYYY-MM-DD HH:mm:ss").add(1, "minute");
-            const appointmentEnd = dayjs(appointment.end, "YYYY-MM-DD HH:mm:ss").subtract(1, "minute");
+            const appointmentStart = dayjs(
+              appointment.begin,
+              "YYYY-MM-DD HH:mm:ss",
+            ).add(1, "minute");
+            const appointmentEnd = dayjs(
+              appointment.end,
+              "YYYY-MM-DD HH:mm:ss",
+            ).subtract(1, "minute");
             if (
-              (startDateTime.isBefore(appointmentEnd) && startDateTime.isAfter(appointmentStart)) ||
-              (endDateTime.isBefore(appointmentEnd) && endDateTime.isAfter(appointmentStart)) ||
-              (appointmentStart.isBefore(endDateTime) && appointmentEnd.isAfter(startDateTime))
+              (startDateTime.isBefore(appointmentEnd) &&
+                startDateTime.isAfter(appointmentStart)) ||
+              (endDateTime.isBefore(appointmentEnd) &&
+                endDateTime.isAfter(appointmentStart)) ||
+              (appointmentStart.isBefore(endDateTime) &&
+                appointmentEnd.isAfter(startDateTime))
             ) {
               return this.createError({
-                message: "O horário selecionado conflita com outro agendamento na mesma sala.",
+                message:
+                  "O horário selecionado conflita com outro agendamento na mesma sala.",
               });
             }
           }
 
           const room = roomsList.find((r) => r.id === roomTF);
-          if (room && room.agendaConfigurations && room.agendaConfigurations.length) {
+          if (
+            room &&
+            room.agendaConfigurations &&
+            room.agendaConfigurations.length
+          ) {
             const portugueseToEnglish = {
               "segunda-feira": "MONDAY",
               "terça-feira": "TUESDAY",
               "quarta-feira": "WEDNESDAY",
               "quinta-feira": "THURSDAY",
               "sexta-feira": "FRIDAY",
-              "sábado": "SATURDAY",
-              "domingo": "SUNDAY"
+              sábado: "SATURDAY",
+              domingo: "SUNDAY",
             };
-            const englishWeekDay = portugueseToEnglish[weekDay.toLowerCase()] || weekDay.toUpperCase();
+            const englishWeekDay =
+              portugueseToEnglish[weekDay.toLowerCase()] ||
+              weekDay.toUpperCase();
             const agendaForDay = room.agendaConfigurations.find(
-              (ac) => ac.day === englishWeekDay && ac.isActive
+              (ac) => ac.day === englishWeekDay && ac.isActive,
             );
             if (!agendaForDay) {
               return this.createError({
-                message: "Não há configuração de horário para a sala no dia selecionado.",
+                message:
+                  "Não há configuração de horário para a sala no dia selecionado.",
               });
             }
-            const agendaStart = dayjs(`${formattedDate} ${agendaForDay.startTime}`, "YYYY-MM-DD HH:mm");
-            const agendaEnd = dayjs(`${formattedDate} ${agendaForDay.endTime}`, "YYYY-MM-DD HH:mm");
-            if (startDateTime.isBefore(agendaStart) || endDateTime.isAfter(agendaEnd)) {
+            const agendaStart = dayjs(
+              `${formattedDate} ${agendaForDay.startTime}`,
+              "YYYY-MM-DD HH:mm",
+            );
+            const agendaEnd = dayjs(
+              `${formattedDate} ${agendaForDay.endTime}`,
+              "YYYY-MM-DD HH:mm",
+            );
+            if (
+              startDateTime.isBefore(agendaStart) ||
+              endDateTime.isAfter(agendaEnd)
+            ) {
               return this.createError({
-                message: "O horário selecionado está fora do horário de funcionamento da sala para o dia.",
+                message:
+                  "O horário selecionado está fora do horário de funcionamento da sala para o dia.",
               });
             }
           }
 
           const calendarBlocksFiltered = calendarBlocks.filter(
-            (block) => block.deletedAt === null
+            (block) => block.deletedAt === null,
           );
           for (let block of calendarBlocksFiltered) {
             const blockStart = dayjs(block.initialTime).add(1, "minute");
             const blockEnd = dayjs(block.endTime).subtract(1, "minute");
             if (
-              (startDateTime.isBefore(blockEnd) && endDateTime.isAfter(blockStart)) ||
+              (startDateTime.isBefore(blockEnd) &&
+                endDateTime.isAfter(blockStart)) ||
               startDateTime.isSame(blockStart) ||
               endDateTime.isSame(blockEnd)
             ) {
@@ -133,7 +167,7 @@ export const validationSchema = (
             }
           }
           return true;
-        }
+        },
       ),
     endTime: Yup.object()
       .required("Horário final é obrigatório")
@@ -143,7 +177,7 @@ export const validationSchema = (
         function (value) {
           const { beginTime } = this.parent;
           return timeToMinutes(value.value) >= timeToMinutes(beginTime.value);
-        }
+        },
       ),
   });
 

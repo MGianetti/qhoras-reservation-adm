@@ -89,10 +89,10 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
     data: [],
   };
   const { data: appointments } = useSelector(
-    (state) => state?.appointments
+    (state) => state?.appointments,
   ) || { data: [] };
   const { data: calendarBlocks } = useSelector(
-    (state) => state?.calendarBlocks
+    (state) => state?.calendarBlocks,
   ) || { data: [] };
   const scheduleState = useSelector((state) => state?.user.schedule) || [];
 
@@ -101,8 +101,8 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
   const initialOptionTime = timeOptions(
     getInitialAndEndTime(
       scheduleState,
-      format(new Date(eventBeginDate), "eeee", { locale: ptBR })
-    )
+      format(new Date(eventBeginDate), "eeee", { locale: ptBR }),
+    ),
   );
 
   const formik = useFormik({
@@ -125,7 +125,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
       roomsList,
       eventID,
       calendarBlocks,
-      format(new Date(eventBeginDate), "eeee", { locale: ptBR })
+      format(new Date(eventBeginDate), "eeee", { locale: ptBR }),
     ),
     onSubmit: (values) => handleSubmit(values),
   });
@@ -171,7 +171,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
         beginTimeValue = "0" + beginTimeValue;
       }
       const validBeginTime = initialOptionTime.find(
-        (time) => time.value === beginTimeValue
+        (time) => time.value === beginTimeValue,
       );
       const correctedBeginTime = validBeginTime || initialOptionTime[0];
 
@@ -184,7 +184,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
         endTimeValue = "0" + endTimeValue;
       }
       const validEndTime = initialOptionTime.find(
-        (time) => time.value === endTimeValue
+        (time) => time.value === endTimeValue,
       );
       let correctedEndTime = validEndTime || initialOptionTime[0];
 
@@ -194,7 +194,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
       ) {
         const nextValidOption = initialOptionTime.find(
           (time) =>
-            timeToMinutes(time.value) > timeToMinutes(correctedBeginTime.value)
+            timeToMinutes(time.value) > timeToMinutes(correctedBeginTime.value),
         );
         correctedEndTime = nextValidOption || correctedEndTime;
       }
@@ -224,12 +224,12 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
       dateAndTime: format(
         formatDateTime(values.beginDate, values.beginTime.value),
         "yyyy/MM/dd HH:mm:ss",
-        { locale: ptBR }
+        { locale: ptBR },
       ),
       endTime: format(
         formatDateTime(values.beginDate, values.endTime.value),
         "yyyy/MM/dd HH:mm:ss",
-        { locale: ptBR }
+        { locale: ptBR },
       ),
       isPaid: values.isPaidTF,
       appointmentStatus: values.statusTF,
@@ -400,56 +400,54 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
               </Grid>
             </Grid>
 
-
-{/* Campo de Descrição */}
-<FormControl fullWidth>
-  <InputLabel htmlFor="descriptionTF" size="small">
-    Descrição
-  </InputLabel>
-  <OutlinedInput
-    id="descriptionTF"
-    name="descriptionTF"
-    label="Descrição"
-    size="small"
-    multiline
-    rows={3}
-    value={formik.values.descriptionTF}
-    onChange={formik.handleChange}
-    error={
-      formik.touched.descriptionTF &&
-      Boolean(formik.errors.descriptionTF)
-    }
-    endAdornment={
-      <InputAdornment position="end">
-        <StyledTooltip
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "#1976D2",
-            borderRadius: "50%",
-            padding: 2
-          }}
-          placement="bottom-start"
-          title={`Quantas pessoas irão participar? Faz parte de algum ministério? Sobre o que será o evento?`}
-        >
-          <IconButton>
-            <FaRegCircleQuestion
-              fontSize={16}
-              style={{ color: "#ffffff", cursor: "pointer" }}
-            />
-          </IconButton>
-        </StyledTooltip>
-      </InputAdornment>
-    }
-  />
-  {formik.touched.descriptionTF && formik.errors.descriptionTF && (
-    <Typography variant="caption" color="error">
-      {formik.errors.descriptionTF}
-    </Typography>
-  )}
-</FormControl>
-
+            {/* Campo de Descrição */}
+            <FormControl fullWidth>
+              <InputLabel htmlFor="descriptionTF" size="small">
+                Descrição
+              </InputLabel>
+              <OutlinedInput
+                id="descriptionTF"
+                name="descriptionTF"
+                label="Descrição"
+                size="small"
+                multiline
+                rows={3}
+                value={formik.values.descriptionTF}
+                onChange={formik.handleChange}
+                error={
+                  formik.touched.descriptionTF &&
+                  Boolean(formik.errors.descriptionTF)
+                }
+                endAdornment={
+                  <InputAdornment position="end">
+                    <StyledTooltip
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        backgroundColor: "#1976D2",
+                        borderRadius: "50%",
+                        padding: 2,
+                      }}
+                      placement="bottom-start"
+                      title={`Quantas pessoas irão participar? Faz parte de algum ministério? Sobre o que será o evento?`}
+                    >
+                      <IconButton>
+                        <FaRegCircleQuestion
+                          fontSize={16}
+                          style={{ color: "#ffffff", cursor: "pointer" }}
+                        />
+                      </IconButton>
+                    </StyledTooltip>
+                  </InputAdornment>
+                }
+              />
+              {formik.touched.descriptionTF && formik.errors.descriptionTF && (
+                <Typography variant="caption" color="error">
+                  {formik.errors.descriptionTF}
+                </Typography>
+              )}
+            </FormControl>
 
             {/* Data do agendamento e exibição do horário */}
             <FormControl
@@ -522,8 +520,8 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                             scheduleState,
                             format(new Date(formik.values.beginDate), "eeee", {
                               locale: ptBR,
-                            })
-                          )
+                            }),
+                          ),
                         )}
                         originalValue={{
                           value: formik.values.beginTime.value,
@@ -539,8 +537,8 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                             scheduleState,
                             format(new Date(formik.values.beginDate), "eeee", {
                               locale: ptBR,
-                            })
-                          )
+                            }),
+                          ),
                         )}
                         originalValue={{
                           value: formik.values.endTime.value,
