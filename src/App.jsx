@@ -10,8 +10,12 @@ import Configurations from "./pages/configurations/configurations";
 import ResetPassword from "./pages/resetPassword/resetPassword";
 import ProtectedRoute from "./infraestructure/components/ProtectedRoute";
 import Updates from "./pages/updates/updates";
+import { useSelector } from "react-redux";
+
 
 function App() {
+  const role = useSelector((state) => state?.auth?.user?.role);
+  
   return (
     <Router>
       <Routes>
@@ -23,7 +27,9 @@ function App() {
         <Route path="/salas" element={<Rooms />} />
         <Route path="/updates" element={<Updates />} />
         {/* <Route path="/financeiro" element={<Financeiro />} /> */}
-        <Route path="/configuracoes" element={<Configurations />} />
+        {role === "ADMINISTRATOR" && (
+          <Route path="/configuracoes" element={<Configurations />} />
+        )}
         <Route element={<ProtectedRoute />}></Route>
       </Routes>
     </Router>

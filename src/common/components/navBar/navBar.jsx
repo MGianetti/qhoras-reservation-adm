@@ -1,4 +1,5 @@
 import { IoMenu } from "react-icons/io5";
+import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
@@ -45,6 +46,8 @@ function NavBar() {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [currentPage, setCurrentPage] = useState("");
   const [anchorEl, setAnchorEl] = useState(null);
+
+  const role = useSelector((state) => state?.auth?.user?.role);
 
   const location = useLocation();
   const theme = useTheme();
@@ -159,16 +162,23 @@ function NavBar() {
                   display: { xs: "block", md: "none" },
                 }}
               >
-                {pages.map((page) => (
-                  <MenuItem
-                    key={page.label}
-                    onClick={() => handlePageChange(page)}
-                  >
-                    <Typography textAlign="center" textTransform={"uppercase"}>
-                      {page.label}
-                    </Typography>
-                  </MenuItem>
-                ))}
+                {pages.map((page) => {
+                  if (role != "ADMINISTRATOR" && page.label === "configurações")
+                    return null;
+                  return (
+                    <MenuItem
+                      key={page.label}
+                      onClick={() => handlePageChange(page)}
+                    >
+                      <Typography
+                        textAlign="center"
+                        textTransform={"uppercase"}
+                      >
+                        {page.label}
+                      </Typography>
+                    </MenuItem>
+                  );
+                })}
               </Menu>
             </Box>
             <Typography
@@ -192,31 +202,38 @@ function NavBar() {
                 display: { xs: "none", md: "flex" },
               }}
             >
-              {pages.map((page) => (
-                <Button
-                  key={page.label}
-                  onClick={() => handlePageChange(page)}
-                  sx={{
-                    borderRadius: 0,
-                    py: 3,
-                    px: 4,
-                    color: "white",
-                    display: "block",
-                    textTransform: "uppercase",
-                    fontSize: 13,
-                    bgcolor:
-                      currentPage === page.path ? "secondary.main" : "inherit",
-                    "&:hover": {
+              {pages.map((page) => {
+                if (role != "ADMINISTRATOR" && page.label === "configurações")
+                  return null;
+
+                return (
+                  <Button
+                    key={page.label}
+                    onClick={() => handlePageChange(page)}
+                    sx={{
+                      borderRadius: 0,
+                      py: 3,
+                      px: 4,
+                      color: "white",
+                      display: "block",
+                      textTransform: "uppercase",
+                      fontSize: 13,
                       bgcolor:
                         currentPage === page.path
                           ? "secondary.main"
                           : "inherit",
-                    },
-                  }}
-                >
-                  {page.label}
-                </Button>
-              ))}
+                      "&:hover": {
+                        bgcolor:
+                          currentPage === page.path
+                            ? "secondary.main"
+                            : "inherit",
+                      },
+                    }}
+                  >
+                    {page.label}
+                  </Button>
+                );
+              })}
             </Box>
 
             <Box sx={{ flexGrow: 0 }}>
