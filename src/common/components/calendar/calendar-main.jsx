@@ -1,3 +1,4 @@
+import { useLocation } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -9,15 +10,15 @@ import {
 } from "date-fns";
 import { styled } from "@mui/material/styles";
 
-import appointmentService from "../../../domains/appointment/appointmentService";
-import CalendarLayoutDayWeek from "./calendar-layout-day-week";
-import CalendarLayoutMonth from "./calendar-layout-month";
-import getSelectedWeekIndex from "./common/getSelectedWeekIndex";
-import { CalendarContext } from "./context/calendar-context";
 import getWeekDays from "./common/getWeekDays";
-import userService from "../../../domains/user/userService";
-import calendarBlocksService from "../../../domains/calendarBlocks/calendarBlocksService";
+import CalendarLayoutMonth from "./calendar-layout-month";
+import { CalendarContext } from "./context/calendar-context";
+import CalendarLayoutDayWeek from "./calendar-layout-day-week";
+import getSelectedWeekIndex from "./common/getSelectedWeekIndex";
+import appointmentService from "../../../domains/appointment/appointmentService";
 import CalendarLayoutList from "./calendarLayout/CalendarLayoutList/calendar-list";
+import calendarBlocksService from "../../../domains/calendarBlocks/calendarBlocksService";
+import calendarReadOnlyService from "../../../domains/calendarReadOnly/calendarReadOnlyService";
 
 const PREFIX = "CalendarMain";
 
@@ -68,12 +69,18 @@ function CalendarMain(props) {
     start: selectedDate,
     end: selectedDate,
   });
+  const location = useLocation();
+
+  const searchParams = new URLSearchParams(location.search);
+  const businessIdQueryParams = searchParams.get("business");
 
   const getScheduleData = async (id) => {
+    
+
     let start, end;
-
+    
     if (!id) return;
-
+    
     if (layout === "day") {
       start = format(selectedDate, "yyyy-MM-dd 00:00:00");
       end = format(selectedDate, "yyyy-MM-dd 23:59:59");
@@ -87,9 +94,14 @@ function CalendarMain(props) {
       );
       end = format(endOfWeek(endOfMonth(selectedDate)), "yyyy-MM-dd 23:59:59");
     }
-
+    
     setStartEndDates({ start, end });
-    const appointments = await appointmentService.read(id, start, end);
+
+    let appointments
+
+    if (businessId) appointments = await appointmentService.read(id, start, end);
+    if (businessIdQueryParams) appointments = await calendarReadOnlyService.readAppointments(id, start, end);
+    
     const calendarBlocks = await calendarBlocksService.read(id, start, end);
     fetchRooms(id);
     return { appointments, calendarBlocks };
@@ -100,7 +112,7 @@ function CalendarMain(props) {
       getScheduleData(selectedRoom);
       setGetScheduleData(() => getScheduleData);
     }
-  }, [selectedDate, layout, businessId, allRooms]);
+  }, [selectedDate, layout, businessId, allRooms, businessIdQueryParams]);
 
   const weeks = getWeekDays(selectedDate, 7);
   const selectedWeekIndex = getSelectedWeekIndex(selectedDate, weeks, 0);

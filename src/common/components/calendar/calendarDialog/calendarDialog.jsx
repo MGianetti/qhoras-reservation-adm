@@ -36,7 +36,6 @@ import {
 
 import TimeSelect from "../time-select";
 import Datepicker from "../date-picker";
-import roomService from "../../../../domains/room/roomService";
 import clientService from "../../../../domains/client/clientService";
 import appointmentService from "../../../../domains/appointment/appointmentService";
 

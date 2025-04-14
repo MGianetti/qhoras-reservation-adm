@@ -9,6 +9,7 @@ import { CalendarContext } from "./context/calendar-context";
 import CalendarHeader from "./calendar-header";
 import CalendarBoard from "./calendar-board";
 import CalendarBoardDragLayer from "./calendar-board-drag-layer";
+import { useLocation } from "react-router-dom";
 
 function CalendarLayoutDayWeek(props) {
   const theme = useTheme();
@@ -16,6 +17,7 @@ function CalendarLayoutDayWeek(props) {
 
   const { stateCalendar } = useContext(CalendarContext);
   const { selectedDate, layout, defaultEventDuration } = stateCalendar;
+  const location = useLocation();
 
   return useMemo(() => {
     return (
@@ -135,7 +137,9 @@ function CalendarLayoutDayWeek(props) {
                 selectedWeek={selectedWeek}
                 selectedRoom={selectedRoom}
               />
-              <CalendarBoardDragLayer />
+              {location.pathname !== "/calendario" && (
+                <CalendarBoardDragLayer />
+              )}
             </DndProvider>
           </Grid>
         </Grid>

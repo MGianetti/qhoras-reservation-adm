@@ -12,11 +12,12 @@ import {
   TableRow,
 } from "@mui/material";
 
+import { clear } from "../../../domains/room/roomSlice";
 import roomService from "../../../domains/room/roomService";
 import { RenderRowRoomsList } from "./renderRowRoomsList/renderRowRoomsList";
-import { columns } from "./roomList.constants";
 import DeleteRoomModal from "../../../common/components/modals/deleteRoomModal/deleteRoomModal";
-import { clear } from "../../../domains/room/roomSlice";
+
+import { columns } from "./roomList.constants";
 
 const RoomList = (props) => {
   const { handleOpenModal, setValuesLine, search } = props;

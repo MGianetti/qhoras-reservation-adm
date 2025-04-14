@@ -1,6 +1,18 @@
-import { useContext, useMemo } from "react";
+import clsx from "clsx";
 import format from "date-fns/format";
 import { ptBR } from "date-fns/locale";
+import { FaList } from "react-icons/fa6";
+import { useContext, useMemo } from "react";
+import { styled } from "@mui/material/styles";
+import { useLocation } from "react-router-dom";
+import { createStyles, makeStyles } from "@mui/styles";
+import { IoIosArrowBack, IoIosArrowForward, IoMdRefresh } from "react-icons/io";
+import {
+  MdOutlineViewModule,
+  MdOutlineViewWeek,
+  MdOutlineToday,
+  MdOutlineCalendarViewDay,
+} from "react-icons/md";
 import {
   Toolbar,
   Tooltip,
@@ -10,27 +22,11 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  Box,
 } from "@mui/material";
 
-import {
-  MdOutlineViewModule,
-  MdOutlineViewWeek,
-  MdOutlineToday,
-  MdOutlineCalendarViewDay,
-  MdOutlineFormatListBulleted,
-} from "react-icons/md";
-import { FaList } from "react-icons/fa6";
-
-import { IoIosArrowBack, IoIosArrowForward, IoMdRefresh } from "react-icons/io";
-
-import { styled } from "@mui/material/styles";
-
-import { CalendarContext } from "./context/calendar-context";
 import getWeekDays from "./common/getWeekDays";
+import { CalendarContext } from "./context/calendar-context";
 import getSelectedWeekIndex from "./common/getSelectedWeekIndex";
-import { createStyles, makeStyles } from "@mui/styles";
-import clsx from "clsx";
 
 const PREFIX = "CalendarToolbar";
 const drawerWidth = 260;
@@ -115,7 +111,7 @@ const useStyles = makeStyles((theme) =>
         display: "none !important",
       },
     },
-  }),
+  })
 );
 
 function CalendarToolbar(props) {
@@ -135,6 +131,8 @@ function CalendarToolbar(props) {
   const { stateCalendar, setStateCalendar } = useContext(CalendarContext);
   const { selectedDate, layout } = stateCalendar;
   const classes = useStyles();
+
+  const location = useLocation();
 
   return useMemo(() => {
     const setLayout = ({ option }) => {
@@ -266,53 +264,57 @@ function CalendarToolbar(props) {
             </h3>
           )}
 
-          <StyledTooltip title="Visualização Diária">
-            <IconButton
-              disabled={isLoading}
-              color="inherit"
-              aria-label="Visualização Diária"
-              onClick={() => setLayout({ option: "day" })}
-              edge="start"
-            >
-              <MdOutlineCalendarViewDay />
-            </IconButton>
-          </StyledTooltip>
+          {location.pathname !== "/calendario" && (
+          <div>
+            <StyledTooltip title="Visualização Diária">
+              <IconButton
+                disabled={isLoading}
+                color="inherit"
+                aria-label="Visualização Diária"
+                onClick={() => setLayout({ option: "day" })}
+                edge="start"
+              >
+                <MdOutlineCalendarViewDay />
+              </IconButton>
+            </StyledTooltip>
 
-          <StyledTooltip title="Visualização Semanal">
-            <IconButton
-              disabled={isLoading}
-              color="inherit"
-              aria-label="Visualização Semanal"
-              onClick={() => setLayout({ option: "week" })}
-              edge="start"
-            >
-              <MdOutlineViewWeek />
-            </IconButton>
-          </StyledTooltip>
+            <StyledTooltip title="Visualização Semanal">
+              <IconButton
+                disabled={isLoading}
+                color="inherit"
+                aria-label="Visualização Semanal"
+                onClick={() => setLayout({ option: "week" })}
+                edge="start"
+              >
+                <MdOutlineViewWeek />
+              </IconButton>
+            </StyledTooltip>
 
-          <StyledTooltip title="Visualização Mensal">
-            <IconButton
-              disabled={isLoading}
-              color="inherit"
-              aria-label="Visualização Mensal"
-              onClick={() => setLayout({ option: "month" })}
-              edge="start"
-            >
-              <MdOutlineViewModule />
-            </IconButton>
-          </StyledTooltip>
+            <StyledTooltip title="Visualização Mensal">
+              <IconButton
+                disabled={isLoading}
+                color="inherit"
+                aria-label="Visualização Mensal"
+                onClick={() => setLayout({ option: "month" })}
+                edge="start"
+              >
+                <MdOutlineViewModule />
+              </IconButton>
+            </StyledTooltip>
 
-          <StyledTooltip title="Visualização Por Lista">
-            <IconButton
-              disabled={isLoading}
-              color="inherit"
-              aria-label="Visualização Por Lista"
-              onClick={() => setLayout({ option: "list" })}
-              edge="start"
-            >
-              <FaList size={16} style={{ marginLeft: "3px" }} />
-            </IconButton>
-          </StyledTooltip>
+            <StyledTooltip title="Visualização Por Lista">
+              <IconButton
+                disabled={isLoading}
+                color="inherit"
+                aria-label="Visualização Por Lista"
+                onClick={() => setLayout({ option: "list" })}
+                edge="start"
+              >
+                <FaList size={16} style={{ marginLeft: "3px" }} />
+              </IconButton>
+            </StyledTooltip>
+          </div>
+          )}
         </Toolbar>
 
         {/* Seletor de Sala para telas pequenas */}
