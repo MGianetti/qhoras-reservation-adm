@@ -36,10 +36,10 @@ const { read, create, update, remove, readCalendarList } = {
       const response = await appointmentRepository.readAllAppointments(
         roomId,
         start,
-        end,
+        end
       );
       const responseSorted = response.sort((a, b) =>
-        dayjs(b.createdAt).diff(dayjs(a.createdAt)),
+        dayjs(b.createdAt).diff(dayjs(a.createdAt))
       );
       dispatch(readItem({ data: responseSorted, roomId }));
       return responseSorted;
@@ -54,18 +54,35 @@ const { read, create, update, remove, readCalendarList } = {
     try {
       const response = await appointmentRepository.createAppointment(
         businessId,
-        newAppointmentPayload,
+        newAppointmentPayload
       );
-      const actualRoomId = store.getState().appointments.roomId;
-      if (response.roomId == actualRoomId) {
-        dispatch(addItem(response));
+
+      // se o payload tiver recurrenceType e != 'NONE', sabemos que é recorrência
+      const isRecurrence =
+        newAppointmentPayload.recurrenceType &&
+        newAppointmentPayload.recurrenceType !== "NONE";
+
+      if (!isRecurrence) {
+        const actualRoomId = store.getState().appointments.roomId;
+        if (response.roomId === actualRoomId) {
+          dispatch(addItem(response));
+        }
       }
+
+      const { roomId } = newAppointmentPayload;
+      const startOfMonth = dayjs().startOf("month").format();
+      const endOfMonth = dayjs().endOf("month").format();
+
+      if (roomId) {
+        await read(roomId, startOfMonth, endOfMonth);
+      }
+
+      // Se chegou até aqui sem erro, agora sim dispara toast de sucesso
       notification(createdAppointmentSuccess);
+
+      return true;
     } catch (error) {
-      if (
-        error?.response?.data?.error ===
-        "The selected time conflicts with another schedule"
-      ) {
+      if (error?.response?.data?.error === "The selected time conflicts ...") {
         notification(appointmentConflict);
       } else {
         notification(createdAppointmentFail);
@@ -81,12 +98,34 @@ const { read, create, update, remove, readCalendarList } = {
       const response = await appointmentRepository.updateAppointment(
         appointmentId,
         updateAppointmentPayload,
+        updateAppointmentPayload.scope // 'single' ou 'series'
       );
-      const actualRoomId = store.getState().appointments.roomId;
-      if (response.roomId == actualRoomId) {
-        dispatch(updateItem(response));
+
+      // Se scope = 'series', recarregamos a agenda em vez de um updateItem único:
+      const isSeries = updateAppointmentPayload.scope === "series";
+
+      if (!isSeries) {
+        // Lógica atual para single occurrence
+        const actualRoomId = store.getState().appointments.roomId;
+        if (response.roomId === actualRoomId) {
+          dispatch(updateItem(response));
+        }
       }
+
+      // Notification
       notification(updatedAppointmentSuccess);
+
+      // Recarrega período atual, garantindo que o store fique em sincronia
+      const { roomId } = updateAppointmentPayload;
+      if (roomId) {
+        // supomos que você tenha um day/week/month
+        // Exemplo simplificado (1 semana a partir de hoje)
+        const startOfWeek = dayjs().startOf("week").format();
+        const endOfWeek = dayjs().endOf("week").format();
+        await read(roomId, startOfWeek, endOfWeek);
+      }
+
+      return true;
     } catch (error) {
       if (
         error?.response?.data?.error ===
@@ -106,12 +145,25 @@ const { read, create, update, remove, readCalendarList } = {
       dispatch(setLoading(false));
     }
   },
-  remove: async (appointmentId) => {
+  remove: async (appointmentId, scope = "single", roomIdForReload) => {
     dispatch(setLoading(true));
     try {
-      await appointmentRepository.deleteAppointment(appointmentId);
-      dispatch(removeItem({ id: appointmentId }));
+      await appointmentRepository.deleteAppointment(appointmentId, scope);
+
+      if (scope === "single") {
+        dispatch(removeItem({ id: appointmentId }));
+      }
       notification(deletedAppointmentSuccess);
+
+      // Se for exclusão de uma série, recarregamos a agenda do período atual
+      if (scope === "series" && roomIdForReload) {
+        // Exemplo: recarregar a semana
+        const startOfWeek = dayjs().startOf("week").format();
+        const endOfWeek = dayjs().endOf("week").format();
+        await read(roomIdForReload, startOfWeek, endOfWeek);
+      }
+
+      return true;
     } catch (error) {
       notification(deletedAppointmentFail);
       return false;
@@ -132,7 +184,7 @@ const { read, create, update, remove, readCalendarList } = {
         page,
         limit,
         order,
-        orderBy,
+        orderBy
       );
       const { reservations, ...pageData } = response;
 
