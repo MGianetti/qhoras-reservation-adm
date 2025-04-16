@@ -7,6 +7,10 @@ import { styled } from "@mui/material/styles";
 import { useLocation } from "react-router-dom";
 import { createStyles, makeStyles } from "@mui/styles";
 import { IoIosArrowBack, IoIosArrowForward, IoMdRefresh } from "react-icons/io";
+import { PiExportBold } from "react-icons/pi";
+
+
+
 import {
   MdOutlineViewModule,
   MdOutlineViewWeek,
@@ -126,6 +130,7 @@ function CalendarToolbar(props) {
     selectedRoom,
     rooms,
     handleRoomChange,
+    setOpenExportDialog,
   } = props;
 
   const { stateCalendar, setStateCalendar } = useContext(CalendarContext);
@@ -266,6 +271,18 @@ function CalendarToolbar(props) {
 
           {location.pathname !== "/calendario" && (
           <div>
+            <StyledTooltip title="Exportar dados" style={{ marginRight: "30px" }}>
+              <IconButton
+                disabled={isLoading}
+                color="inherit"
+                aria-label="Exportar dados"
+                onClick={() => setOpenExportDialog(true)}
+                edge="start"
+              >
+                <PiExportBold size={20} style={{ marginLeft: "3px" }} />
+              </IconButton>
+            </StyledTooltip>
+            
             <StyledTooltip title="Visualização Diária">
               <IconButton
                 disabled={isLoading}

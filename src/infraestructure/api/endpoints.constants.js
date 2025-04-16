@@ -23,6 +23,7 @@ const endpoints = {
     roomsPublic: "calendarPublic/rooms/${BUSINESS-ID}",
     calendarListPublic: "calendarPublic/calendar-list/${BUSINESS-ID}",
     appointmentsPublic: "calendarPublic/appointments/${ROOM-ID}",
+    exportReservations: "appointments/export-reservations/${BUSINESS-ID}",
   },
 
   create: {

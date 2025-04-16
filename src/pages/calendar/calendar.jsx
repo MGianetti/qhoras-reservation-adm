@@ -12,18 +12,19 @@ import {
   subDays,
 } from "date-fns";
 
+import roomsService from "../../domains/room/roomService";
+import notification from "../../common/utils/notification";
 import LoggedLayout from "../../common/layouts/loggedLayout/loggedLayout";
 import CalendarMain from "../../common/components/calendar/calendar-main";
 import CalendarDrawer from "../../common/components/calendar/calendar-drawer";
 import CalendarToolbar from "../../common/components/calendar/calendar-toolbar";
-import { CalendarContext } from "../../common/components/calendar/context/calendar-context";
-import CalendarEventDialog from "../../common/components/calendar/calendarDialog/calendarDialog";
-import notification from "../../common/utils/notification";
-
-import { refreshCalendarSuccess } from "../../domains/appointment/appointment.constants";
 import LoadingOverlay from "../../common/components/LoadingOverlay/LoadingOverlay";
 import BlockDialog from "../../common/components/calendar/calendarDialog/blockDialog";
-import roomsService from "../../domains/room/roomService";
+import { CalendarContext } from "../../common/components/calendar/context/calendar-context";
+import CalendarEventDialog from "../../common/components/calendar/calendarDialog/calendarDialog";
+import ExportReservationDialog from "../../common/components/calendar/calendarDialog/exportDialog/exportDialog";
+
+import { refreshCalendarSuccess } from "../../domains/appointment/appointment.constants";
 
 const PREFIX = "Calendar";
 
@@ -80,6 +81,7 @@ const Calendar = () => {
   const [runAnimation, setRunAnimation] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [getScheduleData, setGetScheduleData] = useState(null);
+  const [openExportDialog, setOpenExportDialog] = useState(false);
 
   // Estados para as salas
   const [rooms, setRooms] = useState([]);
@@ -225,6 +227,7 @@ const Calendar = () => {
               selectedRoom={selectedRoom}
               rooms={rooms}
               handleRoomChange={handleRoomChange}
+              setOpenExportDialog={setOpenExportDialog}
             />
 
             <div
@@ -253,6 +256,10 @@ const Calendar = () => {
                 isLoading={isLoading}
                 refreshCalendar={refreshCalendar}
                 roomsList={rooms}
+              />
+              <ExportReservationDialog
+                open={openExportDialog}
+                setOpenExportDialog={setOpenExportDialog}
               />
               <BlockDialog isLoading={isLoading} />
             </div>
