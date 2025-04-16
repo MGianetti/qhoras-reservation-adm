@@ -121,7 +121,7 @@ function ExportReservationDialog({ open, setOpenExportDialog }) {
                 variant="contained"
                 disabled={!formik.isValid || !formik.values.initialDate || !formik.values.endDate}
               >
-                Filtrar
+                Exportar
               </Button>
             </Box>
           </Box>
