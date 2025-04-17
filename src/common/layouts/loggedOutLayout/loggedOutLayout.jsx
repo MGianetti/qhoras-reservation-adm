@@ -5,6 +5,7 @@ import Typography from "@mui/material/Typography";
 import { CardMedia, useTheme } from "@mui/material";
 
 import logoWhite from "src/assets/images/logo-white.png";
+import { useSelector } from "react-redux";
 
 const loggedOutLayout = ({ children }) => {
   const theme = useTheme();
@@ -12,6 +13,10 @@ const loggedOutLayout = ({ children }) => {
   const isLocalhost = window.location.href.includes("localhost");
   const primaryColor = theme.palette.primary.main;
   const complementaryColor = `#${(0xffffff ^ parseInt(primaryColor.slice(1), 16)).toString(16).padStart(6, "0")}`;
+
+  const business = useSelector((state) => state?.auth);
+
+  console.log(business);
 
   return (
     <div
@@ -25,9 +30,12 @@ const loggedOutLayout = ({ children }) => {
           <Toolbar disableGutters>
             <CardMedia
               component="img"
-              sx={{ display: { xs: "none", md: "flex" }, mr: 8, width: 100 }}
+              sx={{ display: { xs: "none", md: "flex" }, mr: 8, width: 100, cursor: "pointer" }}
               image={logoWhite}
               alt="Logo QHoras"
+              onClick={() => {
+                window.open("https://www.qhoras.com/", "_blank");
+              }}
             />
             {isLocalhost && (
               <Typography
@@ -58,6 +66,9 @@ const loggedOutLayout = ({ children }) => {
                 sx={{ mr: 2, display: { xs: "flex", md: "none" }, width: 100 }}
                 image={logoWhite}
                 alt="Logo QHoras"
+                onClick={() => {
+                  window.open("https://www.qhoras.com/", "_blank");
+                }}
               />
             </Typography>
           </Toolbar>
