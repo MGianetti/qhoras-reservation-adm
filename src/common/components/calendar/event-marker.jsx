@@ -7,6 +7,7 @@ import { ptBR } from "date-fns/locale";
 
 import { CalendarContext } from "./context/calendar-context";
 import clsx from "clsx";
+import { useLocation } from "react-router-dom";
 
 const PREFIX = "EventMark";
 
@@ -181,6 +182,8 @@ function EventMark(props) {
   const { stateCalendar, setStateCalendar } = useContext(CalendarContext);
   const { defaultEventDuration } = stateCalendar;
 
+  const location = useLocation();
+
   const { calendarEvent, len, sq } = props;
 
   // Quando for um bloco, não haverá cliente/serviço, então usamos dados padrão.
@@ -245,7 +248,7 @@ function EventMark(props) {
   const isBlocked = calendarEvent.status === "BLOCKED";
   const [{ isDragging }, drag, preview] = useDrag({
     type: "box",
-    canDrag: !isBlocked,
+    canDrag: !isBlocked && location.pathname !== "/calendario",
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
@@ -265,6 +268,7 @@ function EventMark(props) {
   };
 
   const onDragStart = (eventEl, calendarEvent) => {
+    if (location.pathname === "/calendario") return;
     // Caso seja bloco, desabilite arrastar se assim desejar
     if (calendarEvent.status === "BLOCKED") return;
 
@@ -315,7 +319,9 @@ function EventMark(props) {
         }
       }}
     >
-      <div className={`${classes.beginEnd} event-marker`}>
+      <div className={`${classes.beginEnd} event-marker`} style={{
+        cursor: location.pathname === "/calendario" ? "default" : "pointer",
+      }}>
         <span>{titleFormatted}</span>
         <span>{roomFormatted}</span>
         <span>{descriptionFormatted}</span>

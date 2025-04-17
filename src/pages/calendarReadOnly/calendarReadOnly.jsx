@@ -1,30 +1,21 @@
-import { useEffect, useState, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { styled } from "@mui/material/styles";
-import { CssBaseline, useTheme } from "@mui/material";
+import { addWeeks, subWeeks } from "date-fns";
 import { ThemeProvider } from "@mui/material/styles";
-import {
-  addMonths,
-  addWeeks,
-  addDays,
-  subMonths,
-  subWeeks,
-  subDays,
-} from "date-fns";
+import { CssBaseline, useTheme } from "@mui/material";
+import { useEffect, useState, useCallback } from "react";
 
 import roomsService from "../../domains/room/roomService";
 import notification from "../../common/utils/notification";
-import LoggedLayout from "../../common/layouts/loggedLayout/loggedLayout";
 import CalendarMain from "../../common/components/calendar/calendar-main";
-import CalendarDrawer from "../../common/components/calendar/calendar-drawer";
 import CalendarToolbar from "../../common/components/calendar/calendar-toolbar";
 import LoadingOverlay from "../../common/components/LoadingOverlay/LoadingOverlay";
-import BlockDialog from "../../common/components/calendar/calendarDialog/blockDialog";
+import LoggedOutLayout from "../../common/layouts/loggedOutLayout/loggedOutLayout";
 import { CalendarContext } from "../../common/components/calendar/context/calendar-context";
-import CalendarEventDialog from "../../common/components/calendar/calendarDialog/calendarDialog";
-import ExportReservationDialog from "../../common/components/calendar/calendarDialog/exportDialog/exportDialog";
 
 import { refreshCalendarSuccess } from "../../domains/appointment/appointment.constants";
+import { useLocation } from "react-router-dom";
+import calendarReadOnlyService from "../../domains/calendarReadOnly/calendarReadOnlyService";
 
 const PREFIX = "Calendar";
 
@@ -42,23 +33,25 @@ const StyledCalendarContextProvider = styled(CalendarContext.Provider)(() => ({
   },
 }));
 
-const defaultEventDuration = 60; // em minutos
 const initialSelectedDate = new Date();
-const initialLayout = "day";
+const initialLayout = "week";
 const initialOpenDialog = false;
 const initialOpenViewDialog = false;
 
-const Calendar = () => {
+const CalendarReadOnly = () => {
   const theme = useTheme();
   const isLoading = useSelector((state) => state.appointments.isLoading);
-  const auth = useSelector((state) => state.auth);
+
+  const location = useLocation();
+
+  const searchParams = new URLSearchParams(location.search);
+  const businessId = searchParams.get("business");
 
   const [stateCalendar, setStateCalendar] = useState({
     actions: "",
     allowFullScreen: false,
     calendarEvent: {},
     content: "",
-    defaultEventDuration,
     draggingEventId: -1,
     eventBeginDate: null,
     eventBeginTime: { value: null, label: null },
@@ -81,19 +74,16 @@ const Calendar = () => {
   const [runAnimation, setRunAnimation] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [getScheduleData, setGetScheduleData] = useState(null);
-  const [openExportDialog, setOpenExportDialog] = useState(false);
 
-  // Estados para as salas
   const [rooms, setRooms] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState(null);
 
-  // Função para buscar as salas
   const fetchRooms = useCallback(
     async (room = selectedRoom) => {
       try {
-        if (!auth?.user?.businessId) return;
-        const data = await roomsService.read({
-          businessId: auth.user.businessId,
+        if (!businessId) return;
+        const data = await calendarReadOnlyService.readRoom({
+          businessId: businessId,
           page: 1,
           limit: 1000,
         });
@@ -105,14 +95,13 @@ const Calendar = () => {
         console.error("Failed to fetch rooms:", error);
       }
     },
-    [auth?.user?.businessId, selectedRoom],
+    [businessId, selectedRoom]
   );
 
   useEffect(() => {
     fetchRooms();
   }, [fetchRooms]);
 
-  // Atualiza o calendário sempre que a sala selecionada mudar
   useEffect(() => {
     if (selectedRoom) {
       refreshCalendar();
@@ -121,9 +110,6 @@ const Calendar = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedRoom]);
 
-  const handleDrawerOpen = () => setDrawerOpen(true);
-  const handleDrawerClose = () => setDrawerOpen(false);
-
   const goToToday = () => {
     setRunAnimation(false);
     setStateCalendar({ ...stateCalendar, selectedDate: new Date() });
@@ -131,35 +117,14 @@ const Calendar = () => {
 
   const next = () => {
     setRunAnimation(false);
-    let newDate;
-    switch (stateCalendar.layout) {
-      case "week":
-        newDate = addWeeks(stateCalendar.selectedDate, 1);
-        break;
-      case "day":
-        newDate = addDays(stateCalendar.selectedDate, 1);
-        break;
-      default:
-        newDate = addMonths(stateCalendar.selectedDate, 1);
-        break;
-    }
+    let newDate = addWeeks(stateCalendar.selectedDate, 1);
+
     setStateCalendar({ ...stateCalendar, selectedDate: newDate });
   };
 
   const previous = () => {
     setRunAnimation(false);
-    let newDate;
-    switch (stateCalendar.layout) {
-      case "week":
-        newDate = subWeeks(stateCalendar.selectedDate, 1);
-        break;
-      case "day":
-        newDate = subDays(stateCalendar.selectedDate, 1);
-        break;
-      default:
-        newDate = subMonths(stateCalendar.selectedDate, 1);
-        break;
-    }
+    let newDate = subWeeks(stateCalendar.selectedDate, 1);
     setStateCalendar({ ...stateCalendar, selectedDate: newDate });
   };
 
@@ -168,10 +133,6 @@ const Calendar = () => {
       ...stateCalendar,
       miniCalendarOpen: !stateCalendar.miniCalendarOpen,
     });
-  };
-
-  const handleLayoutChange = ({ value }) => {
-    setStateCalendar({ ...stateCalendar, layout: value });
   };
 
   const handleRoomChange = (event) => {
@@ -196,7 +157,7 @@ const Calendar = () => {
   };
 
   return (
-    <LoggedLayout>
+    <LoggedOutLayout>
       <StyledCalendarContextProvider
         value={{ stateCalendar, setStateCalendar }}
       >
@@ -218,32 +179,20 @@ const Calendar = () => {
               next={next}
               previous={previous}
               open={drawerOpen}
-              handleDrawerOpen={handleDrawerOpen}
-              handleDrawerClose={handleDrawerClose}
-              handleLayoutChange={handleLayoutChange}
+              handleDrawerOpen={() => setDrawerOpen(true)}
+              handleDrawerClose={() => setDrawerOpen(false)}
+              handleLayoutChange={() => setStateCalendar({ ...stateCalendar, layout: value })}
               refreshCalendar={refreshCalendar}
               isLoading={isLoading}
-              // Propriedades para seleção de sala
               selectedRoom={selectedRoom}
               rooms={rooms}
               handleRoomChange={handleRoomChange}
-              setOpenExportDialog={setOpenExportDialog}
             />
 
             <div
               style={{ display: "flex", width: "100%", position: "relative" }}
             >
               <LoadingOverlay isLoading={isLoading} />
-              {stateCalendar.layout !== "list" && (
-                <CalendarDrawer
-                  selectedDate={stateCalendar.selectedDate}
-                  next={next}
-                  previous={previous}
-                  open={drawerOpen}
-                  layout={"month"}
-                  miniCalendarOpen={stateCalendar.miniCalendarOpen}
-                />
-              )}
               <CalendarMain
                 isLoading={isLoading}
                 open={drawerOpen}
@@ -252,22 +201,12 @@ const Calendar = () => {
                 fetchRooms={fetchRooms}
                 selectedRoom={selectedRoom}
               />
-              <CalendarEventDialog
-                isLoading={isLoading}
-                refreshCalendar={refreshCalendar}
-                roomsList={rooms}
-              />
-              <ExportReservationDialog
-                open={openExportDialog}
-                setOpenExportDialog={setOpenExportDialog}
-              />
-              <BlockDialog isLoading={isLoading} />
             </div>
           </div>
         </ThemeProvider>
       </StyledCalendarContextProvider>
-    </LoggedLayout>
+    </LoggedOutLayout>
   );
 };
 
-export default Calendar;
+export default CalendarReadOnly;

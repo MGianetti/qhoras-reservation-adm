@@ -8,6 +8,7 @@ import { Box, Grid } from "@mui/material";
 import { CalendarContext } from "./context/calendar-context";
 import { createStyles, makeStyles } from "@mui/styles";
 import { grey, blue } from "@mui/material/colors";
+import { useLocation } from "react-router-dom";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -147,6 +148,8 @@ function CalendarHeader(props) {
   const { selectedDate, layout, defaultEventDuration } = stateCalendar;
   const [currentTimePosition, setCurrentTimePosition] = useState();
 
+  const location = useLocation();
+
   useEffect(() => {
     setInterval(() => {
       const now = new Date();
@@ -164,6 +167,7 @@ function CalendarHeader(props) {
     );
 
     const handleDayClick = (event) => {
+      if (location.pathname === "/calendario") return;
       const gridParent = event.target.parentElement.parentElement;
       setStateCalendar({
         ...stateCalendar,

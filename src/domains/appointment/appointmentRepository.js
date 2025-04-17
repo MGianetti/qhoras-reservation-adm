@@ -42,11 +42,25 @@ const readCalendarList = (businessId, page, limit, order, orderBy) =>
       { page, limit, order, orderBy }
     )
   );
-
+  const exportReservations = (businessId, start, end) =>
+    makeRequest(() =>
+      apiService.get(
+        endpoints.read.exportReservations.replace("${BUSINESS-ID}", businessId),
+        {
+          params: { start, end },
+          responseType: "arraybuffer",
+          headers: {
+            Accept: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          }
+        }
+      )
+    );
+    
 export default {
   readAllAppointments,
   createAppointment,
   updateAppointment,
   deleteAppointment,
   readCalendarList,
+  exportReservations,
 };

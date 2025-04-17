@@ -25,6 +25,8 @@ import {
   columnsCalendarList,
   rowsCalendarList,
 } from "./calendar-list.constants";
+import { useLocation } from "react-router-dom";
+import calendarReadOnlyService from "../../../../../domains/calendarReadOnly/calendarReadOnlyService";
 
 const CalendarLayoutList = () => {
   const theme = useTheme();
@@ -48,10 +50,30 @@ const CalendarLayoutList = () => {
   const [order, setOrder] = useState("desc");
   const [orderBy, setOrderBy] = useState("createdAt");
 
+  const location = useLocation();
+
+  const searchParams = new URLSearchParams(location.search);
+  const businessIdQueryParams = searchParams.get("business");
+
   const fetchCalendarList = useCallback(async () => {
     if (businessId) {
       await appointmentService.readCalendarList({
         businessId,
+        page: page + 1,
+        limit: rowsPerPage,
+        order,
+        orderBy:
+          orderBy === "member"
+            ? "client.name"
+            : orderBy === "room"
+              ? "room.name"
+              : orderBy,
+      });
+    }
+
+    if (businessIdQueryParams) {
+      await calendarReadOnlyService.readCalendarList({
+        businessId: businessIdQueryParams,
         page: page + 1,
         limit: rowsPerPage,
         order,
