@@ -133,9 +133,9 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
         endDate: v.endDate ? formatDateTime(v.endDate, "23:59:59") : null,
         timesToRepeat: v.endDate ? null : Number(v.timesToRepeat) || null,
         dayOfWeek: v.dayOfWeek,
-        ordinalOfWeek: v.ordinalOfWeek,
-        dayOfMonth: v.dayOfMonth,
-        monthOfYear: v.monthOfYear,
+        ordinalOfWeek: v.ordinalOfWeek ? Number(v.ordinalOfWeek) : null,
+        dayOfMonth: v.dayOfMonth ? Number(v.dayOfMonth) : null,
+        monthOfYear: v.monthOfYear ? Number(v.monthOfYear) : null,
       });
     }
 
@@ -615,7 +615,28 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
               </Grid>
             </FormControl>
 
-            {/* Seletor de tipo de recorrência */}
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} sm={4}>
+                <FormControl
+                  className={clsx(classes.formControl, classes.formControlFlex)}
+                  style={{
+                    display: "flex",
+                    justifyContent: "flex-start",
+                    paddingTop: 0,
+                  }}
+                >
+                  <Typography>Pago</Typography>
+                  <Switch
+                    checked={formik.values.isPaidTF}
+                    onChange={(e) =>
+                      formik.setFieldValue("isPaidTF", e.target.checked)
+                    }
+                    color="primary"
+                  />
+                </FormControl>
+              </Grid>
+            </Grid>
+
             <FormControl fullWidth>
               <InputLabel htmlFor="recurrenceType" size="small">
                 Recorrência
@@ -644,67 +665,49 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
             </FormControl>
 
             {formik.values.recurrenceType !== "NONE" && (
-              <Box sx={{ mt: 2, mb: 2 }}>
+              <Box sx={{ gap: "16px" }} display="flex" flexDirection="column">
                 <Typography variant="subtitle1" gutterBottom>
-                  Recorrência
+                  Configuração da recorrência
                 </Typography>
 
-                {/* endDate OR timesToRepeat ------------------------------------------ */}
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
-                    <Datepicker
-                      label="Data final"
-                      dateFormat="dd/MM/yyyy"
-                      originalValue={formik.values.endDate}
-                      onChange={(d) => formik.setFieldValue("endDate", d)}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      label="Repetir (vezes)"
-                      type="number"
-                      value={formik.values.timesToRepeat}
-                      onChange={(e) =>
-                        formik.setFieldValue("timesToRepeat", e.target.value)
-                      }
-                      disabled={Boolean(formik.values.endDate)} // mutually–exclusive
-                    />
-                  </Grid>
-                </Grid>
-
-                {/* type‑specific fields ---------------------------------------------- */}
-                {
-                  formik.values.recurrenceType === "DAILY" &&
-                    null /* nothing extra */
-                }
+                <Datepicker
+                  label="Data final da recorrência"
+                  placeholderText="Selecione até quando repetir"
+                  dateFormat="dd/MM/yyyy"
+                  position="top"
+                  originalValue={formik.values.endDate}
+                  onChange={(d) => formik.setFieldValue("endDate", d)}
+                />
 
                 {formik.values.recurrenceType === "WEEKLY" && (
-                  <Select
-                    fullWidth
-                    name="dayOfWeek"
-                    value={formik.values.dayOfWeek}
-                    onChange={formik.handleChange}
-                  >
-                    {[
-                      "MONDAY",
-                      "TUESDAY",
-                      "WEDNESDAY",
-                      "THURSDAY",
-                      "FRIDAY",
-                      "SATURDAY",
-                      "SUNDAY",
-                    ].map((d) => (
-                      <MenuItem key={d} value={d}>
-                        {d[0] + d.slice(1).toLowerCase()}
-                      </MenuItem>
-                    ))}
-                  </Select>
+                  <>
+                    <InputLabel htmlFor="weeklyRecurrence" size="small">
+                      Dis da semana
+                    </InputLabel>
+                    <Select
+                      id="weeklyRecurrence"
+                      size="small"
+                      fullWidth
+                      name="dayOfWeek"
+                      value={formik.values.dayOfWeek}
+                      onChange={formik.handleChange}
+                      placeholderText="Selecione o dia da semana"
+                    >
+                      <MenuItem value="MONDAY">Segunda-feira</MenuItem>
+                      <MenuItem value="TUESDAY">Terça-feira</MenuItem>
+                      <MenuItem value="WEDNESDAY">Quarta-feira</MenuItem>
+                      <MenuItem value="THURSDAY">Quinta-feira</MenuItem>
+                      <MenuItem value="FRIDAY">Sexta-feira</MenuItem>
+                      <MenuItem value="SATURDAY">Sábado</MenuItem>
+                      <MenuItem value="SUNDAY">Domingo</MenuItem>
+                    </Select>
+                  </>
                 )}
 
                 {formik.values.recurrenceType === "WEEKDAYS" && (
                   <Typography variant="body2" color="textSecondary">
-                    Repetirá automaticamente de <b>segunda</b> a <b>sexta</b>.
+                    Repetirá automaticamente de <b>segunda</b> a{" "}
+                    <b>sexta-feira</b>.
                   </Typography>
                 )}
 
@@ -712,6 +715,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                   <TextField
                     fullWidth
                     label="Dia do mês"
+                    placeholder="Ex: 8"
                     type="number"
                     value={formik.values.dayOfMonth || ""}
                     onChange={(e) =>
@@ -725,7 +729,8 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                     <Grid item xs={6}>
                       <TextField
                         fullWidth
-                        label="Ordem (1‑5)"
+                        label="Semana do mês"
+                        placeholder="Ex: 1 a 5"
                         type="number"
                         value={formik.values.ordinalOfWeek}
                         onChange={(e) =>
@@ -740,19 +745,16 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                         value={formik.values.dayOfWeek}
                         onChange={formik.handleChange}
                       >
-                        {[
-                          "MONDAY",
-                          "TUESDAY",
-                          "WEDNESDAY",
-                          "THURSDAY",
-                          "FRIDAY",
-                          "SATURDAY",
-                          "SUNDAY",
-                        ].map((d) => (
-                          <MenuItem key={d} value={d}>
-                            {d[0] + d.slice(1).toLowerCase()}
-                          </MenuItem>
-                        ))}
+                        <MenuItem disabled value="">
+                          Selecione o dia da semana
+                        </MenuItem>
+                        <MenuItem value="MONDAY">Segunda-feira</MenuItem>
+                        <MenuItem value="TUESDAY">Terça-feira</MenuItem>
+                        <MenuItem value="WEDNESDAY">Quarta-feira</MenuItem>
+                        <MenuItem value="THURSDAY">Quinta-feira</MenuItem>
+                        <MenuItem value="FRIDAY">Sexta-feira</MenuItem>
+                        <MenuItem value="SATURDAY">Sábado</MenuItem>
+                        <MenuItem value="SUNDAY">Domingo</MenuItem>
                       </Select>
                     </Grid>
                   </Grid>
@@ -763,7 +765,8 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                     <Grid item xs={6}>
                       <TextField
                         fullWidth
-                        label="Dia"
+                        label="Dia do mês"
+                        placeholder="Ex: 25"
                         type="number"
                         value={formik.values.dayOfMonth || ""}
                         onChange={(e) =>
@@ -774,7 +777,8 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                     <Grid item xs={6}>
                       <TextField
                         fullWidth
-                        label="Mês"
+                        label="Mês do ano"
+                        placeholder="Ex: 12 para Dezembro"
                         type="number"
                         value={formik.values.monthOfYear || ""}
                         onChange={(e) =>
@@ -790,7 +794,8 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                     <Grid item xs={4}>
                       <TextField
                         fullWidth
-                        label="Ordem"
+                        label="Semana do mês"
+                        placeholder="1 a 5"
                         type="number"
                         value={formik.values.ordinalOfWeek}
                         onChange={(e) =>
@@ -804,26 +809,25 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                         name="dayOfWeek"
                         value={formik.values.dayOfWeek}
                         onChange={formik.handleChange}
+                        displayEmpty
                       >
-                        {[
-                          "MONDAY",
-                          "TUESDAY",
-                          "WEDNESDAY",
-                          "THURSDAY",
-                          "FRIDAY",
-                          "SATURDAY",
-                          "SUNDAY",
-                        ].map((d) => (
-                          <MenuItem key={d} value={d}>
-                            {d[0] + d.slice(1).toLowerCase()}
-                          </MenuItem>
-                        ))}
+                        <MenuItem disabled value="">
+                          Dia da semana
+                        </MenuItem>
+                        <MenuItem value="MONDAY">Segunda-feira</MenuItem>
+                        <MenuItem value="TUESDAY">Terça-feira</MenuItem>
+                        <MenuItem value="WEDNESDAY">Quarta-feira</MenuItem>
+                        <MenuItem value="THURSDAY">Quinta-feira</MenuItem>
+                        <MenuItem value="FRIDAY">Sexta-feira</MenuItem>
+                        <MenuItem value="SATURDAY">Sábado</MenuItem>
+                        <MenuItem value="SUNDAY">Domingo</MenuItem>
                       </Select>
                     </Grid>
                     <Grid item xs={4}>
                       <TextField
                         fullWidth
                         label="Mês"
+                        placeholder="1 a 12"
                         type="number"
                         value={formik.values.monthOfYear || ""}
                         onChange={(e) =>
@@ -835,28 +839,6 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                 )}
               </Box>
             )}
-
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} sm={4}>
-                <FormControl
-                  className={clsx(classes.formControl, classes.formControlFlex)}
-                  style={{
-                    display: "flex",
-                    justifyContent: "flex-start",
-                    paddingTop: 0,
-                  }}
-                >
-                  <Typography>Pago</Typography>
-                  <Switch
-                    checked={formik.values.isPaidTF}
-                    onChange={(e) =>
-                      formik.setFieldValue("isPaidTF", e.target.checked)
-                    }
-                    color="primary"
-                  />
-                </FormControl>
-              </Grid>
-            </Grid>
 
             <DialogActions>
               <Button autoFocus onClick={handleClose}>
