@@ -36,10 +36,10 @@ const { read, create, update, remove, readCalendarList, exportReservations } = {
       const response = await appointmentRepository.readAllAppointments(
         roomId,
         start,
-        end
+        end,
       );
       const responseSorted = response.sort((a, b) =>
-        dayjs(b.createdAt).diff(dayjs(a.createdAt))
+        dayjs(b.createdAt).diff(dayjs(a.createdAt)),
       );
       dispatch(readItem({ data: responseSorted, roomId }));
       return responseSorted;
@@ -54,7 +54,7 @@ const { read, create, update, remove, readCalendarList, exportReservations } = {
     try {
       const response = await appointmentRepository.createAppointment(
         businessId,
-        newAppointmentPayload
+        newAppointmentPayload,
       );
 
       // se o payload tiver recurrenceType e != 'NONE', sabemos que é recorrência
@@ -98,7 +98,7 @@ const { read, create, update, remove, readCalendarList, exportReservations } = {
       const response = await appointmentRepository.updateAppointment(
         appointmentId,
         updateAppointmentPayload,
-        updateAppointmentPayload.scope // 'single' ou 'series'
+        updateAppointmentPayload.scope, // 'single' ou 'series'
       );
 
       // Se scope = 'series', recarregamos a agenda em vez de um updateItem único:
@@ -184,7 +184,7 @@ const { read, create, update, remove, readCalendarList, exportReservations } = {
         page,
         limit,
         order,
-        orderBy
+        orderBy,
       );
       const { reservations, ...pageData } = response;
 
@@ -196,7 +196,11 @@ const { read, create, update, remove, readCalendarList, exportReservations } = {
   },
   exportReservations: async (businessId, start, end) => {
     try {
-      const response = await appointmentRepository.exportReservations(businessId, start, end);
+      const response = await appointmentRepository.exportReservations(
+        businessId,
+        start,
+        end,
+      );
       return response;
     } catch (error) {
       return false;

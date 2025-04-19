@@ -6,24 +6,24 @@ const readAllAppointments = (roomId, start, end) =>
   makeRequest(() =>
     apiService.get(endpoints.read.appointments.replace("${ROOM-ID}", roomId), {
       params: { start, end },
-    })
+    }),
   );
 const createAppointment = (businessId, appointmentData) =>
   makeRequest(() =>
     apiService.post(
       endpoints.create.appointments.replace("${BUSINESS-ID}", businessId),
-      appointmentData
-    )
+      appointmentData,
+    ),
   );
 const updateAppointment = (appointmentId, appointmentData, scope = "single") =>
   makeRequest(() =>
     apiService.put(
       endpoints.update.appointments.replace(
         "${APPOINTMENT-ID}",
-        appointmentId
+        appointmentId,
       ) + `?scope=${scope}`,
-      appointmentData
-    )
+      appointmentData,
+    ),
   );
 
 const deleteAppointment = (appointmentId, scope = "single") =>
@@ -31,31 +31,32 @@ const deleteAppointment = (appointmentId, scope = "single") =>
     apiService.delete(
       endpoints.delete.appointments.replace(
         "${APPOINTMENT-ID}",
-        appointmentId
-      ) + `?scope=${scope}`
-    )
+        appointmentId,
+      ) + `?scope=${scope}`,
+    ),
   );
 const readCalendarList = (businessId, page, limit, order, orderBy) =>
   makeRequest(() =>
     apiService.post(
       endpoints.read.calendarList.replace("${BUSINESS-ID}", businessId),
-      { page, limit, order, orderBy }
-    )
+      { page, limit, order, orderBy },
+    ),
   );
-  const exportReservations = (businessId, start, end) =>
-    makeRequest(() =>
-      apiService.get(
-        endpoints.read.exportReservations.replace("${BUSINESS-ID}", businessId),
-        {
-          params: { start, end },
-          responseType: "arraybuffer",
-          headers: {
-            Accept: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-          }
-        }
-      )
-    );
-    
+const exportReservations = (businessId, start, end) =>
+  makeRequest(() =>
+    apiService.get(
+      endpoints.read.exportReservations.replace("${BUSINESS-ID}", businessId),
+      {
+        params: { start, end },
+        responseType: "arraybuffer",
+        headers: {
+          Accept:
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        },
+      },
+    ),
+  );
+
 export default {
   readAllAppointments,
   createAppointment,
