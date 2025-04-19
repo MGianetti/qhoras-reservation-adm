@@ -116,7 +116,7 @@ const useStyles = makeStyles(() =>
         writingMode: "vertical-rl",
       },
     },
-  })
+  }),
 );
 
 function CalendarBoard(props) {
@@ -141,7 +141,7 @@ function CalendarBoard(props) {
     setInterval(() => {
       const now = new Date();
       const initTime = new Date(
-        format(now, "yyyy/MM/dd 0:0:0", { locale: ptBR })
+        format(now, "yyyy/MM/dd 0:0:0", { locale: ptBR }),
       );
       const position = differenceInMinutes(now, initTime);
       setCurrentTimePosition(position);
@@ -149,7 +149,7 @@ function CalendarBoard(props) {
   }, []);
 
   const viewLayout = Array.from(
-    Array(layout === "week" ? 7 : layout === "day" ? 1 : 0).keys()
+    Array(layout === "week" ? 7 : layout === "day" ? 1 : 0).keys(),
   );
 
   const appointments = useSelector((state) => state?.appointments?.data) || [];
@@ -158,7 +158,7 @@ function CalendarBoard(props) {
   const rooms = useSelector((state) => state?.rooms?.data) || [];
 
   const scheduleState = rooms.find(
-    (room) => room.id === selectedRoom
+    (room) => room.id === selectedRoom,
   )?.agendaConfigurations;
 
   const getEventData = (day) => {
@@ -173,7 +173,7 @@ function CalendarBoard(props) {
       (event) =>
         event.begin &&
         format(new Date(event.begin), "yyyyMMdd", { locale: ptBR }) ===
-          format(day, "yyyyMMdd", { locale: ptBR })
+          format(day, "yyyyMMdd", { locale: ptBR }),
     );
     const dayHoursEvents = dayEvents
       .map((event) => new Date(event.begin).getHours())
@@ -181,7 +181,7 @@ function CalendarBoard(props) {
 
     const eventsByHour = dayHoursEvents.reduce((acc, hour) => {
       const len = dayHoursEvents.filter(
-        (eventHour) => eventHour === hour
+        (eventHour) => eventHour === hour,
       ).length;
       !acc.some((accItem) => accItem.hour === hour) && acc.push({ hour, len });
       return acc;
@@ -207,11 +207,11 @@ function CalendarBoard(props) {
     const dayBlocks = (calendarBlocks || []).filter(
       (block) =>
         format(new Date(block.initialTime), "yyyyMMdd", { locale: ptBR }) ===
-        format(day, "yyyyMMdd", { locale: ptBR })
+        format(day, "yyyyMMdd", { locale: ptBR }),
     );
 
     const sortedBlocks = dayBlocks.sort(
-      (a, b) => new Date(a.initialTime) - new Date(b.initialTime)
+      (a, b) => new Date(a.initialTime) - new Date(b.initialTime),
     );
     const blockHoursEvents = sortedBlocks
       .map((block) => new Date(block.initialTime).getHours())
@@ -219,7 +219,7 @@ function CalendarBoard(props) {
 
     const eventsByHour = blockHoursEvents.reduce((acc, hour) => {
       const len = blockHoursEvents.filter(
-        (eventHour) => eventHour === hour
+        (eventHour) => eventHour === hour,
       ).length;
       !acc.some((accItem) => accItem.hour === hour) && acc.push({ hour, len });
       return acc;
@@ -228,7 +228,7 @@ function CalendarBoard(props) {
     const blockMarkers = eventsByHour.map((evHour) => {
       return sortedBlocks
         .filter(
-          (block) => new Date(block.initialTime).getHours() === evHour.hour
+          (block) => new Date(block.initialTime).getHours() === evHour.hour,
         )
         .map((block, index) => (
           <EventMark
@@ -279,19 +279,19 @@ function CalendarBoard(props) {
 
     const eventDuration = dayjs(calendarEvent.end).diff(
       dayjs(calendarEvent.date),
-      "minutes"
+      "minutes",
     );
     const eventDurationMillis = eventDuration * 60000;
 
     const adjustedInitialDate = format(
       new Date(eventBeginDate.getTime()),
       "yyyy/MM/dd HH:mm:ss",
-      { locale: ptBR }
+      { locale: ptBR },
     );
     const adjustedEndDate = format(
       new Date(eventBeginDate.getTime() + eventDurationMillis),
       "yyyy/MM/dd HH:mm:ss",
-      { locale: ptBR }
+      { locale: ptBR },
     );
 
     appointmentService.update(eventID, {
@@ -324,7 +324,7 @@ function CalendarBoard(props) {
   const isAgendaOpen = (day) => {
     const dayOfWeek = format(day, "EEEE", { locale: ptBR }).toUpperCase();
     const currentBlock = scheduleState?.find(
-      (block) => block.day === translateDay[dayOfWeek]
+      (block) => block.day === translateDay[dayOfWeek],
     );
 
     if (!currentBlock || !currentBlock.isActive) return false;

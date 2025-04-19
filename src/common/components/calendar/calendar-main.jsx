@@ -75,12 +75,10 @@ function CalendarMain(props) {
   const businessIdQueryParams = searchParams.get("business");
 
   const getScheduleData = async (id) => {
-    
-
     let start, end;
-    
+
     if (!id) return;
-    
+
     if (layout === "day") {
       start = format(selectedDate, "yyyy-MM-dd 00:00:00");
       end = format(selectedDate, "yyyy-MM-dd 23:59:59");
@@ -94,14 +92,20 @@ function CalendarMain(props) {
       );
       end = format(endOfWeek(endOfMonth(selectedDate)), "yyyy-MM-dd 23:59:59");
     }
-    
+
     setStartEndDates({ start, end });
 
-    let appointments
+    let appointments;
 
-    if (businessId) appointments = await appointmentService.read(id, start, end);
-    if (businessIdQueryParams) appointments = await calendarReadOnlyService.readAppointments(id, start, end);
-    
+    if (businessId)
+      appointments = await appointmentService.read(id, start, end);
+    if (businessIdQueryParams)
+      appointments = await calendarReadOnlyService.readAppointments(
+        id,
+        start,
+        end,
+      );
+
     const calendarBlocks = await calendarBlocksService.read(id, start, end);
     fetchRooms(id);
     return { appointments, calendarBlocks };

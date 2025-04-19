@@ -95,7 +95,7 @@ const CalendarReadOnly = () => {
         console.error("Failed to fetch rooms:", error);
       }
     },
-    [businessId, selectedRoom]
+    [businessId, selectedRoom],
   );
 
   useEffect(() => {
@@ -181,7 +181,9 @@ const CalendarReadOnly = () => {
               open={drawerOpen}
               handleDrawerOpen={() => setDrawerOpen(true)}
               handleDrawerClose={() => setDrawerOpen(false)}
-              handleLayoutChange={() => setStateCalendar({ ...stateCalendar, layout: value })}
+              handleLayoutChange={() =>
+                setStateCalendar({ ...stateCalendar, layout: value })
+              }
               refreshCalendar={refreshCalendar}
               isLoading={isLoading}
               selectedRoom={selectedRoom}
