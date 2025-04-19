@@ -64,8 +64,18 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
     status,
     isPaid,
     description,
+    recurrenceType,
+    dayOfWeek,
+    ordinalOfWeek,
+    dayOfMonth,
+    monthOfYear,
+    recurrenceEndDate,
+    timesToRepeat,
   } = stateCalendar;
 
+  const isRecurrentEvent = Boolean(
+    stateCalendar?.calendarEvent?.recurrenceRuleId
+  );
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
   const [clientInput, setClientInput] = useState("");
   const [scopeDialogOpen, setScopeDialogOpen] = useState(false);
@@ -90,10 +100,10 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
     data: [],
   };
   const { data: appointments } = useSelector(
-    (state) => state?.appointments,
+    (state) => state?.appointments
   ) || { data: [] };
   const { data: calendarBlocks } = useSelector(
-    (state) => state?.calendarBlocks,
+    (state) => state?.calendarBlocks
   ) || { data: [] };
   const scheduleState = useSelector((state) => state?.user.schedule) || [];
 
@@ -111,7 +121,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
     return timeOptions(getInitialAndEndTime(scheduleState, weekday));
   }, [scheduleState, safeBeginDate]);
 
-  const handleSubmit = (v) => {
+  const handleSubmit = async (v) => {
     const baseDate = formatDateTime(v.beginDate, v.beginTime.value);
     const baseEndDate = formatDateTime(v.beginDate, v.endTime.value);
 
@@ -139,17 +149,20 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
       });
     }
 
-    const fn = eventID
-      ? () =>
-          stateCalendar.recurrenceRuleId
-            ? (setScopeDialogOpen(true), setMarkerDataForUpdate(payload))
-            : appointmentService.update(eventID, payload)
-      : () => appointmentService.create(business.id, payload);
+    if (eventID) {
+      alert(isRecurrentEvent);
+      if (isRecurrentEvent) {
+        setMarkerDataForUpdate(payload);
+        setScopeDialogOpen(true);
+        return;
+      }
+      await appointmentService.update(eventID, payload);
+    } else {
+      await appointmentService.create(business.id, payload);
+    }
 
-    fn().then(() => {
-      refreshCalendar(false);
-      handleClose();
-    });
+    refreshCalendar(false);
+    handleClose();
   };
 
   const initialValues = useMemo(
@@ -164,13 +177,17 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
       beginDate: safeBeginDate,
       beginTime: eventBeginTime,
       endTime: eventEndTime,
-      recurrenceType: "NONE",
-      dayOfWeek: null,
-      ordinalOfWeek: 2,
-      dayOfMonth: null,
-      monthOfYear: null,
-      endDate: new Date(),
-      timesToRepeat: "",
+
+      /* Recorrência */
+      recurrenceType: isRecurrentEvent ? recurrenceType : "NONE",
+      dayOfWeek: isRecurrentEvent ? dayOfWeek : null,
+      ordinalOfWeek: isRecurrentEvent ? ordinalOfWeek : 2,
+      dayOfMonth: isRecurrentEvent ? dayOfMonth : null,
+      monthOfYear: isRecurrentEvent ? monthOfYear : null,
+      endDate: isRecurrentEvent
+        ? (recurrenceEndDate ?? new Date())
+        : new Date(),
+      timesToRepeat: isRecurrentEvent ? timesToRepeat : "",
     }),
     [
       room,
@@ -181,7 +198,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
       safeBeginDate,
       eventBeginTime,
       eventEndTime,
-    ],
+    ]
   );
 
   const formik = useFormik({
@@ -194,7 +211,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
       calendarBlocks,
       safeBeginDate
         ? format(new Date(safeBeginDate), "eeee", { locale: ptBR })
-        : "",
+        : ""
     ),
     onSubmit: handleSubmit,
   });
@@ -240,7 +257,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
         beginTimeValue = "0" + beginTimeValue;
       }
       const validBeginTime = initialOptionTime.find(
-        (time) => time.value === beginTimeValue,
+        (time) => time.value === beginTimeValue
       );
       const correctedBeginTime = validBeginTime || initialOptionTime[0];
 
@@ -253,7 +270,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
         endTimeValue = "0" + endTimeValue;
       }
       const validEndTime = initialOptionTime.find(
-        (time) => time.value === endTimeValue,
+        (time) => time.value === endTimeValue
       );
       let correctedEndTime = validEndTime || initialOptionTime[0];
 
@@ -263,7 +280,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
       ) {
         const nextValidOption = initialOptionTime.find(
           (time) =>
-            timeToMinutes(time.value) > timeToMinutes(correctedBeginTime.value),
+            timeToMinutes(time.value) > timeToMinutes(correctedBeginTime.value)
         );
         correctedEndTime = nextValidOption || correctedEndTime;
       }
@@ -296,14 +313,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
     setOpenDeleteConfirm(false);
   };
 
-  const handleOpenDeleteConfirm = () => {
-    const isRecurrent = Boolean(stateCalendar.recurrenceRuleId);
-    setStateCalendar((prev) => ({
-      ...prev,
-      isRecurrent,
-    }));
-    setOpenDeleteConfirm(true);
-  };
+  const handleOpenDeleteConfirm = () => setOpenDeleteConfirm(true);
 
   const handleCloseDeleteConfirm = () => {
     setOpenDeleteConfirm(false);
@@ -577,8 +587,8 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                             scheduleState,
                             format(new Date(formik.values.beginDate), "eeee", {
                               locale: ptBR,
-                            }),
-                          ),
+                            })
+                          )
                         )}
                         originalValue={{
                           value: formik.values.beginTime.value,
@@ -594,8 +604,8 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                             scheduleState,
                             format(new Date(formik.values.beginDate), "eeee", {
                               locale: ptBR,
-                            }),
-                          ),
+                            })
+                          )
                         )}
                         originalValue={{
                           value: formik.values.endTime.value,
@@ -862,14 +872,14 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
           {"Confirmar exclusão"}
         </DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            {stateCalendar.isRecurrent
+          <DialogContentText>
+            {isRecurrentEvent
               ? "Este agendamento faz parte de uma série recorrente. Deseja excluir apenas este ou toda a série?"
               : "Você tem certeza que deseja excluir este agendamento? Esta ação não pode ser desfeita."}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          {stateCalendar.isRecurrent ? (
+          {isRecurrentEvent ? (
             <>
               <Button onClick={() => handleDelete("single")} color="primary">
                 Somente este
