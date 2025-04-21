@@ -1,5 +1,7 @@
 import clsx from "clsx";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import { format } from "date-fns";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -49,6 +51,9 @@ import {
   timeToMinutes,
 } from "./calendarDialog.constants";
 import { useDebounce } from "../../../utils/useDebounce";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 function CalendarEventDialog({ refreshCalendar, roomsList }) {
   const { stateCalendar, setStateCalendar } = useContext(CalendarContext);
@@ -125,6 +130,9 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
     const baseDate = formatDateTime(v.beginDate, v.beginTime.value);
     const baseEndDate = formatDateTime(v.beginDate, v.endTime.value);
 
+    console.log('baseDate', baseDate)
+    console.log('baseEndDate', baseEndDate)
+
     const payload = {
       clientId: v.clientTF.value,
       businessId: business.id,
@@ -150,7 +158,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
     }
 
     if (eventID) {
-      alert(isRecurrentEvent);
+      // alert(isRecurrentEvent);
       if (isRecurrentEvent) {
         setMarkerDataForUpdate(payload);
         setScopeDialogOpen(true);
@@ -301,10 +309,14 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
     setOpenDeleteConfirm(false);
   };
 
-  const formatDateTime = (d, t) =>
-    d && !isNaN(new Date(d))
-      ? new Date(`${format(new Date(d), "yyyy/MM/dd")} ${t}`)
-      : null;
+  const formatDateTime = (date, time) => {
+    const [h, m, s = "00"] = time.split(":");
+    return dayjs(date)
+      .hour(Number(h))
+      .minute(Number(m))
+      .second(Number(s))
+      .format("YYYY-MM-DD[T]HH:mm:ssZ");
+  };
 
   const handleDelete = async (scope = "single") => {
     if (!eventID) return;
