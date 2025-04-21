@@ -42,3 +42,14 @@ export const refreshCalendarSuccess = Object.freeze({
   message: "Agendamentos atualizados com sucesso!",
   type: "success",
 });
+
+export const RECURRENCE_TYPES = {
+  NONE: "NONE",
+  DAILY: "DAILY",
+  WEEKLY: "WEEKLY",
+  WEEKDAYS: "WEEKDAYS",
+  MONTHLY_BY_DATE: "MONTHLY_BY_DATE",
+  MONTHLY_BY_ORDINAL: "MONTHLY_BY_ORDINAL",
+  YEARLY_BY_DATE: "YEARLY_BY_DATE",
+  YEARLY_BY_ORDINAL: "YEARLY_BY_ORDINAL",
+};

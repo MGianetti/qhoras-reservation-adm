@@ -1,8 +1,7 @@
 import makeRequest from "../../common/utils/makeRequest";
 import apiService from "../../infraestructure/api/apiService";
-
 import endpoints from "../../infraestructure/api/endpoints.constants";
-// TODO fix
+
 const readAllAppointments = (roomId, start, end) =>
   makeRequest(() =>
     apiService.get(endpoints.read.appointments.replace("${ROOM-ID}", roomId), {
@@ -16,17 +15,24 @@ const createAppointment = (businessId, appointmentData) =>
       appointmentData,
     ),
   );
-const updateAppointment = (appointmentId, appointmentData) =>
+const updateAppointment = (appointmentId, appointmentData, scope = "single") =>
   makeRequest(() =>
     apiService.put(
-      endpoints.update.appointments.replace("${APPOINTMENT-ID}", appointmentId),
+      endpoints.update.appointments.replace(
+        "${APPOINTMENT-ID}",
+        appointmentId,
+      ) + `?scope=${scope}`,
       appointmentData,
     ),
   );
-const deleteAppointment = (appointmentId) =>
+
+const deleteAppointment = (appointmentId, scope = "single") =>
   makeRequest(() =>
     apiService.delete(
-      endpoints.delete.appointments.replace("${APPOINTMENT-ID}", appointmentId),
+      endpoints.delete.appointments.replace(
+        "${APPOINTMENT-ID}",
+        appointmentId,
+      ) + `?scope=${scope}`,
     ),
   );
 const readCalendarList = (businessId, page, limit, order, orderBy) =>
@@ -36,20 +42,21 @@ const readCalendarList = (businessId, page, limit, order, orderBy) =>
       { page, limit, order, orderBy },
     ),
   );
-  const exportReservations = (businessId, start, end) =>
-    makeRequest(() =>
-      apiService.get(
-        endpoints.read.exportReservations.replace("${BUSINESS-ID}", businessId),
-        {
-          params: { start, end },
-          responseType: "arraybuffer",
-          headers: {
-            Accept: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-          }
-        }
-      )
-    );
-    
+const exportReservations = (businessId, start, end) =>
+  makeRequest(() =>
+    apiService.get(
+      endpoints.read.exportReservations.replace("${BUSINESS-ID}", businessId),
+      {
+        params: { start, end },
+        responseType: "arraybuffer",
+        headers: {
+          Accept:
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        },
+      },
+    ),
+  );
+
 export default {
   readAllAppointments,
   createAppointment,

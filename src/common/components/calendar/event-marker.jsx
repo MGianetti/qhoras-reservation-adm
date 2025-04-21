@@ -319,9 +319,12 @@ function EventMark(props) {
         }
       }}
     >
-      <div className={`${classes.beginEnd} event-marker`} style={{
-        cursor: location.pathname === "/calendario" ? "default" : "pointer",
-      }}>
+      <div
+        className={`${classes.beginEnd} event-marker`}
+        style={{
+          cursor: location.pathname === "/calendario" ? "default" : "pointer",
+        }}
+      >
         <span>{titleFormatted}</span>
         <span>{roomFormatted}</span>
         <span>{descriptionFormatted}</span>

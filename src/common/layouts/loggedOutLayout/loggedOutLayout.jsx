@@ -30,7 +30,12 @@ const loggedOutLayout = ({ children }) => {
           <Toolbar disableGutters>
             <CardMedia
               component="img"
-              sx={{ display: { xs: "none", md: "flex" }, mr: 8, width: 100, cursor: "pointer" }}
+              sx={{
+                display: { xs: "none", md: "flex" },
+                mr: 8,
+                width: 100,
+                cursor: "pointer",
+              }}
               image={logoWhite}
               alt="Logo QHoras"
               onClick={() => {

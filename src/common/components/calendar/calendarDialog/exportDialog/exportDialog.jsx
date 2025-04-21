@@ -20,34 +20,31 @@ import { validationSchema } from "./exportDialog.constants";
 import appointmentService from "../../../../../domains/appointment/appointmentService";
 
 function ExportReservationDialog({ open, setOpenExportDialog }) {
-
   const businessId = useSelector((state) => state.auth.user?.businessId);
 
   const handleSubmit = async (values) => {
-    const startFormatted = dayjs(values.initialDate).format('YYYY-MM-DD');
-    const endFormatted   = dayjs(values.endDate).format('YYYY-MM-DD');
-  
+    const startFormatted = dayjs(values.initialDate).format("YYYY-MM-DD");
+    const endFormatted = dayjs(values.endDate).format("YYYY-MM-DD");
+
     const arrayBuffer = await appointmentService.exportReservations(
       businessId,
       startFormatted,
-      endFormatted
+      endFormatted,
     );
-  
-    const blob = new Blob(
-      [arrayBuffer],
-      { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }
-    );
-  
+
+    const blob = new Blob([arrayBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
     const url = window.URL.createObjectURL(blob);
-    const a   = document.createElement('a');
-    a.href      = url;
-    a.download  = `reservas_${startFormatted}_${endFormatted}.xlsx`;
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `reservas_${startFormatted}_${endFormatted}.xlsx`;
     document.body.appendChild(a);
     a.click();
     a.remove();
     window.URL.revokeObjectURL(url);
   };
-  
 
   const onClose = () => {
     formik.resetForm();
@@ -119,7 +116,11 @@ function ExportReservationDialog({ open, setOpenExportDialog }) {
               <Button
                 type="submit"
                 variant="contained"
-                disabled={!formik.isValid || !formik.values.initialDate || !formik.values.endDate}
+                disabled={
+                  !formik.isValid ||
+                  !formik.values.initialDate ||
+                  !formik.values.endDate
+                }
               >
                 Exportar
               </Button>

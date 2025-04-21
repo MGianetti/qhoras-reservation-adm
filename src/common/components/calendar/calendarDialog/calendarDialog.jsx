@@ -8,7 +8,7 @@ import { IoMdTime } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { MdDeleteOutline } from "react-icons/md";
 import { FaRegCircleQuestion } from "react-icons/fa6";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { CalendarContext } from "../context/calendar-context";
 import {
   Button,
@@ -64,10 +64,22 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
     status,
     isPaid,
     description,
+    recurrenceType,
+    dayOfWeek,
+    ordinalOfWeek,
+    dayOfMonth,
+    monthOfYear,
+    recurrenceEndDate,
+    timesToRepeat,
   } = stateCalendar;
 
+  const isRecurrentEvent = Boolean(
+    stateCalendar?.calendarEvent?.recurrenceRuleId
+  );
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
   const [clientInput, setClientInput] = useState("");
+  const [scopeDialogOpen, setScopeDialogOpen] = useState(false);
+  const [markerDataForUpdate, setMarkerDataForUpdate] = useState(null);
 
   const theme = useTheme();
   const isSmUp = useMediaQuery(theme.breakpoints.up("sm"));
@@ -88,24 +100,73 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
     data: [],
   };
   const { data: appointments } = useSelector(
-    (state) => state?.appointments,
+    (state) => state?.appointments
   ) || { data: [] };
   const { data: calendarBlocks } = useSelector(
-    (state) => state?.calendarBlocks,
+    (state) => state?.calendarBlocks
   ) || { data: [] };
   const scheduleState = useSelector((state) => state?.user.schedule) || [];
 
   const [filteredClientsList, setFilteredClientsList] = useState(clientsList);
 
-  const initialOptionTime = timeOptions(
-    getInitialAndEndTime(
-      scheduleState,
-      format(new Date(eventBeginDate), "eeee", { locale: ptBR }),
-    ),
-  );
+  const safeBeginDate =
+    eventBeginDate && !isNaN(new Date(eventBeginDate).getTime())
+      ? eventBeginDate
+      : null;
 
-  const formik = useFormik({
-    initialValues: {
+  const initialOptionTime = useMemo(() => {
+    const weekday = safeBeginDate
+      ? format(new Date(safeBeginDate), "eeee", { locale: ptBR })
+      : "monday";
+    return timeOptions(getInitialAndEndTime(scheduleState, weekday));
+  }, [scheduleState, safeBeginDate]);
+
+  const handleSubmit = async (v) => {
+    const baseDate = formatDateTime(v.beginDate, v.beginTime.value);
+    const baseEndDate = formatDateTime(v.beginDate, v.endTime.value);
+
+    const payload = {
+      clientId: v.clientTF.value,
+      businessId: business.id,
+      roomId: v.roomTF,
+      description: v.descriptionTF,
+      dateAndTime: baseDate,
+      endTime: baseEndDate,
+      isPaid: v.isPaidTF,
+      appointmentStatus: v.statusTF,
+    };
+
+    if (v.recurrenceType !== "NONE") {
+      Object.assign(payload, {
+        recurrenceType: v.recurrenceType,
+        startDate: baseDate,
+        endDate: v.endDate ? formatDateTime(v.endDate, "23:59:59") : null,
+        timesToRepeat: v.endDate ? null : Number(v.timesToRepeat) || null,
+        dayOfWeek: v.dayOfWeek,
+        ordinalOfWeek: v.ordinalOfWeek ? Number(v.ordinalOfWeek) : null,
+        dayOfMonth: v.dayOfMonth ? Number(v.dayOfMonth) : null,
+        monthOfYear: v.monthOfYear ? Number(v.monthOfYear) : null,
+      });
+    }
+
+    if (eventID) {
+      alert(isRecurrentEvent);
+      if (isRecurrentEvent) {
+        setMarkerDataForUpdate(payload);
+        setScopeDialogOpen(true);
+        return;
+      }
+      await appointmentService.update(eventID, payload);
+    } else {
+      await appointmentService.create(business.id, payload);
+    }
+
+    refreshCalendar(false);
+    handleClose();
+  };
+
+  const initialValues = useMemo(
+    () => ({
       roomTF: room || "",
       clientTF: client
         ? { value: client, label: clientName }
@@ -113,20 +174,46 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
       statusTF: status || "SCHEDULED",
       descriptionTF: description || "",
       isPaidTF: isPaid || false,
-      beginDate: eventBeginDate,
+      beginDate: safeBeginDate,
       beginTime: eventBeginTime,
-      endTime: eventEndTime, // novo campo para o horário final
-    },
+      endTime: eventEndTime,
+
+      /* Recorrência */
+      recurrenceType: isRecurrentEvent ? recurrenceType : "NONE",
+      dayOfWeek: isRecurrentEvent ? dayOfWeek : null,
+      ordinalOfWeek: isRecurrentEvent ? ordinalOfWeek : 2,
+      dayOfMonth: isRecurrentEvent ? dayOfMonth : null,
+      monthOfYear: isRecurrentEvent ? monthOfYear : null,
+      endDate: isRecurrentEvent
+        ? (recurrenceEndDate ?? new Date())
+        : new Date(),
+      timesToRepeat: isRecurrentEvent ? timesToRepeat : "",
+    }),
+    [
+      room,
+      client,
+      clientName,
+      status,
+      isPaid,
+      safeBeginDate,
+      eventBeginTime,
+      eventEndTime,
+    ]
+  );
+
+  const formik = useFormik({
+    initialValues,
     enableReinitialize: true,
-    // Mescla a validação base com a validação customizada para endTime
     validationSchema: baseValidationSchema(
       appointments,
       roomsList,
       eventID,
       calendarBlocks,
-      format(new Date(eventBeginDate), "eeee", { locale: ptBR }),
+      safeBeginDate
+        ? format(new Date(safeBeginDate), "eeee", { locale: ptBR })
+        : ""
     ),
-    onSubmit: (values) => handleSubmit(values),
+    onSubmit: handleSubmit,
   });
 
   useEffect(() => {
@@ -170,7 +257,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
         beginTimeValue = "0" + beginTimeValue;
       }
       const validBeginTime = initialOptionTime.find(
-        (time) => time.value === beginTimeValue,
+        (time) => time.value === beginTimeValue
       );
       const correctedBeginTime = validBeginTime || initialOptionTime[0];
 
@@ -183,7 +270,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
         endTimeValue = "0" + endTimeValue;
       }
       const validEndTime = initialOptionTime.find(
-        (time) => time.value === endTimeValue,
+        (time) => time.value === endTimeValue
       );
       let correctedEndTime = validEndTime || initialOptionTime[0];
 
@@ -193,7 +280,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
       ) {
         const nextValidOption = initialOptionTime.find(
           (time) =>
-            timeToMinutes(time.value) > timeToMinutes(correctedBeginTime.value),
+            timeToMinutes(time.value) > timeToMinutes(correctedBeginTime.value)
         );
         correctedEndTime = nextValidOption || correctedEndTime;
       }
@@ -214,54 +301,30 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
     setOpenDeleteConfirm(false);
   };
 
-  const handleSubmit = (values) => {
-    const markerData = {
-      clientId: values.clientTF.value,
-      businessId: business?.id,
-      roomId: values.roomTF,
-      description: values.descriptionTF,
-      dateAndTime: format(
-        formatDateTime(values.beginDate, values.beginTime.value),
-        "yyyy/MM/dd HH:mm:ss",
-        { locale: ptBR },
-      ),
-      endTime: format(
-        formatDateTime(values.beginDate, values.endTime.value),
-        "yyyy/MM/dd HH:mm:ss",
-        { locale: ptBR },
-      ),
-      isPaid: values.isPaidTF,
-      appointmentStatus: values.statusTF,
-    };
+  const formatDateTime = (d, t) =>
+    d && !isNaN(new Date(d))
+      ? new Date(`${format(new Date(d), "yyyy/MM/dd")} ${t}`)
+      : null;
 
-    if (eventID) {
-      appointmentService.update(eventID, markerData);
-      refreshCalendar(false);
-    } else {
-      appointmentService.create(business?.id, markerData);
-    }
-
-    handleClose();
-  };
-
-  const formatDateTime = (newDate, newTime) => {
-    if (newDate === null) return;
-    const dateTxt = format(newDate, "yyyy/MM/dd");
-    return new Date(dateTxt + " " + newTime);
-  };
-
-  const handleDelete = () => {
-    appointmentService.remove(eventID);
+  const handleDelete = async (scope = "single") => {
+    if (!eventID) return;
+    await appointmentService.remove(eventID, scope);
     handleCloseDialog();
     setOpenDeleteConfirm(false);
   };
 
-  const handleOpenDeleteConfirm = () => {
-    setOpenDeleteConfirm(true);
-  };
+  const handleOpenDeleteConfirm = () => setOpenDeleteConfirm(true);
 
   const handleCloseDeleteConfirm = () => {
     setOpenDeleteConfirm(false);
+  };
+
+  const doUpdate = (scope) => {
+    appointmentService.update(eventID, markerDataForUpdate, scope).then(() => {
+      refreshCalendar(false);
+      setScopeDialogOpen(false);
+      handleClose();
+    });
   };
 
   return (
@@ -467,13 +530,18 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                     >
                       <Datepicker
                         styleCls={classes.datepicker}
-                        dateFormat={"dd/MM/yyyy"}
-                        originalValue={new Date(formik.values.beginDate)}
-                        onChange={(e) => {
-                          formik.setFieldValue("beginDate", e);
+                        dateFormat="dd/MM/yyyy"
+                        originalValue={
+                          formik.values.beginDate &&
+                          !isNaN(new Date(formik.values.beginDate).getTime())
+                            ? new Date(formik.values.beginDate)
+                            : null
+                        }
+                        onChange={(datePicked) => {
+                          formik.setFieldValue("beginDate", datePicked);
                           setStateCalendar({
                             ...stateCalendar,
-                            eventBeginDate: e,
+                            eventBeginDate: datePicked,
                           });
                         }}
                       />
@@ -519,8 +587,8 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                             scheduleState,
                             format(new Date(formik.values.beginDate), "eeee", {
                               locale: ptBR,
-                            }),
-                          ),
+                            })
+                          )
                         )}
                         originalValue={{
                           value: formik.values.beginTime.value,
@@ -536,8 +604,8 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                             scheduleState,
                             format(new Date(formik.values.beginDate), "eeee", {
                               locale: ptBR,
-                            }),
-                          ),
+                            })
+                          )
                         )}
                         originalValue={{
                           value: formik.values.endTime.value,
@@ -579,6 +647,209 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
               </Grid>
             </Grid>
 
+            <FormControl fullWidth>
+              <InputLabel htmlFor="recurrenceType" size="small">
+                Recorrência
+              </InputLabel>
+              <Select
+                id="recurrenceType"
+                name="recurrenceType"
+                label="Recorrência"
+                size="small"
+                value={formik.values.recurrenceType}
+                onChange={formik.handleChange}
+              >
+                <MenuItem value="NONE">Não se repete</MenuItem>
+                <MenuItem value="DAILY">Diariamente</MenuItem>
+                <MenuItem value="WEEKLY">Semanalmente</MenuItem>
+                <MenuItem value="WEEKDAYS">Dias de semana (Seg-Sex)</MenuItem>
+                <MenuItem value="MONTHLY_BY_DATE">Mensal (dia exato)</MenuItem>
+                <MenuItem value="MONTHLY_BY_ORDINAL">
+                  Mensal (ex: 2ª Terça)
+                </MenuItem>
+                <MenuItem value="YEARLY_BY_DATE">Anual (data exata)</MenuItem>
+                <MenuItem value="YEARLY_BY_ORDINAL">
+                  Anual (ex: 2ª Terça de Abril)
+                </MenuItem>
+              </Select>
+            </FormControl>
+
+            {formik.values.recurrenceType !== "NONE" && (
+              <Box sx={{ gap: "16px" }} display="flex" flexDirection="column">
+                <Typography variant="subtitle1" gutterBottom>
+                  Configuração da recorrência
+                </Typography>
+
+                <Datepicker
+                  label="Data final da recorrência"
+                  placeholderText="Selecione até quando repetir"
+                  dateFormat="dd/MM/yyyy"
+                  position="top"
+                  originalValue={formik.values.endDate}
+                  onChange={(d) => formik.setFieldValue("endDate", d)}
+                />
+
+                {formik.values.recurrenceType === "WEEKLY" && (
+                  <>
+                    <InputLabel htmlFor="weeklyRecurrence" size="small">
+                      Dis da semana
+                    </InputLabel>
+                    <Select
+                      id="weeklyRecurrence"
+                      size="small"
+                      fullWidth
+                      name="dayOfWeek"
+                      value={formik.values.dayOfWeek}
+                      onChange={formik.handleChange}
+                      placeholderText="Selecione o dia da semana"
+                    >
+                      <MenuItem value="MONDAY">Segunda-feira</MenuItem>
+                      <MenuItem value="TUESDAY">Terça-feira</MenuItem>
+                      <MenuItem value="WEDNESDAY">Quarta-feira</MenuItem>
+                      <MenuItem value="THURSDAY">Quinta-feira</MenuItem>
+                      <MenuItem value="FRIDAY">Sexta-feira</MenuItem>
+                      <MenuItem value="SATURDAY">Sábado</MenuItem>
+                      <MenuItem value="SUNDAY">Domingo</MenuItem>
+                    </Select>
+                  </>
+                )}
+
+                {formik.values.recurrenceType === "WEEKDAYS" && (
+                  <Typography variant="body2" color="textSecondary">
+                    Repetirá automaticamente de <b>segunda</b> a{" "}
+                    <b>sexta-feira</b>.
+                  </Typography>
+                )}
+
+                {formik.values.recurrenceType === "MONTHLY_BY_DATE" && (
+                  <TextField
+                    fullWidth
+                    label="Dia do mês"
+                    placeholder="Ex: 8"
+                    type="number"
+                    value={formik.values.dayOfMonth || ""}
+                    onChange={(e) =>
+                      formik.setFieldValue("dayOfMonth", e.target.value)
+                    }
+                  />
+                )}
+
+                {formik.values.recurrenceType === "MONTHLY_BY_ORDINAL" && (
+                  <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                      <TextField
+                        fullWidth
+                        label="Semana do mês"
+                        placeholder="Ex: 1 a 5"
+                        type="number"
+                        value={formik.values.ordinalOfWeek}
+                        onChange={(e) =>
+                          formik.setFieldValue("ordinalOfWeek", e.target.value)
+                        }
+                      />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Select
+                        fullWidth
+                        name="dayOfWeek"
+                        value={formik.values.dayOfWeek}
+                        onChange={formik.handleChange}
+                      >
+                        <MenuItem disabled value="">
+                          Selecione o dia da semana
+                        </MenuItem>
+                        <MenuItem value="MONDAY">Segunda-feira</MenuItem>
+                        <MenuItem value="TUESDAY">Terça-feira</MenuItem>
+                        <MenuItem value="WEDNESDAY">Quarta-feira</MenuItem>
+                        <MenuItem value="THURSDAY">Quinta-feira</MenuItem>
+                        <MenuItem value="FRIDAY">Sexta-feira</MenuItem>
+                        <MenuItem value="SATURDAY">Sábado</MenuItem>
+                        <MenuItem value="SUNDAY">Domingo</MenuItem>
+                      </Select>
+                    </Grid>
+                  </Grid>
+                )}
+
+                {formik.values.recurrenceType === "YEARLY_BY_DATE" && (
+                  <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                      <TextField
+                        fullWidth
+                        label="Dia do mês"
+                        placeholder="Ex: 25"
+                        type="number"
+                        value={formik.values.dayOfMonth || ""}
+                        onChange={(e) =>
+                          formik.setFieldValue("dayOfMonth", e.target.value)
+                        }
+                      />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <TextField
+                        fullWidth
+                        label="Mês do ano"
+                        placeholder="Ex: 12 para Dezembro"
+                        type="number"
+                        value={formik.values.monthOfYear || ""}
+                        onChange={(e) =>
+                          formik.setFieldValue("monthOfYear", e.target.value)
+                        }
+                      />
+                    </Grid>
+                  </Grid>
+                )}
+
+                {formik.values.recurrenceType === "YEARLY_BY_ORDINAL" && (
+                  <Grid container spacing={2}>
+                    <Grid item xs={4}>
+                      <TextField
+                        fullWidth
+                        label="Semana do mês"
+                        placeholder="1 a 5"
+                        type="number"
+                        value={formik.values.ordinalOfWeek}
+                        onChange={(e) =>
+                          formik.setFieldValue("ordinalOfWeek", e.target.value)
+                        }
+                      />
+                    </Grid>
+                    <Grid item xs={4}>
+                      <Select
+                        fullWidth
+                        name="dayOfWeek"
+                        value={formik.values.dayOfWeek}
+                        onChange={formik.handleChange}
+                        displayEmpty
+                      >
+                        <MenuItem disabled value="">
+                          Dia da semana
+                        </MenuItem>
+                        <MenuItem value="MONDAY">Segunda-feira</MenuItem>
+                        <MenuItem value="TUESDAY">Terça-feira</MenuItem>
+                        <MenuItem value="WEDNESDAY">Quarta-feira</MenuItem>
+                        <MenuItem value="THURSDAY">Quinta-feira</MenuItem>
+                        <MenuItem value="FRIDAY">Sexta-feira</MenuItem>
+                        <MenuItem value="SATURDAY">Sábado</MenuItem>
+                        <MenuItem value="SUNDAY">Domingo</MenuItem>
+                      </Select>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <TextField
+                        fullWidth
+                        label="Mês"
+                        placeholder="1 a 12"
+                        type="number"
+                        value={formik.values.monthOfYear || ""}
+                        onChange={(e) =>
+                          formik.setFieldValue("monthOfYear", e.target.value)
+                        }
+                      />
+                    </Grid>
+                  </Grid>
+                )}
+              </Box>
+            )}
+
             <DialogActions>
               <Button autoFocus onClick={handleClose}>
                 Cancelar
@@ -601,15 +872,53 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
           {"Confirmar exclusão"}
         </DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Você tem certeza que deseja excluir este agendamento? Esta ação não
-            pode ser desfeita.
+          <DialogContentText>
+            {isRecurrentEvent
+              ? "Este agendamento faz parte de uma série recorrente. Deseja excluir apenas este ou toda a série?"
+              : "Você tem certeza que deseja excluir este agendamento? Esta ação não pode ser desfeita."}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDeleteConfirm}>Cancelar</Button>
-          <Button onClick={handleDelete} autoFocus>
-            Confirmar exclusão
+          {isRecurrentEvent ? (
+            <>
+              <Button onClick={() => handleDelete("single")} color="primary">
+                Somente este
+              </Button>
+              <Button
+                onClick={() => handleDelete("series")}
+                color="primary"
+                autoFocus
+              >
+                Toda a série
+              </Button>
+            </>
+          ) : (
+            <Button
+              onClick={() => handleDelete("single")}
+              color="primary"
+              autoFocus
+            >
+              Confirmar exclusão
+            </Button>
+          )}
+
+          <Button onClick={handleCloseDeleteConfirm} color="primary">
+            Cancelar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={scopeDialogOpen} onClose={() => setScopeDialogOpen(false)}>
+        <DialogTitle>Editar recorrência</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Você deseja editar somente este evento ou toda a série recorrente?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => doUpdate("single")}>Somente este</Button>
+          <Button onClick={() => doUpdate("series")} autoFocus>
+            Toda a série
           </Button>
         </DialogActions>
       </Dialog>

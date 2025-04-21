@@ -9,8 +9,6 @@ import { createStyles, makeStyles } from "@mui/styles";
 import { IoIosArrowBack, IoIosArrowForward, IoMdRefresh } from "react-icons/io";
 import { PiExportBold } from "react-icons/pi";
 
-
-
 import {
   MdOutlineViewModule,
   MdOutlineViewWeek,
@@ -115,7 +113,7 @@ const useStyles = makeStyles((theme) =>
         display: "none !important",
       },
     },
-  })
+  }),
 );
 
 function CalendarToolbar(props) {
@@ -272,65 +270,65 @@ function CalendarToolbar(props) {
           {location.pathname !== "/calendario" && (
           <div style={{ display: "flex", justifyContent: "end" }}>
             <StyledTooltip title="Exportar dados" style={{ marginRight: "30px" }}>
-              <IconButton
-                disabled={isLoading}
-                color="inherit"
-                aria-label="Exportar dados"
-                onClick={() => setOpenExportDialog(true)}
-                edge="start"
-              >
-                <PiExportBold size={20} style={{ marginLeft: "3px" }} />
-              </IconButton>
-            </StyledTooltip>
-            
-            <StyledTooltip title="Visualização Diária">
-              <IconButton
-                disabled={isLoading}
-                color="inherit"
-                aria-label="Visualização Diária"
-                onClick={() => setLayout({ option: "day" })}
-                edge="start"
-              >
-                <MdOutlineCalendarViewDay />
-              </IconButton>
-            </StyledTooltip>
+                <IconButton
+                  disabled={isLoading}
+                  color="inherit"
+                  aria-label="Exportar dados"
+                  onClick={() => setOpenExportDialog(true)}
+                  edge="start"
+                >
+                  <PiExportBold size={20} style={{ marginLeft: "3px" }} />
+                </IconButton>
+              </StyledTooltip>
 
-            <StyledTooltip title="Visualização Semanal">
-              <IconButton
-                disabled={isLoading}
-                color="inherit"
-                aria-label="Visualização Semanal"
-                onClick={() => setLayout({ option: "week" })}
-                edge="start"
-              >
-                <MdOutlineViewWeek />
-              </IconButton>
-            </StyledTooltip>
+              <StyledTooltip title="Visualização Diária">
+                <IconButton
+                  disabled={isLoading}
+                  color="inherit"
+                  aria-label="Visualização Diária"
+                  onClick={() => setLayout({ option: "day" })}
+                  edge="start"
+                >
+                  <MdOutlineCalendarViewDay />
+                </IconButton>
+              </StyledTooltip>
 
-            <StyledTooltip title="Visualização Mensal">
-              <IconButton
-                disabled={isLoading}
-                color="inherit"
-                aria-label="Visualização Mensal"
-                onClick={() => setLayout({ option: "month" })}
-                edge="start"
-              >
-                <MdOutlineViewModule />
-              </IconButton>
-            </StyledTooltip>
+              <StyledTooltip title="Visualização Semanal">
+                <IconButton
+                  disabled={isLoading}
+                  color="inherit"
+                  aria-label="Visualização Semanal"
+                  onClick={() => setLayout({ option: "week" })}
+                  edge="start"
+                >
+                  <MdOutlineViewWeek />
+                </IconButton>
+              </StyledTooltip>
 
-            <StyledTooltip title="Visualização Por Lista">
-              <IconButton
-                disabled={isLoading}
-                color="inherit"
-                aria-label="Visualização Por Lista"
-                onClick={() => setLayout({ option: "list" })}
-                edge="start"
-              >
-                <FaList size={16} style={{ marginLeft: "3px" }} />
-              </IconButton>
-            </StyledTooltip>
-          </div>
+              <StyledTooltip title="Visualização Mensal">
+                <IconButton
+                  disabled={isLoading}
+                  color="inherit"
+                  aria-label="Visualização Mensal"
+                  onClick={() => setLayout({ option: "month" })}
+                  edge="start"
+                >
+                  <MdOutlineViewModule />
+                </IconButton>
+              </StyledTooltip>
+
+              <StyledTooltip title="Visualização Por Lista">
+                <IconButton
+                  disabled={isLoading}
+                  color="inherit"
+                  aria-label="Visualização Por Lista"
+                  onClick={() => setLayout({ option: "list" })}
+                  edge="start"
+                >
+                  <FaList size={16} style={{ marginLeft: "3px" }} />
+                </IconButton>
+              </StyledTooltip>
+            </div>
           )}
         </Toolbar>
 
