@@ -74,7 +74,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
   } = stateCalendar;
 
   const isRecurrentEvent = Boolean(
-    stateCalendar?.calendarEvent?.recurrenceRuleId
+    stateCalendar?.calendarEvent?.recurrenceRuleId,
   );
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
   const [clientInput, setClientInput] = useState("");
@@ -100,10 +100,10 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
     data: [],
   };
   const { data: appointments } = useSelector(
-    (state) => state?.appointments
+    (state) => state?.appointments,
   ) || { data: [] };
   const { data: calendarBlocks } = useSelector(
-    (state) => state?.calendarBlocks
+    (state) => state?.calendarBlocks,
   ) || { data: [] };
   const scheduleState = useSelector((state) => state?.user.schedule) || [];
 
@@ -198,7 +198,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
       safeBeginDate,
       eventBeginTime,
       eventEndTime,
-    ]
+    ],
   );
 
   const formik = useFormik({
@@ -211,7 +211,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
       calendarBlocks,
       safeBeginDate
         ? format(new Date(safeBeginDate), "eeee", { locale: ptBR })
-        : ""
+        : "",
     ),
     onSubmit: handleSubmit,
   });
@@ -257,7 +257,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
         beginTimeValue = "0" + beginTimeValue;
       }
       const validBeginTime = initialOptionTime.find(
-        (time) => time.value === beginTimeValue
+        (time) => time.value === beginTimeValue,
       );
       const correctedBeginTime = validBeginTime || initialOptionTime[0];
 
@@ -270,7 +270,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
         endTimeValue = "0" + endTimeValue;
       }
       const validEndTime = initialOptionTime.find(
-        (time) => time.value === endTimeValue
+        (time) => time.value === endTimeValue,
       );
       let correctedEndTime = validEndTime || initialOptionTime[0];
 
@@ -280,7 +280,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
       ) {
         const nextValidOption = initialOptionTime.find(
           (time) =>
-            timeToMinutes(time.value) > timeToMinutes(correctedBeginTime.value)
+            timeToMinutes(time.value) > timeToMinutes(correctedBeginTime.value),
         );
         correctedEndTime = nextValidOption || correctedEndTime;
       }
@@ -587,8 +587,8 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                             scheduleState,
                             format(new Date(formik.values.beginDate), "eeee", {
                               locale: ptBR,
-                            })
-                          )
+                            }),
+                          ),
                         )}
                         originalValue={{
                           value: formik.values.beginTime.value,
@@ -604,8 +604,8 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                             scheduleState,
                             format(new Date(formik.values.beginDate), "eeee", {
                               locale: ptBR,
-                            })
-                          )
+                            }),
+                          ),
                         )}
                         originalValue={{
                           value: formik.values.endTime.value,
