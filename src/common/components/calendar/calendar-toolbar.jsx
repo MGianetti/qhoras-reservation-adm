@@ -270,7 +270,7 @@ function CalendarToolbar(props) {
           )}
 
           {location.pathname !== "/calendario" && (
-          <div>
+          <div style={{ display: "flex", justifyContent: "end" }}>
             <StyledTooltip title="Exportar dados" style={{ marginRight: "30px" }}>
               <IconButton
                 disabled={isLoading}
