@@ -36,10 +36,10 @@ const { read, create, update, remove, readCalendarList, exportReservations } = {
       const response = await appointmentRepository.readAllAppointments(
         roomId,
         start,
-        end,
+        end
       );
       const responseSorted = response.sort((a, b) =>
-        dayjs(b.createdAt).diff(dayjs(a.createdAt)),
+        dayjs(b.createdAt).diff(dayjs(a.createdAt))
       );
       dispatch(readItem({ data: responseSorted, roomId }));
       return responseSorted;
@@ -54,7 +54,7 @@ const { read, create, update, remove, readCalendarList, exportReservations } = {
     try {
       const response = await appointmentRepository.createAppointment(
         businessId,
-        newAppointmentPayload,
+        newAppointmentPayload
       );
 
       // se o payload tiver recurrenceType e != 'NONE', sabemos que é recorrência
@@ -98,7 +98,7 @@ const { read, create, update, remove, readCalendarList, exportReservations } = {
       const response = await appointmentRepository.updateAppointment(
         appointmentId,
         updateAppointmentPayload,
-        scope, // 'single' ou 'series'
+        scope // 'single' ou 'series'
       );
 
       // Se scope = 'series', recarregamos a agenda em vez de um updateItem único:
@@ -145,26 +145,23 @@ const { read, create, update, remove, readCalendarList, exportReservations } = {
       dispatch(setLoading(false));
     }
   },
-  remove: async (appointmentId, scope = "single", roomIdForReload) => {
+  remove: async (appointmentId, scope = "single") => {
     dispatch(setLoading(true));
     try {
-      await appointmentRepository.deleteAppointment(appointmentId, scope);
+      const { result } = await appointmentRepository.deleteAppointment(
+        appointmentId,
+        scope
+      );
 
-      if (scope === "single") {
-        dispatch(removeItem({ id: appointmentId }));
-      }
+      result.forEach((appointment) => {
+        dispatch(removeItem({ id: appointment.id }));
+      });
+
       notification(deletedAppointmentSuccess);
-
-      // Se for exclusão de uma série, recarregamos a agenda do período atual
-      if (scope === "series" && roomIdForReload) {
-        // Exemplo: recarregar a semana
-        const startOfWeek = dayjs().startOf("week").format();
-        const endOfWeek = dayjs().endOf("week").format();
-        await read(roomIdForReload, startOfWeek, endOfWeek);
-      }
 
       return true;
     } catch (error) {
+      console.log("error", error);
       notification(deletedAppointmentFail);
       return false;
     } finally {
@@ -184,7 +181,7 @@ const { read, create, update, remove, readCalendarList, exportReservations } = {
         page,
         limit,
         order,
-        orderBy,
+        orderBy
       );
       const { reservations, ...pageData } = response;
 
@@ -199,7 +196,7 @@ const { read, create, update, remove, readCalendarList, exportReservations } = {
       const response = await appointmentRepository.exportReservations(
         businessId,
         start,
-        end,
+        end
       );
       return response;
     } catch (error) {

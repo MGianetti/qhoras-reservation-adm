@@ -1,7 +1,7 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 
 
-export default function RecurrenceDialog({ scopeDialogOpen, setScopeDialogOpen, doUpdate }) {
+export default function UpdateRecurrenceDialog({ scopeDialogOpen, setScopeDialogOpen, doUpdate }) {
   return (
     <Dialog open={scopeDialogOpen} onClose={() => setScopeDialogOpen(false)}>
         <DialogTitle>Editar recorrência</DialogTitle>

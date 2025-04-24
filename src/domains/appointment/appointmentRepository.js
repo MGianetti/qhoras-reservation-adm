@@ -32,7 +32,8 @@ const deleteAppointment = (appointmentId, scope = "single") =>
       endpoints.delete.appointments.replace(
         "${APPOINTMENT-ID}",
         appointmentId,
-      ) + `?scope=${scope}`,
+      ),
+      { params: { scope } },
     ),
   );
 const readCalendarList = (businessId, page, limit, order, orderBy) =>

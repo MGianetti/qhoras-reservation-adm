@@ -51,7 +51,8 @@ import {
   timeToMinutes,
 } from "./calendarDialog.constants";
 import { useDebounce } from "../../../utils/useDebounce";
-import RecurrenceDialog from "./recurrenceDialog/recurrenceDialog";
+import UpdateRecurrenceDialog from "./updateRecurrenceDialog/updateRecurrenceDialog";
+import DeleteAppointmentDialog from "./deleteAppointmentDialog/deleteAppointmentDialog";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -80,7 +81,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
   } = stateCalendar;
 
   const isRecurrentEvent = Boolean(
-    stateCalendar?.calendarEvent?.recurrenceRuleId,
+    stateCalendar?.calendarEvent?.recurrenceRuleId
   );
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
   const [clientInput, setClientInput] = useState("");
@@ -106,10 +107,10 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
     data: [],
   };
   const { data: appointments } = useSelector(
-    (state) => state?.appointments,
+    (state) => state?.appointments
   ) || { data: [] };
   const { data: calendarBlocks } = useSelector(
-    (state) => state?.calendarBlocks,
+    (state) => state?.calendarBlocks
   ) || { data: [] };
   const scheduleState = useSelector((state) => state?.user.schedule) || [];
 
@@ -202,7 +203,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
       safeBeginDate,
       eventBeginTime,
       eventEndTime,
-    ],
+    ]
   );
 
   const formik = useFormik({
@@ -215,7 +216,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
       calendarBlocks,
       safeBeginDate
         ? format(new Date(safeBeginDate), "eeee", { locale: ptBR })
-        : "",
+        : ""
     ),
     onSubmit: handleSubmit,
   });
@@ -261,7 +262,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
         beginTimeValue = "0" + beginTimeValue;
       }
       const validBeginTime = initialOptionTime.find(
-        (time) => time.value === beginTimeValue,
+        (time) => time.value === beginTimeValue
       );
       const correctedBeginTime = validBeginTime || initialOptionTime[0];
 
@@ -274,7 +275,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
         endTimeValue = "0" + endTimeValue;
       }
       const validEndTime = initialOptionTime.find(
-        (time) => time.value === endTimeValue,
+        (time) => time.value === endTimeValue
       );
       let correctedEndTime = validEndTime || initialOptionTime[0];
 
@@ -284,7 +285,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
       ) {
         const nextValidOption = initialOptionTime.find(
           (time) =>
-            timeToMinutes(time.value) > timeToMinutes(correctedBeginTime.value),
+            timeToMinutes(time.value) > timeToMinutes(correctedBeginTime.value)
         );
         correctedEndTime = nextValidOption || correctedEndTime;
       }
@@ -316,7 +317,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
 
   const handleDelete = async (scope = "single") => {
     if (!eventID) return;
-    await appointmentService.remove(eventID, scope);
+    await appointmentService.remove(eventID, scope, isRecurrentEvent);
     handleCloseDialog();
     setOpenDeleteConfirm(false);
   };
@@ -535,7 +536,11 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                     >
                       <Typography>Data do agendamento</Typography>
                       <div
-                        style={{ display: "flex", alignItems: "center", gap: 10 }}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 10,
+                        }}
                       >
                         <Datepicker
                           styleCls={classes.datepicker}
@@ -572,7 +577,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                 <Grid
                   item
                   xs={12}
-                  sm={(!eventID || !isRecurrentEvent) ? 5 : 12}
+                  sm={!eventID || !isRecurrentEvent ? 5 : 12}
                   style={{
                     display: "flex",
                     justifyContent: isSmUp ? "flex-start" : "flex-start",
@@ -598,8 +603,8 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                             scheduleState,
                             format(new Date(formik.values.beginDate), "eeee", {
                               locale: ptBR,
-                            }),
-                          ),
+                            })
+                          )
                         )}
                         originalValue={{
                           value: formik.values.beginTime.value,
@@ -615,8 +620,8 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                             scheduleState,
                             format(new Date(formik.values.beginDate), "eeee", {
                               locale: ptBR,
-                            }),
-                          ),
+                            })
+                          )
                         )}
                         originalValue={{
                           value: formik.values.endTime.value,
@@ -658,33 +663,34 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
               </Grid>
             </Grid>
 
-            {
-              !eventID && (
-                <FormControl fullWidth>
-                  <InputLabel htmlFor="recurrenceType" size="small">
-                    Recorrência
-              </InputLabel>
-              <Select
-                id="recurrenceType"
-                name="recurrenceType"
-                label="Recorrência"
-                size="small"
-                value={formik.values.recurrenceType}
-                onChange={formik.handleChange}
-              >
-                <MenuItem value="NONE">Não se repete</MenuItem>
-                <MenuItem value="DAILY">Diariamente</MenuItem>
-                <MenuItem value="WEEKLY">Semanalmente</MenuItem>
-                <MenuItem value="WEEKDAYS">Dias de semana (Seg-Sex)</MenuItem>
-                <MenuItem value="MONTHLY_BY_DATE">Mensal (dia exato)</MenuItem>
-                <MenuItem value="MONTHLY_BY_ORDINAL">
-                  Mensal (ex: 2ª Terça)
-                </MenuItem>
-                <MenuItem value="YEARLY_BY_DATE">Anual (data exata)</MenuItem>
-                <MenuItem value="YEARLY_BY_ORDINAL">
-                  Anual (ex: 2ª Terça de Abril)
-                </MenuItem>
-              </Select>
+            {!eventID && (
+              <FormControl fullWidth>
+                <InputLabel htmlFor="recurrenceType" size="small">
+                  Recorrência
+                </InputLabel>
+                <Select
+                  id="recurrenceType"
+                  name="recurrenceType"
+                  label="Recorrência"
+                  size="small"
+                  value={formik.values.recurrenceType}
+                  onChange={formik.handleChange}
+                >
+                  <MenuItem value="NONE">Não se repete</MenuItem>
+                  <MenuItem value="DAILY">Diariamente</MenuItem>
+                  <MenuItem value="WEEKLY">Semanalmente</MenuItem>
+                  <MenuItem value="WEEKDAYS">Dias de semana (Seg-Sex)</MenuItem>
+                  <MenuItem value="MONTHLY_BY_DATE">
+                    Mensal (dia exato)
+                  </MenuItem>
+                  <MenuItem value="MONTHLY_BY_ORDINAL">
+                    Mensal (ex: 2ª Terça)
+                  </MenuItem>
+                  <MenuItem value="YEARLY_BY_DATE">Anual (data exata)</MenuItem>
+                  <MenuItem value="YEARLY_BY_ORDINAL">
+                    Anual (ex: 2ª Terça de Abril)
+                  </MenuItem>
+                </Select>
               </FormControl>
             )}
 
@@ -876,53 +882,14 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
         </DialogContent>
       </StyledDialog>
 
-      <Dialog
-        open={openDeleteConfirm}
-        onClose={handleCloseDeleteConfirm}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {"Confirmar exclusão"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            {isRecurrentEvent
-              ? "Este agendamento faz parte de uma série recorrente. Deseja excluir apenas este ou toda a série?"
-              : "Você tem certeza que deseja excluir este agendamento? Esta ação não pode ser desfeita."}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          {isRecurrentEvent ? (
-            <>
-              <Button onClick={() => handleDelete("single")} color="primary">
-                Somente este
-              </Button>
-              <Button
-                onClick={() => handleDelete("series")}
-                color="primary"
-                autoFocus
-              >
-                Toda a série
-              </Button>
-            </>
-          ) : (
-            <Button
-              onClick={() => handleDelete("single")}
-              color="primary"
-              autoFocus
-            >
-              Confirmar exclusão
-            </Button>
-          )}
+      <DeleteAppointmentDialog
+        openDeleteConfirm={openDeleteConfirm}
+        handleCloseDeleteConfirm={handleCloseDeleteConfirm}
+        handleDelete={handleDelete}
+        isRecurrentEvent={isRecurrentEvent}
+      />
 
-          <Button onClick={handleCloseDeleteConfirm} color="primary">
-            Cancelar
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <RecurrenceDialog
+      <UpdateRecurrenceDialog
         scopeDialogOpen={scopeDialogOpen}
         setScopeDialogOpen={setScopeDialogOpen}
         doUpdate={doUpdate}
