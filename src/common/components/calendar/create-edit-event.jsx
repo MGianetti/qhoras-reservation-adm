@@ -97,5 +97,6 @@ export default function createEditEvent(props) {
     clientName,
     status,
     isPaid,
+    calendarEvent,
   });
 }

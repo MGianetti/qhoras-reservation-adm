@@ -51,6 +51,7 @@ import {
   timeToMinutes,
 } from "./calendarDialog.constants";
 import { useDebounce } from "../../../utils/useDebounce";
+import RecurrenceDialog from "./recurrenceDialog/recurrenceDialog";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -130,9 +131,6 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
     const baseDate = formatDateTime(v.beginDate, v.beginTime.value);
     const baseEndDate = formatDateTime(v.beginDate, v.endTime.value);
 
-    console.log('baseDate', baseDate)
-    console.log('baseEndDate', baseEndDate)
-
     const payload = {
       clientId: v.clientTF.value,
       businessId: business.id,
@@ -187,15 +185,13 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
       endTime: eventEndTime,
 
       /* Recorrência */
-      recurrenceType: isRecurrentEvent ? recurrenceType : "NONE",
-      dayOfWeek: isRecurrentEvent ? dayOfWeek : null,
-      ordinalOfWeek: isRecurrentEvent ? ordinalOfWeek : 2,
-      dayOfMonth: isRecurrentEvent ? dayOfMonth : null,
-      monthOfYear: isRecurrentEvent ? monthOfYear : null,
-      endDate: isRecurrentEvent
-        ? (recurrenceEndDate ?? new Date())
-        : new Date(),
-      timesToRepeat: isRecurrentEvent ? timesToRepeat : "",
+      recurrenceType: "NONE",
+      dayOfWeek: null,
+      ordinalOfWeek: 2,
+      dayOfMonth: null,
+      monthOfYear: null,
+      endDate: new Date(),
+      timesToRepeat: "",
     }),
     [
       room,
@@ -528,56 +524,58 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
               className={clsx(classes.formControl, classes.formControlFlex)}
             >
               <Grid container spacing={2} alignItems="center">
-                <Grid item xs={12} sm={8} style={{ paddingBlock: 15 }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 10,
-                    }}
-                  >
-                    <Typography>Data do agendamento</Typography>
+                {(!eventID || !isRecurrentEvent) && (
+                  <Grid item xs={12} sm={7} style={{ paddingBlock: 15 }}>
                     <div
-                      style={{ display: "flex", alignItems: "center", gap: 10 }}
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 10,
+                      }}
                     >
-                      <Datepicker
-                        styleCls={classes.datepicker}
-                        dateFormat="dd/MM/yyyy"
-                        originalValue={
-                          formik.values.beginDate &&
-                          !isNaN(new Date(formik.values.beginDate).getTime())
-                            ? new Date(formik.values.beginDate)
-                            : null
-                        }
-                        onChange={(datePicked) => {
-                          formik.setFieldValue("beginDate", datePicked);
-                          setStateCalendar({
-                            ...stateCalendar,
-                            eventBeginDate: datePicked,
-                          });
-                        }}
-                      />
-                      <Typography className={classes.dayOfWeek}>
-                        {formik.values.beginDate !== null &&
-                          format(new Date(formik.values.beginDate), "eeee", {
-                            locale: ptBR,
-                          })}
-                      </Typography>
+                      <Typography>Data do agendamento</Typography>
+                      <div
+                        style={{ display: "flex", alignItems: "center", gap: 10 }}
+                      >
+                        <Datepicker
+                          styleCls={classes.datepicker}
+                          dateFormat="dd/MM/yyyy"
+                          originalValue={
+                            formik.values.beginDate &&
+                            !isNaN(new Date(formik.values.beginDate).getTime())
+                              ? new Date(formik.values.beginDate)
+                              : null
+                          }
+                          onChange={(datePicked) => {
+                            formik.setFieldValue("beginDate", datePicked);
+                            setStateCalendar({
+                              ...stateCalendar,
+                              eventBeginDate: datePicked,
+                            });
+                          }}
+                        />
+                        <Typography className={classes.dayOfWeek}>
+                          {formik.values.beginDate !== null &&
+                            format(new Date(formik.values.beginDate), "eeee", {
+                              locale: ptBR,
+                            })}
+                        </Typography>
+                      </div>
+                      {formik.touched.beginDate && formik.errors.beginDate && (
+                        <Typography variant="caption" color="error">
+                          {formik.errors.beginDate}
+                        </Typography>
+                      )}
                     </div>
-                    {formik.touched.beginDate && formik.errors.beginDate && (
-                      <Typography variant="caption" color="error">
-                        {formik.errors.beginDate}
-                      </Typography>
-                    )}
-                  </div>
-                </Grid>
+                  </Grid>
+                )}
                 <Grid
                   item
                   xs={12}
-                  sm={4}
+                  sm={(!eventID || !isRecurrentEvent) ? 5 : 12}
                   style={{
                     display: "flex",
-                    justifyContent: isSmUp ? "flex-end" : "flex-start",
+                    justifyContent: isSmUp ? "flex-start" : "flex-start",
                     paddingBlock: 15,
                   }}
                 >
@@ -586,6 +584,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                       display: "flex",
                       flexDirection: "column",
                       gap: 10,
+                      width: "100%",
                     }}
                   >
                     <Typography>Horário</Typography>
@@ -659,9 +658,11 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
               </Grid>
             </Grid>
 
-            <FormControl fullWidth>
-              <InputLabel htmlFor="recurrenceType" size="small">
-                Recorrência
+            {
+              !eventID && (
+                <FormControl fullWidth>
+                  <InputLabel htmlFor="recurrenceType" size="small">
+                    Recorrência
               </InputLabel>
               <Select
                 id="recurrenceType"
@@ -684,7 +685,8 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                   Anual (ex: 2ª Terça de Abril)
                 </MenuItem>
               </Select>
-            </FormControl>
+              </FormControl>
+            )}
 
             {formik.values.recurrenceType !== "NONE" && (
               <Box sx={{ gap: "16px" }} display="flex" flexDirection="column">
@@ -920,20 +922,11 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
         </DialogActions>
       </Dialog>
 
-      <Dialog open={scopeDialogOpen} onClose={() => setScopeDialogOpen(false)}>
-        <DialogTitle>Editar recorrência</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Você deseja editar somente este evento ou toda a série recorrente?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => doUpdate("single")}>Somente este</Button>
-          <Button onClick={() => doUpdate("series")} autoFocus>
-            Toda a série
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <RecurrenceDialog
+        scopeDialogOpen={scopeDialogOpen}
+        setScopeDialogOpen={setScopeDialogOpen}
+        doUpdate={doUpdate}
+      />
     </>
   );
 }

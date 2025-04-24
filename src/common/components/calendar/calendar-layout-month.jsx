@@ -274,6 +274,7 @@ function CalendarLayoutMonth(props) {
       isPaid,
       description,
       eventID: (calendarEvent && calendarEvent.id) || 0,
+      calendarEvent,
     });
   };
 

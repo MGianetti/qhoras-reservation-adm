@@ -21,8 +21,8 @@ const updateAppointment = (appointmentId, appointmentData, scope = "single") =>
       endpoints.update.appointments.replace(
         "${APPOINTMENT-ID}",
         appointmentId,
-      ) + `?scope=${scope}`,
-      appointmentData,
+      ),
+      { ...appointmentData, scope },
     ),
   );
 

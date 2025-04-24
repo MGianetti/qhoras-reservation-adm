@@ -133,6 +133,7 @@ const CalendarLayoutList = () => {
       isPaid,
       description,
       eventID: (rowData && rowData.id) || 0,
+      calendarEvent: rowData,
     });
   };
 

@@ -16,8 +16,6 @@ const loggedOutLayout = ({ children }) => {
 
   const business = useSelector((state) => state?.auth);
 
-  console.log(business);
-
   return (
     <div
       style={{

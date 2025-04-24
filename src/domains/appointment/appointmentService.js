@@ -92,17 +92,17 @@ const { read, create, update, remove, readCalendarList, exportReservations } = {
       dispatch(setLoading(false));
     }
   },
-  update: async (appointmentId, updateAppointmentPayload) => {
+  update: async (appointmentId, updateAppointmentPayload, scope = "single") => {
     dispatch(setLoading(true));
     try {
       const response = await appointmentRepository.updateAppointment(
         appointmentId,
         updateAppointmentPayload,
-        updateAppointmentPayload.scope, // 'single' ou 'series'
+        scope, // 'single' ou 'series'
       );
 
       // Se scope = 'series', recarregamos a agenda em vez de um updateItem único:
-      const isSeries = updateAppointmentPayload.scope === "series";
+      const isSeries = scope === "series";
 
       if (!isSeries) {
         // Lógica atual para single occurrence
