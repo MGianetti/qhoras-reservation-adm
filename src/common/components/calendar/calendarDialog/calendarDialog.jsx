@@ -194,16 +194,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
       endDate: new Date(),
       timesToRepeat: "",
     }),
-    [
-      room,
-      client,
-      clientName,
-      status,
-      isPaid,
-      safeBeginDate,
-      eventBeginTime,
-      eventEndTime,
-    ]
+    [eventID, openDialog]
   );
 
   const formik = useFormik({
