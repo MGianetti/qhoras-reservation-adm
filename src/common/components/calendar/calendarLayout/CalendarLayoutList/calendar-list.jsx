@@ -40,6 +40,8 @@ const CalendarLayoutList = () => {
     },
   } = useSelector((state) => state?.appointments) || {};
 
+  console.log("reservations", reservations);
+
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -134,6 +136,19 @@ const CalendarLayoutList = () => {
       description,
       eventID: (rowData && rowData.id) || 0,
       calendarEvent: rowData,
+      isList: true,
+      updateParams: {
+          businessId,
+          page: page + 1,
+          limit: rowsPerPage,
+          order,
+          orderBy:
+            orderBy === "member"
+              ? "client.name"
+              : orderBy === "room"
+                ? "room.name"
+                : orderBy,
+      }
     });
   };
 

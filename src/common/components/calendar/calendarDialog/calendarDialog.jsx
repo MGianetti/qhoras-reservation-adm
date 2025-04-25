@@ -78,6 +78,8 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
     monthOfYear,
     recurrenceEndDate,
     timesToRepeat,
+    isList,
+    updateParams,
   } = stateCalendar;
 
   const isRecurrentEvent = Boolean(
@@ -163,12 +165,12 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
         setScopeDialogOpen(true);
         return;
       }
-      await appointmentService.update(eventID, payload);
+      await appointmentService.update(eventID, payload, "single", isList, updateParams);
     } else {
       await appointmentService.create(business.id, payload);
     }
 
-    refreshCalendar(false);
+    if(!isList) refreshCalendar(false);
     handleClose();
   };
 
@@ -320,8 +322,8 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
   };
 
   const doUpdate = (scope) => {
-    appointmentService.update(eventID, markerDataForUpdate, scope).then(() => {
-      refreshCalendar(false);
+    appointmentService.update(eventID, markerDataForUpdate, scope, isList, updateParams).then(() => {
+      if(!isList) refreshCalendar(false);
       setScopeDialogOpen(false);
       handleClose();
     });

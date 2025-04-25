@@ -92,38 +92,38 @@ const { read, create, update, remove, readCalendarList, exportReservations } = {
       dispatch(setLoading(false));
     }
   },
-  update: async (appointmentId, updateAppointmentPayload, scope = "single") => {
+
+  update: async (appointmentId, updateAppointmentPayload, scope = "single", isList = false, updateParams = {}) => {
     dispatch(setLoading(true));
     try {
       const response = await appointmentRepository.updateAppointment(
         appointmentId,
         updateAppointmentPayload,
-        scope // 'single' ou 'series'
+        scope
       );
 
-      // Se scope = 'series', recarregamos a agenda em vez de um updateItem único:
       const isSeries = scope === "series";
 
-      if (!isSeries) {
-        // Lógica atual para single occurrence
+      if (!isSeries && !isList) {
         const actualRoomId = store.getState().appointments.roomId;
         if (response.roomId === actualRoomId) {
           dispatch(updateItem(response));
         }
       }
 
-      // Notification
-      notification(updatedAppointmentSuccess);
-
-      // Recarrega período atual, garantindo que o store fique em sincronia
-      const { roomId } = updateAppointmentPayload;
-      if (roomId) {
-        // supomos que você tenha um day/week/month
-        // Exemplo simplificado (1 semana a partir de hoje)
-        const startOfWeek = dayjs().startOf("week").format();
-        const endOfWeek = dayjs().endOf("week").format();
-        await read(roomId, startOfWeek, endOfWeek);
+      if(isList){
+        const response = await readCalendarList(updateParams);
+        return response;
+      }else{
+        const { roomId } = updateAppointmentPayload;
+        if (roomId) {
+          const startOfWeek = dayjs().startOf("week").format();
+          const endOfWeek = dayjs().endOf("week").format();
+          await read(roomId, startOfWeek, endOfWeek);
+        }
       }
+
+      notification(updatedAppointmentSuccess);
 
       return true;
     } catch (error) {
@@ -184,7 +184,6 @@ const { read, create, update, remove, readCalendarList, exportReservations } = {
         orderBy
       );
       const { reservations, ...pageData } = response;
-
       dispatch(readItem({ data: reservations, roomId: null, pageData }));
       return response;
     } catch (error) {

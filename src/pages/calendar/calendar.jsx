@@ -77,6 +77,8 @@ const Calendar = () => {
     withCloseIcon: true,
     miniCalendarOpen: false,
     calendarEvent: {},
+    isList: false,
+    updateParams: {},
   });
 
   const [runAnimation, setRunAnimation] = useState(true);
