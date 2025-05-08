@@ -9,6 +9,7 @@ import {
   updateItem,
   deleteItem,
   setLoading,
+  clear,
 } from "./roomSlice";
 
 import {
@@ -23,7 +24,7 @@ import {
 const dispatch = (action) => store.dispatch(action);
 
 const { read, create, update, deleteRoom } = {
-  read: async ({ businessId, page = 1, limit = 10, ...filters }) => {
+  read: async ({ businessId, page = 1, limit = 10, search = "", ...filters }) => {
     try {
       dispatch(setLoading(true));
       const response = await roomRepository.readAllRooms(
@@ -31,6 +32,7 @@ const { read, create, update, deleteRoom } = {
         page,
         limit,
         filters,
+        search,
       );
       const newData = response.rooms;
 
@@ -39,6 +41,7 @@ const { read, create, update, deleteRoom } = {
           data: newData,
           page,
           totalCount: response.totalCount,
+          search,
         }),
       );
       return response.rooms;

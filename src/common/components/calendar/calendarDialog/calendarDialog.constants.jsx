@@ -20,14 +20,26 @@ const getDayOfWeek = {
   6: "SATURDAY",
 };
 
-export const getInitialAndEndTime = (userData, weekDay) => {
-  if (!userData.length) return { initialTime: "07:00", endTime: "18:00" };
+const portugueseToEnglish = {
+  "segunda-feira": "MONDAY",
+  "terça-feira": "TUESDAY",
+  "quarta-feira": "WEDNESDAY",
+  "quinta-feira": "THURSDAY",
+  "sexta-feira": "FRIDAY",
+  sábado: "SATURDAY",
+  domingo: "SUNDAY",
+};
 
-  return { initialTime: "07:00", endTime: "18:00" };
-  const block = userData.filter(
-    (block) => block?.day === weekDay.toUpperCase(),
-  );
-  return { initialTime: block[0].startTime, endTime: block[0].endTime };
+export const getInitialAndEndTime = (userData, weekDay) => {
+
+  if (!userData.length) return { initialTime: "07:00", endTime: "18:00" };
+  
+  const englishWeekDay = portugueseToEnglish[weekDay.toLowerCase()] || weekDay.toUpperCase();
+  const daySelected = userData.find(day => day.day === englishWeekDay);
+  
+  if(!daySelected) return { initialTime: "07:00", endTime: "18:00" };
+
+  return { initialTime: daySelected.startTime, endTime: daySelected.endTime };
 };
 
 export const timeToMinutes = (timeStr) => {
@@ -181,7 +193,7 @@ export const validationSchema = (
       ),
   });
 
-const interval = 15;
+const interval = 30;
 export const timeOptions = (initialAndEndTime) => {
   const { initialTime, endTime } = initialAndEndTime || {};
   const [startHour, startMinute] = initialTime.split(":").map(Number);

@@ -3,10 +3,10 @@ import apiService from "../../infraestructure/api/apiService";
 
 import endpoints from "../../infraestructure/api/endpoints.constants";
 
-const readAllRooms = (businessId, page = 1, limit = 10, filters = {}) =>
+const readAllRooms = (businessId, page = 1, limit = 10, filters = {}, search = '') =>
   makeRequest(() =>
     apiService.get(endpoints.read.rooms.replace("${BUSINESS-ID}", businessId), {
-      params: { page, limit, filters },
+      params: { page, limit, filters, search },
     }),
   );
 const createRoom = (businessId, roomData) =>

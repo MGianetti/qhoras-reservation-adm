@@ -1,13 +1,18 @@
 import { FormControl, InputLabel, OutlinedInput } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BiSearchAlt2 } from "react-icons/bi";
+import { useDebounce } from "../../utils/useDebounce";
 
 const SearchInput = (props) => {
   const { labelSearch, setSearch } = props;
 
-  const handleSearch = (newSearch) => {
-    setSearch(newSearch);
-  };
+  const [searchInput, setSearchInput] = useState("");
+
+  const debouncedValue = useDebounce(searchInput, 500);
+
+  useEffect(() => {
+    setSearch(debouncedValue);
+  }, [debouncedValue, setSearch]);
 
   return (
     <FormControl fullWidth variant="outlined">
@@ -19,7 +24,7 @@ const SearchInput = (props) => {
         size="small"
         type={"text"}
         label={labelSearch}
-        onChange={(e) => handleSearch(e.target.value)}
+        onChange={(e) => setSearchInput(e.target.value)}
         endAdornment={<BiSearchAlt2 size={26} color="#9C9C9C" />}
       />
     </FormControl>

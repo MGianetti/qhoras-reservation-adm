@@ -37,9 +37,9 @@ const RoomList = (props) => {
 
   const fetchRooms = useCallback(() => {
     if (businessId) {
-      roomService.read({ businessId, page: page + 1, limit: rowsPerPage });
+      roomService.read({ businessId, page: page + 1, limit: rowsPerPage, search });
     }
-  }, [businessId, page, rowsPerPage, dispatch]);
+  }, [businessId, page, rowsPerPage, dispatch, search]);
 
   useEffect(() => {
     dispatch(clear());
@@ -69,6 +69,8 @@ const RoomList = (props) => {
     setDeleteModalOpen(true);
     setDeleteRowValues(rowValues);
   };
+
+  // TODO: Verificar se é necessário filtrar a lista de salas
 
   const filteredList = useMemo(() => {
     const lowercasedSearch = search.trim().toLowerCase();

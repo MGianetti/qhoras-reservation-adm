@@ -114,7 +114,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
   const { data: calendarBlocks } = useSelector(
     (state) => state?.calendarBlocks
   ) || { data: [] };
-  const scheduleState = useSelector((state) => state?.user.schedule) || [];
+  const [scheduleState, setScheduleState] = useState([]);
 
   const [filteredClientsList, setFilteredClientsList] = useState(clientsList);
 
@@ -122,13 +122,6 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
     eventBeginDate && !isNaN(new Date(eventBeginDate).getTime())
       ? eventBeginDate
       : null;
-
-  const initialOptionTime = useMemo(() => {
-    const weekday = safeBeginDate
-      ? format(new Date(safeBeginDate), "eeee", { locale: ptBR })
-      : "monday";
-    return timeOptions(getInitialAndEndTime(scheduleState, weekday));
-  }, [scheduleState, safeBeginDate]);
 
   const handleSubmit = async (v) => {
     const baseDate = formatDateTime(v.beginDate, v.beginTime.value);
@@ -213,6 +206,17 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
     ),
     onSubmit: handleSubmit,
   });
+
+  const initialOptionTime = useMemo(() => {
+    const weekday = safeBeginDate
+      ? format(new Date(safeBeginDate), "eeee", { locale: ptBR })
+      : "monday";
+
+    const roomSelected = roomsList?.find(room => room.id === formik?.values?.roomTF);
+    if(!roomSelected) return [];
+    setScheduleState(roomSelected?.agendaConfigurations);
+    return timeOptions(getInitialAndEndTime(roomSelected?.agendaConfigurations, weekday));
+  }, [safeBeginDate, formik?.values?.roomTF]);
 
   useEffect(() => {
     if (business?.id) {
