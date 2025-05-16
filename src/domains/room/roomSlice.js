@@ -21,9 +21,10 @@ const roomsSlice = createSlice({
 
       return {
         ...state,
-        data: [...state.data, ...data],
+        data: [...data],
         pagination: {
           ...state.pagination,
+          page,
           totalCount,
         },
       };

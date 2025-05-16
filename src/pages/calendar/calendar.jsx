@@ -90,10 +90,8 @@ const Calendar = () => {
   const [rooms, setRooms] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState(null);
 
-  // Função para buscar as salas
   const fetchRooms = useCallback(
     async (room = selectedRoom) => {
-      try {
         if (!auth?.user?.businessId) return;
         const data = await roomsService.read({
           businessId: auth.user.businessId,
@@ -104,11 +102,8 @@ const Calendar = () => {
         if (data.length > 0 && !room) {
           setSelectedRoom(data[0].id);
         }
-      } catch (error) {
-        console.error("Failed to fetch rooms:", error);
-      }
     },
-    [auth?.user?.businessId, selectedRoom],
+    [auth?.user?.businessId],
   );
 
   useEffect(() => {

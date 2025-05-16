@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   startOfWeek,
@@ -74,10 +74,10 @@ function CalendarMain(props) {
   const searchParams = new URLSearchParams(location.search);
   const businessIdQueryParams = searchParams.get("business");
 
-  const getScheduleData = async (id) => {
-    let start, end;
-
+  const getScheduleData = useCallback(async (id) => {
     if (!id) return;
+    
+    let start, end;
 
     if (layout === "day") {
       start = format(selectedDate, "yyyy-MM-dd 00:00:00");
@@ -109,14 +109,17 @@ function CalendarMain(props) {
     const calendarBlocks = await calendarBlocksService.read(id, start, end);
     fetchRooms(id);
     return { appointments, calendarBlocks };
-  };
+  }, [selectedDate, layout, businessId, businessIdQueryParams]);
 
   useEffect(() => {
-    if (allRooms.length > 0 && layout !== "list") {
+    setGetScheduleData(() => getScheduleData);
+  }, [getScheduleData]);
+
+  useEffect(() => {
+    if (allRooms.length > 0 && layout !== "list" && selectedRoom) {
       getScheduleData(selectedRoom);
-      setGetScheduleData(() => getScheduleData);
     }
-  }, [selectedDate, layout, businessId, allRooms, businessIdQueryParams]);
+  }, [selectedDate, layout, allRooms.length, getScheduleData]);
 
   const weeks = getWeekDays(selectedDate, 7);
   const selectedWeekIndex = getSelectedWeekIndex(selectedDate, weeks, 0);
