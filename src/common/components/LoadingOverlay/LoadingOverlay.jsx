@@ -19,7 +19,7 @@ const LoadingOverlay = ({ isLoading }) => {
         zIndex: 1000,
       }}
     >
-      <CircularProgress size={70} sx={{ color: "#8317b1" }} />
+      <CircularProgress size={70} sx={{ color: "#0D47A1" }} />
     </Box>
   );
 };
