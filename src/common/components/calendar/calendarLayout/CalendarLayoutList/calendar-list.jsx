@@ -31,6 +31,7 @@ import appointmentService from '../../../../../domains/appointment/appointmentSe
 import { columnsCalendarList, rowsCalendarList } from './calendar-list.constants';
 import { useLocation } from 'react-router-dom';
 import calendarReadOnlyService from '../../../../../domains/calendarReadOnly/calendarReadOnlyService';
+import LoadingOverlay from '../../../LoadingOverlay/LoadingOverlay';
 
 const CalendarLayoutList = () => {
     const theme = useTheme();
@@ -41,10 +42,9 @@ const CalendarLayoutList = () => {
         pageData: { totalCount = 0, page: pageAppointments = 0 } = {
             totalCount: 0,
             page: 0
-        }
+        },
+        isLoading
     } = useSelector((state) => state?.appointments) || {};
-
-    console.log('reservations', reservations);
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -157,6 +157,7 @@ const CalendarLayoutList = () => {
 
     return (
         <>
+            <LoadingOverlay isLoading={isLoading} />
             <Paper sx={{ width: '100%', overflow: 'hidden', boxShadow: theme.shadows[0] }}>
                 <TableContainer>
                     <Table stickyHeader aria-label="sticky table">
