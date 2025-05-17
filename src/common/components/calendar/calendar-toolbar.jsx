@@ -10,7 +10,7 @@ import { IoIosArrowBack, IoIosArrowForward, IoMdRefresh } from 'react-icons/io';
 import { PiExportBold } from 'react-icons/pi';
 
 import { MdOutlineViewModule, MdOutlineViewWeek, MdOutlineToday, MdOutlineCalendarViewDay } from 'react-icons/md';
-import { Toolbar, Tooltip, Typography, IconButton, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import { Toolbar, Tooltip, Typography, IconButton, FormControl, InputLabel, MenuItem, Select, Box } from '@mui/material';
 
 import getWeekDays from './common/getWeekDays';
 import { CalendarContext } from './context/calendar-context';
@@ -141,116 +141,292 @@ function CalendarToolbar(props) {
 
         return (
             <StyledRoot>
-                <Toolbar>
-                    <></>
+                <Toolbar className={classes.toolbar}>
+                    {/* ===== CALENDAR | WEEK | MONTH VIEWS ===== */}
                     {layout !== 'list' ? (
                         <>
-                            <StyledTooltip title="Hoje" className={classes.miniCalendarToday} style={{ marginRight: 0 }}>
-                                <StyledMenuButton disabled={isLoading} color="inherit" aria-label="Hoje" onClick={goToToday} edge="start">
-                                    <MdOutlineToday />
-                                </StyledMenuButton>
-                            </StyledTooltip>
-
-                            <StyledTooltip
-                                title="Calendário"
-                                className={clsx(classes.miniCalendarOpen, {
-                                    [classes.miniCalendarOpenSelected]: miniCalendarOpen
-                                })}
-                                style={{ marginRight: 0 }}
+                            {/* ---------- MOBILE ONLY (xs) ---------- */}
+                            <Box
+                                sx={{
+                                    display: { xs: 'flex', sm: 'none' },
+                                    flexDirection: 'column',
+                                    width: '100%',
+                                    gap: 2
+                                }}
                             >
-                                <StyledMenuButton color="inherit" aria-label="Calendário" disabled={isLoading} onClick={openCalendar} edge="start">
-                                    <MdOutlineToday />
-                                </StyledMenuButton>
-                            </StyledTooltip>
+                                {/* Row 1: Hoje / Calendário / Atualizar / MonthYear */}
+                                <Box
+                                    sx={{
+                                        display: { xs: 'flex', sm: 'none' },
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: 2,
+                                        width: '100%',
+                                        flexWrap: 'wrap',
+                                        px: 2
+                                    }}
+                                >
+                                    <StyledTooltip title="Hoje" className={classes.miniCalendarToday}>
+                                        <StyledMenuButton disabled={isLoading} aria-label="Hoje" onClick={goToToday} edge="start">
+                                            <MdOutlineToday />
+                                        </StyledMenuButton>
+                                    </StyledTooltip>
 
-                            <StyledTooltip title="Atualizar" style={{ marginRight: '16px' }}>
-                                <IconButton disabled={isLoading} color="inherit" onClick={refreshCalendar}>
-                                    <IoMdRefresh />
-                                </IconButton>
-                            </StyledTooltip>
+                                    <StyledTooltip
+                                        title="Calendário"
+                                        className={clsx(classes.miniCalendarOpen, {
+                                            [classes.miniCalendarOpenSelected]: miniCalendarOpen
+                                        })}
+                                    >
+                                        <StyledMenuButton disabled={isLoading} aria-label="Calendário" onClick={openCalendar} edge="start">
+                                            <MdOutlineToday />
+                                        </StyledMenuButton>
+                                    </StyledTooltip>
 
-                            <div className={classes.navigation}>
-                                <StyledTooltip title="Anterior">
-                                    <IconButton disabled={isLoading} onClick={previous}>
-                                        <IoIosArrowBack />
+                                    <StyledTooltip title="Atualizar">
+                                        <IconButton disabled={isLoading} onClick={refreshCalendar}>
+                                            <IoMdRefresh />
+                                        </IconButton>
+                                    </StyledTooltip>
+
+                                    <StyledTitle sx={{ whiteSpace: 'nowrap' }}>{showMonthsAndYears || showMonthsAndYear || showMonthAndYear}</StyledTitle>
+                                </Box>
+
+                                {/* Row 2: Export + Day/Week/Month/List */}
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: 2,
+                                        flexWrap: 'wrap',
+                                        width: '100%'
+                                    }}
+                                >
+                                    <StyledTooltip title="Exportar dados">
+                                        <IconButton disabled={isLoading} aria-label="Exportar dados" onClick={() => setOpenExportDialog(true)}>
+                                            <PiExportBold size={20} />
+                                        </IconButton>
+                                    </StyledTooltip>
+
+                                    <StyledTooltip title="Visualização Diária">
+                                        <IconButton disabled={isLoading} aria-label="Visualização Diária" onClick={() => setLayout({ option: 'day' })}>
+                                            <MdOutlineCalendarViewDay />
+                                        </IconButton>
+                                    </StyledTooltip>
+
+                                    <StyledTooltip title="Visualização Semanal">
+                                        <IconButton disabled={isLoading} aria-label="Visualização Semanal" onClick={() => setLayout({ option: 'week' })}>
+                                            <MdOutlineViewWeek />
+                                        </IconButton>
+                                    </StyledTooltip>
+
+                                    <StyledTooltip title="Visualização Mensal">
+                                        <IconButton disabled={isLoading} aria-label="Visualização Mensal" onClick={() => setLayout({ option: 'month' })}>
+                                            <MdOutlineViewModule />
+                                        </IconButton>
+                                    </StyledTooltip>
+
+                                    <StyledTooltip title="Visualização Por Lista">
+                                        <IconButton disabled={isLoading} aria-label="Visualização Por Lista" onClick={() => setLayout({ option: 'list' })}>
+                                            <FaList size={16} />
+                                        </IconButton>
+                                    </StyledTooltip>
+                                </Box>
+                            </Box>
+
+                            {/* ---------- DESKTOP ONLY (sm+) ---------- */}
+                            {/* LEFT – Hoje / Calendário / Refresh / Arrows / Título */}
+                            <Box
+                                sx={{
+                                    display: { xs: 'none', sm: 'flex' },
+                                    alignItems: 'center',
+                                    gap: 1,
+                                    flexShrink: 0,
+                                    flexWrap: 'wrap'
+                                }}
+                            >
+                                <StyledTooltip title="Hoje" className={classes.miniCalendarToday}>
+                                    <StyledMenuButton disabled={isLoading} aria-label="Hoje" onClick={goToToday} edge="start">
+                                        <MdOutlineToday />
+                                    </StyledMenuButton>
+                                </StyledTooltip>
+
+                                <StyledTooltip
+                                    title="Calendário"
+                                    className={clsx(classes.miniCalendarOpen, {
+                                        [classes.miniCalendarOpenSelected]: miniCalendarOpen
+                                    })}
+                                >
+                                    <StyledMenuButton disabled={isLoading} aria-label="Calendário" onClick={openCalendar} edge="start">
+                                        <MdOutlineToday />
+                                    </StyledMenuButton>
+                                </StyledTooltip>
+
+                                <StyledTooltip title="Atualizar">
+                                    <IconButton disabled={isLoading} onClick={refreshCalendar}>
+                                        <IoMdRefresh />
                                     </IconButton>
                                 </StyledTooltip>
 
-                                <StyledTooltip title="Próximo">
-                                    <IconButton disabled={isLoading} onClick={next}>
-                                        <IoIosArrowForward />
-                                    </IconButton>
-                                </StyledTooltip>
-                            </div>
+                                <Box className={classes.navigation}>
+                                    <StyledTooltip title="Anterior">
+                                        <IconButton disabled={isLoading} onClick={previous}>
+                                            <IoIosArrowBack />
+                                        </IconButton>
+                                    </StyledTooltip>
 
-                            <StyledTitle>{showMonthsAndYears || showMonthsAndYear || showMonthAndYear}</StyledTitle>
+                                    <StyledTooltip title="Próximo">
+                                        <IconButton disabled={isLoading} onClick={next}>
+                                            <IoIosArrowForward />
+                                        </IconButton>
+                                    </StyledTooltip>
+                                </Box>
 
-                            {/* Seletor de Sala para telas maiores */}
-                            <FormControl size="small" className={classes.roomSelector}>
-                                <InputLabel>Sala</InputLabel>
-                                <Select value={selectedRoom || ''} label="Sala" onChange={handleRoomChange}>
-                                    {Array.isArray(rooms) &&
-                                        rooms
+                                <StyledTitle>{showMonthsAndYears || showMonthsAndYear || showMonthAndYear}</StyledTitle>
+                            </Box>
+
+                            {/* CENTER – Room selector (desktop ≥ sm) */}
+                            <Box
+                                sx={{
+                                    display: { xs: 'none', sm: 'flex' },
+                                    flexGrow: 1,
+                                    justifyContent: 'center',
+                                    minWidth: '30%',
+                                    pl: 1
+                                }}
+                            >
+                                <FormControl size="small" className={classes.roomSelector} sx={{ width: '100%', maxWidth: 420 }}>
+                                    <InputLabel>Sala</InputLabel>
+                                    <Select value={selectedRoom || ''} label="Sala" onChange={handleRoomChange} fullWidth>
+                                        {rooms
+                                            ?.slice()
                                             .sort((a, b) => a.name.localeCompare(b.name))
                                             .map((room) => (
                                                 <MenuItem key={room.id} value={room.id}>
                                                     {room.name}
                                                 </MenuItem>
                                             ))}
-                                </Select>
-                            </FormControl>
+                                    </Select>
+                                </FormControl>
+                            </Box>
+
+                            {/* RIGHT – Export + view buttons (desktop ≥ sm) */}
+                            {location.pathname !== '/calendario' && (
+                                <Box
+                                    sx={{
+                                        display: { xs: 'none', sm: 'flex' },
+                                        alignItems: 'center',
+                                        gap: 1,
+                                        flexShrink: 0,
+                                        ml: 'auto'
+                                    }}
+                                >
+                                    <StyledTooltip title="Exportar dados">
+                                        <IconButton disabled={isLoading} aria-label="Exportar dados" onClick={() => setOpenExportDialog(true)}>
+                                            <PiExportBold size={20} />
+                                        </IconButton>
+                                    </StyledTooltip>
+
+                                    <StyledTooltip title="Visualização Diária">
+                                        <IconButton disabled={isLoading} aria-label="Visualização Diária" onClick={() => setLayout({ option: 'day' })}>
+                                            <MdOutlineCalendarViewDay />
+                                        </IconButton>
+                                    </StyledTooltip>
+
+                                    <StyledTooltip title="Visualização Semanal">
+                                        <IconButton disabled={isLoading} aria-label="Visualização Semanal" onClick={() => setLayout({ option: 'week' })}>
+                                            <MdOutlineViewWeek />
+                                        </IconButton>
+                                    </StyledTooltip>
+
+                                    <StyledTooltip title="Visualização Mensal">
+                                        <IconButton disabled={isLoading} aria-label="Visualização Mensal" onClick={() => setLayout({ option: 'month' })}>
+                                            <MdOutlineViewModule />
+                                        </IconButton>
+                                    </StyledTooltip>
+
+                                    <StyledTooltip title="Visualização Por Lista">
+                                        <IconButton disabled={isLoading} aria-label="Visualização Por Lista" onClick={() => setLayout({ option: 'list' })}>
+                                            <FaList size={16} />
+                                        </IconButton>
+                                    </StyledTooltip>
+                                </Box>
+                            )}
                         </>
                     ) : (
-                        <h3 style={{ width: '100%', fontWeight: 500 }}> Lista de Eventos</h3>
-                    )}
+                        /* ===== LIST VIEW ===== */
+                        <Box
+                            sx={{
+                                width: '100%',
+                                display: 'flex',
+                                flexWrap: 'wrap',
+                                alignItems: 'center',
+                                justifyContent: 'space-between'
+                            }}
+                        >
+                            <h3 style={{ margin: 0, fontWeight: 500 }}>Lista de Eventos</h3>
 
-                    {location.pathname !== '/calendario' && (
-                        <div style={{ display: 'flex', justifyContent: 'end' }}>
-                            <StyledTooltip title="Exportar dados" style={{ marginRight: '30px' }}>
-                                <IconButton disabled={isLoading} color="inherit" aria-label="Exportar dados" onClick={() => setOpenExportDialog(true)} edge="start">
-                                    <PiExportBold size={20} style={{ marginLeft: '3px' }} />
-                                </IconButton>
-                            </StyledTooltip>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 1,
+                                    mt: { xs: 1, sm: 0 },
+                                    width: { xs: '100%', sm: 'auto' },
+                                    justifyContent: { xs: 'center', sm: 'flex-start' },
+                                    flexWrap: 'wrap'
+                                }}
+                            >
+                                <StyledTooltip title="Exportar dados">
+                                    <IconButton disabled={isLoading} aria-label="Exportar dados" onClick={() => setOpenExportDialog(true)}>
+                                        <PiExportBold size={20} />
+                                    </IconButton>
+                                </StyledTooltip>
 
-                            <StyledTooltip title="Visualização Diária">
-                                <IconButton disabled={isLoading} color="inherit" aria-label="Visualização Diária" onClick={() => setLayout({ option: 'day' })} edge="start">
-                                    <MdOutlineCalendarViewDay />
-                                </IconButton>
-                            </StyledTooltip>
+                                <StyledTooltip title="Visualização Diária">
+                                    <IconButton disabled={isLoading} aria-label="Visualização Diária" onClick={() => setLayout({ option: 'day' })}>
+                                        <MdOutlineCalendarViewDay />
+                                    </IconButton>
+                                </StyledTooltip>
 
-                            <StyledTooltip title="Visualização Semanal">
-                                <IconButton disabled={isLoading} color="inherit" aria-label="Visualização Semanal" onClick={() => setLayout({ option: 'week' })} edge="start">
-                                    <MdOutlineViewWeek />
-                                </IconButton>
-                            </StyledTooltip>
+                                <StyledTooltip title="Visualização Semanal">
+                                    <IconButton disabled={isLoading} aria-label="Visualização Semanal" onClick={() => setLayout({ option: 'week' })}>
+                                        <MdOutlineViewWeek />
+                                    </IconButton>
+                                </StyledTooltip>
 
-                            <StyledTooltip title="Visualização Mensal">
-                                <IconButton disabled={isLoading} color="inherit" aria-label="Visualização Mensal" onClick={() => setLayout({ option: 'month' })} edge="start">
-                                    <MdOutlineViewModule />
-                                </IconButton>
-                            </StyledTooltip>
+                                <StyledTooltip title="Visualização Mensal">
+                                    <IconButton disabled={isLoading} aria-label="Visualização Mensal" onClick={() => setLayout({ option: 'month' })}>
+                                        <MdOutlineViewModule />
+                                    </IconButton>
+                                </StyledTooltip>
 
-                            <StyledTooltip title="Visualização Por Lista">
-                                <IconButton disabled={isLoading} color="inherit" aria-label="Visualização Por Lista" onClick={() => setLayout({ option: 'list' })} edge="start">
-                                    <FaList size={16} style={{ marginLeft: '3px' }} />
-                                </IconButton>
-                            </StyledTooltip>
-                        </div>
+                                <StyledTooltip title="Visualização Por Lista">
+                                    <IconButton disabled={isLoading} aria-label="Visualização Por Lista" onClick={() => setLayout({ option: 'list' })}>
+                                        <FaList size={16} />
+                                    </IconButton>
+                                </StyledTooltip>
+                            </Box>
+                        </Box>
                     )}
                 </Toolbar>
 
-                {/* Seletor de Sala para telas pequenas */}
-                <FormControl size="small" className={classes.roomSelectorSmall}>
-                    <InputLabel>Sala</InputLabel>
-                    <Select value={selectedRoom || ''} label="Sala" onChange={handleRoomChange} style={{ width: '100%' }}>
-                        {Array.isArray(rooms) &&
-                            rooms.map((room) => (
-                                <MenuItem key={room.id} value={room.id}>
-                                    {room.name}
-                                </MenuItem>
-                            ))}
-                    </Select>
-                </FormControl>
+                {/* ===== ROOM SELECTOR – MOBILE ===== */}
+                {layout !== 'list' && (
+                    <Box sx={{ display: { xs: 'block', sm: 'none' }, m: 1, px: 2 }}>
+                        <FormControl size="small" className={classes.roomSelectorSmall} fullWidth>
+                            <InputLabel>Sala</InputLabel>
+                            <Select value={selectedRoom || ''} label="Sala" onChange={handleRoomChange} fullWidth>
+                                {rooms?.map((room) => (
+                                    <MenuItem key={room.id} value={room.id}>
+                                        {room.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </Box>
+                )}
             </StyledRoot>
         );
     }, [

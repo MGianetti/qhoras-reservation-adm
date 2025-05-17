@@ -128,6 +128,7 @@ function NavBar() {
                   transformOrigin: "right bottom",
                   cursor: "wait",
                   margin: "20px",
+                  whiteSpace:'nowrap',
                 }}
               >
                 Local Environment
