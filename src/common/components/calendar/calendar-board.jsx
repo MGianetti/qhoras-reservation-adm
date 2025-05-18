@@ -268,6 +268,7 @@ function CalendarBoard(props) {
   };
 
   const onDrop = () => {
+    // debugger;
     if (location.pathname === "/calendario") return;
     const eventID = draggingEventId;
 
@@ -373,6 +374,7 @@ function CalendarBoard(props) {
               defaultEventDuration,
               stateCalendar,
               setStateCalendar,
+              selectedRoom
             })
           }
         >

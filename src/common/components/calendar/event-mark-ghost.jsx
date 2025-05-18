@@ -7,7 +7,7 @@ import { CalendarContext } from "./context/calendar-context";
 const styles = {
   display: "inline-block",
 };
-const backgroundColor = "#7f369e66";
+const backgroundColor = "#128fd85f";
 
 const EventMarkGhost = (props) => {
   const { dataDate, dataHour, dataMin } = props;
