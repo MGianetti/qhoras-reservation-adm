@@ -1,8 +1,6 @@
-import { createContext } from "react";
-
-const savedLayout = localStorage.getItem("calendarLayout") || "month";
+import { createContext } from 'react';
 
 export const CalendarContext = createContext({
-  stateCalendar: { layout: savedLayout },
-  setStateCalendar: () => {},
+    stateCalendar: {},
+    setStateCalendar: () => {}
 });

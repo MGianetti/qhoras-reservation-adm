@@ -112,8 +112,13 @@ function CalendarToolbar(props) {
     const location = useLocation();
 
     return useMemo(() => {
-        const setLayout = ({ option }) => {
-            setStateCalendar({ ...stateCalendar, layout: option });
+        const setLayout = (props) => {
+            const { option } = props;
+            setStateCalendar((prev) => ({
+                ...prev,
+                selectedDate,
+                layout: option
+            }));
             localStorage.setItem('calendarLayout', option);
         };
 
