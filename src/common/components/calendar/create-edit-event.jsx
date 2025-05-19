@@ -15,6 +15,7 @@ export default function createEditEvent(props) {
     stateCalendar,
     setStateCalendar,
     calendarEvent = null,
+    selectedRoom
   } = props;
 
   let datasetDate;
@@ -62,6 +63,7 @@ export default function createEditEvent(props) {
 
     const hour = Math.trunc(position / 60);
     const isHalfHour = Math.trunc(position / 15) % 2 === 0 ? false : true;
+    room = selectedRoom;
 
     const minute = isHalfHour ? 15 : 0;
 

@@ -194,8 +194,10 @@ const Root = styled("div")(({ theme }) => ({
 }));
 
 function CalendarLayoutMonth(props) {
-  const viewEvent = (props) => {
-    const { calendarEvent } = props;
+  const { selectedRoom } = props;
+
+  const viewEvent = (viewEventProps) => {
+    const { calendarEvent } = viewEventProps;
 
     let eventBeginDate;
 
@@ -230,6 +232,8 @@ function CalendarLayoutMonth(props) {
       if (eventEl.target.dataset.date === undefined) return false;
 
       datasetDate = new Date(eventEl.target.dataset.date);
+      
+      room = selectedRoom;
 
       let position =
         eventEl.clientY - eventEl.target.getBoundingClientRect().top;
@@ -347,6 +351,7 @@ function CalendarLayoutMonth(props) {
                 defaultEventDuration,
                 stateCalendar,
                 setStateCalendar,
+                selectedRoom
               });
             }}
           >
@@ -434,6 +439,7 @@ function CalendarLayoutMonth(props) {
                         defaultEventDuration,
                         stateCalendar,
                         setStateCalendar,
+                        selectedRoom
                       })
                     }
                   >

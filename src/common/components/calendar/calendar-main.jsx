@@ -128,7 +128,7 @@ function CalendarMain(props) {
   return (
     <Root style={{ width: "100%" }}>
       {layout === "month" && (
-        <CalendarLayoutMonth weeks={weeks} runAnimation={runAnimation} />
+        <CalendarLayoutMonth weeks={weeks} runAnimation={runAnimation} selectedRoom={selectedRoom} />
       )}
       {(layout === "week" || layout === "day") && (
         <CalendarLayoutDayWeek
