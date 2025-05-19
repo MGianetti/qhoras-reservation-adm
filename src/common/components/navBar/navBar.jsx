@@ -1,10 +1,11 @@
 import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+
 import { IoMenu } from 'react-icons/io5';
+import { FaRegCopy } from 'react-icons/fa';
 import { LuCalendarDays } from 'react-icons/lu';
 import { FaExternalLinkAlt } from 'react-icons/fa';
-import { FaRegCopy } from 'react-icons/fa';
 
 import Box from '@mui/material/Box';
 import Menu from '@mui/material/Menu';
@@ -12,18 +13,18 @@ import AppBar from '@mui/material/AppBar';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Toolbar from '@mui/material/Toolbar';
+import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import Container from '@mui/material/Container';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { CardMedia, useTheme } from '@mui/material';
-import Tooltip from '@mui/material/Tooltip';
 
+import notification from '../../utils/notification';
 import store from '../../../infraestructure/store/store';
 import { logout } from '../../../infraestructure/auth/authSlice';
 
 import logoWhite from 'src/assets/images/logo-white.png';
-import notification from '../../utils/notification';
 
 const pages = [
     {
