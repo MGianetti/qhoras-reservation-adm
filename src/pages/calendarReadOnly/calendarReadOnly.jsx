@@ -69,7 +69,6 @@ const CalendarReadOnly = () => {
     title: "",
     withCloseIcon: true,
     miniCalendarOpen: false,
-    calendarEvent: {},
   });
 
   const [runAnimation, setRunAnimation] = useState(true);

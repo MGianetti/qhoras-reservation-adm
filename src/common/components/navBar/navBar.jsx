@@ -178,7 +178,7 @@ function NavBar() {
                                 }}
                             >
                                 {pages.map((page) => {
-                                    if (role != 'ADMINISTRATOR' && page.label === 'configurações') return null;
+                                    if (role != 'ADMINISTRATOR' && page.label === 'configurações') return null;
                                     return (
                                         <MenuItem key={page.label} onClick={() => handlePageChange(page)}>
                                             <Typography textAlign="center" textTransform={'uppercase'}>
@@ -206,8 +206,7 @@ function NavBar() {
                             }}
                         >
                             {pages.map((page) => {
-                                if (role != 'ADMINISTRATOR' && page.label === 'configurações') return null;
-
+                                if (role != 'ADMINISTRATOR' && page.label === 'configurações') return null;
                                 return (
                                     <Button
                                         key={page.label}

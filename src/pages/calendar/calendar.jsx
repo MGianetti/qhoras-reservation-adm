@@ -67,7 +67,6 @@ const Calendar = () => {
         title: '',
         withCloseIcon: true,
         miniCalendarOpen: false,
-        calendarEvent: {},
         isList: false,
         updateParams: {}
     });
