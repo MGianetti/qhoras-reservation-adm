@@ -138,10 +138,10 @@ const { read, create, update, remove, readCalendarList, exportReservations } = {
             dispatch(setLoading(false));
         }
     },
-    readCalendarList: async ({ businessId, page = 1, limit = 10, order = 'asc', orderBy = 'date' }) => {
+    readCalendarList: async ({ businessId, page = 1, limit = 10, order = 'asc', orderBy = 'date', filters = {} }) => {
         try {
             dispatch(setLoading(true));
-            const response = await appointmentRepository.readCalendarList(businessId, page, limit, order, orderBy);
+            const response = await appointmentRepository.readCalendarList(businessId, page, limit, order, orderBy, filters);
             const { reservations, ...pageData } = response;
             dispatch(readItem({ data: reservations, roomId: null, pageData }));
             return response;

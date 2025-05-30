@@ -421,7 +421,7 @@ function CalendarToolbar(props) {
                                 justifyContent: 'space-between'
                             }}
                         >
-                            <h3 style={{ margin: 0, fontWeight: 500 }}>Lista de Eventos</h3>
+                            <h3 style={{ margin: 0, fontWeight: 500 }}></h3>
 
                             <Box
                                 sx={{
