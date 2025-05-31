@@ -12,3 +12,35 @@ msgstr ""
 "Last-Translator: \n"
 "Language-Team: \n"
 "Plural-Forms: \n"
+
+#: src/common/components/halfScreenLogin/halfScreenLogin.jsx:30
+msgid "com facilidade e eficiência"
+msgstr "com facilidade e eficiência"
+
+#: src/pages/loginPage/loginPageForm/loginPageForm.jsx:74
+msgid "Email"
+msgstr "Email"
+
+#: src/pages/loginPage/loginPageForm/loginPageForm.jsx:117
+msgid "Entrar"
+msgstr "Entrar"
+
+#: src/pages/loginPage/loginPageForm/loginPageForm.jsx:120
+msgid "Esqueci minha senha"
+msgstr "Esqueci minha senha"
+
+#: src/pages/loginPage/loginPageForm/loginPageForm.jsx:70
+msgid "Faça login para continuar"
+msgstr "Faça login para continuar"
+
+#: src/common/components/halfScreenLogin/halfScreenLogin.jsx:33
+#~ msgid "Gerencie suas reservas de salas com a QHoras!"
+#~ msgstr "Gerencie suas reservas de salas com a QHoras!"
+
+#: src/common/components/halfScreenLogin/halfScreenLogin.jsx:29
+msgid "Organize suas reuniões e eventos"
+msgstr "Organize suas reuniões e eventos"
+
+#: src/pages/loginPage/loginPageForm/loginPageForm.jsx:92
+msgid "Senha"
+msgstr "Senha"

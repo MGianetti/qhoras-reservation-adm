@@ -1,1 +1,1 @@
-/*eslint-disable*/export const messages=JSON.parse("{}");
+/*eslint-disable*/export const messages=JSON.parse("{\"ODPN6C\":[\"com facilidade e eficiência\"],\"O3oNi5\":[\"Email\"],\"8Cqk2V\":[\"Entrar\"],\"uvmtuR\":[\"Esqueci minha senha\"],\"3hGYsD\":[\"Faça login para continuar\"],\"RSLZyX\":[\"Gerencie suas reservas de salas com a QHoras!\"],\"3UNbk2\":[\"Organize suas reuniões e eventos\"],\"SHCqbT\":[\"Senha\"]}");

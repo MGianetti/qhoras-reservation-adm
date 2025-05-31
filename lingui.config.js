@@ -9,5 +9,7 @@ export default {
     ],
     format: 'po',
     compileNamespace: 'es',
-
+    fallbackLocales: {
+        default: 'en'
+    }
 };

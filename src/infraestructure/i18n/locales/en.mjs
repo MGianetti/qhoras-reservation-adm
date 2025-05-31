@@ -1,1 +1,1 @@
-/*eslint-disable*/export const messages=JSON.parse("{}");
+/*eslint-disable*/export const messages=JSON.parse("{\"ODPN6C\":[\"with ease and efficiency\"],\"O3oNi5\":[\"Email\"],\"8Cqk2V\":[\"Sign in\"],\"uvmtuR\":[\"Forgot my password\"],\"3hGYsD\":[\"Sign in to continue\"],\"RSLZyX\":[\"Manage your room bookings with QHoras!\"],\"3UNbk2\":[\"Organize your meetings and events\"],\"SHCqbT\":[\"Password\"]}");

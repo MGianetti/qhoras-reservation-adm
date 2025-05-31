@@ -1,17 +1,17 @@
 import { i18n } from '@lingui/core';
 import { I18nProvider } from '@lingui/react';
 
-export async function activateLocale(locale = 'pt') {
+export async function activateLocale(locale) {
     let messages;
+
     switch (locale) {
-        case 'pt':
-            messages = (await import('./locales/pt.mjs')).messages;
-            break;
         case 'en':
             messages = (await import('./locales/en.mjs')).messages;
             break;
+        case 'pt':
         default:
             messages = (await import('./locales/pt.mjs')).messages;
+            break;
     }
 
     i18n.load(locale, messages);
