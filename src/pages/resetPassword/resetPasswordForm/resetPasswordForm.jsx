@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import authService from '../../../infraestructure/auth/authService';
 import { validationSchema } from './resetPasswordForm.constants';
 import logoB from 'src/assets/images/logo-b.png';
+import { Trans } from '@lingui/react/macro';
 
 const ResetPasswordForm = () => {
     const theme = useTheme();
@@ -63,7 +64,7 @@ const ResetPasswordForm = () => {
                 noValidate
                 autoComplete="off"
             >
-                <CardMedia component="img" sx={{ width: 200 }} image={logoB} alt="Logo QHoras" />
+                <CardMedia component="img" sx={{ width: 200 }} image={logoB} alt={Trans`Logo QHoras`} />
                 <Typography
                     variant="subtitle2"
                     sx={{
@@ -73,18 +74,18 @@ const ResetPasswordForm = () => {
                         fontSize: '1.5rem'
                     }}
                 >
-                    Digite sua nova senha
+                    <Trans>Digite sua nova senha</Trans>
                 </Typography>
                 <FormControl fullWidth sx={{ m: 2 }} variant="outlined">
                     <InputLabel size="small" required htmlFor="outlined-adornment-password">
-                        Nova Senha
+                        <Trans>Nova Senha</Trans>
                     </InputLabel>
                     <OutlinedInput
                         id="outlined-adornment-password"
                         size="small"
                         required
                         type={showPassword ? 'text' : 'password'}
-                        label="Nova Senha"
+                        label={Trans`Nova Senha`}
                         {...formik.getFieldProps('password')}
                         endAdornment={
                             <InputAdornment position="end">
@@ -103,14 +104,14 @@ const ResetPasswordForm = () => {
                 </FormControl>
                 <FormControl fullWidth sx={{ m: 2 }} variant="outlined">
                     <InputLabel size="small" required htmlFor="outlined-adornment-confirm-password">
-                        Confirmação de Senha
+                        <Trans>Confirmação de Senha</Trans>
                     </InputLabel>
                     <OutlinedInput
                         id="outlined-adornment-confirm-password"
                         size="small"
                         required
                         type={showConfirmPassword ? 'text' : 'password'}
-                        label="Confirmação de Senha"
+                        label={Trans`Confirmação de Senha`}
                         {...formik.getFieldProps('confirmPassword')}
                         endAdornment={
                             <InputAdornment position="end">
@@ -128,10 +129,10 @@ const ResetPasswordForm = () => {
                     ) : null}
                 </FormControl>
                 <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-                    Mudar senha
+                    <Trans>Mudar senha</Trans>
                 </Button>
                 <Link href="/" variant="subtitle2" sx={{ pt: 2 }}>
-                    Faça Login
+                    <Trans>Faça Login</Trans>
                 </Link>
             </Stack>
         </Box>

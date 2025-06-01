@@ -5,6 +5,7 @@ import moneyMask from '../../../common/masks/moneyMask';
 import formatDuration from '../../../common/masks/durationMask';
 import { IconButton } from '@mui/material';
 import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
+import { Trans } from '@lingui/react/macro';
 
 const StyledTooltip = styled(({ className, ...props }) => <Tooltip {...props} classes={{ popper: className }} />)(({ theme }) => ({
     [`& .${tooltipClasses.tooltip}`]: {
@@ -18,25 +19,25 @@ const StyledTooltip = styled(({ className, ...props }) => <Tooltip {...props} cl
 export const columns = [
     {
         id: 'name',
-        label: 'Nome',
+        label: Trans`Nome`,
         minWidth: 170,
         align: 'left'
     },
     {
         id: 'status',
-        label: 'Status',
+        label: Trans`Status`,
         minWidth: 170,
         align: 'center'
     },
     {
         id: 'price',
-        label: 'Taxa',
+        label: Trans`Taxa`,
         minWidth: 170,
         align: 'center'
     },
     {
         id: 'capacity',
-        label: 'Capacidade',
+        label: Trans`Capacidade`,
         minWidth: 170,
         align: 'center'
     }
@@ -44,8 +45,8 @@ export const columns = [
 
 function createData(name, statusBoolean, priceNumber, capacityNumber) {
     const price = moneyMask(priceNumber);
-    const capacity = `${capacityNumber} pessoas`;
-    const status = statusBoolean ? 'Ativo' : 'Inativo';
+    const capacity = `${capacityNumber}` + Trans` pessoas`;
+    const status = statusBoolean ? Trans`Ativo` : Trans`Inativo`;
     return { name, status, price, capacity };
 }
 

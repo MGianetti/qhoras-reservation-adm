@@ -4,6 +4,7 @@ import { Box, Button, CardMedia, FormControl, InputLabel, Link, OutlinedInput, S
 import authService from '../../../infraestructure/auth/authService';
 
 import logoB from 'src/assets/images/logo-b.png';
+import { Trans } from '@lingui/react/macro';
 
 const ForgotPasswordForm = () => {
     const [email, setEmail] = useState('');
@@ -39,24 +40,32 @@ const ForgotPasswordForm = () => {
                 noValidate
                 autoComplete="off"
             >
-                <CardMedia component="img" sx={{ width: 200 }} image={logoB} alt="Logo QHoras" />
+                <CardMedia component="img" sx={{ width: 200 }} image={logoB} alt={Trans`Logo QHoras`} />
                 <Typography variant="subtitle2" sx={{ pt: 4, color: theme.palette.primary.main, fontSize: '1.5rem' }}>
-                    Recuperação de senha
+                    <Trans>Recuperação de senha</Trans>
                 </Typography>
                 <Typography variant="caption" sx={{ color: '#606062', fontSize: '1rem' }}>
-                    Informe seu e-mail para solicitar uma nova senha!
+                    <Trans>Informe seu e-mail para solicitar uma nova senha!</Trans>
                 </Typography>
                 <FormControl fullWidth sx={{ m: 2 }} variant="outlined">
                     <InputLabel size="small" required htmlFor="email">
-                        Insira seu email de acesso
+                        <Trans>Insira seu email de acesso</Trans>
                     </InputLabel>
-                    <OutlinedInput id="email" size="small" type="email" label="Insira seu email de acesso" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                    <OutlinedInput
+                        id="email"
+                        size="small"
+                        type="email"
+                        label={Trans`Insira seu email de acesso`}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
                 </FormControl>
                 <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-                    Resetar Senha
+                    <Trans>Resetar Senha</Trans>
                 </Button>
                 <Link href="/" variant="subtitle2" sx={{ pt: 2 }}>
-                    Faça Login
+                    <Trans>Faça Login</Trans>
                 </Link>
             </Stack>
         </Box>

@@ -64,7 +64,7 @@ const LoginPageForm = () => {
                     }}
                     component="img"
                     image={logoB}
-                    alt="Logo QHoras"
+                    alt={Trans`Logo QHoras`}
                 />
                 <Typography variant="subtitle2" sx={{ m: 2, pt: 2, color: theme.palette.primary.main }}>
                     <Trans>Faça login para continuar</Trans>
@@ -96,7 +96,7 @@ const LoginPageForm = () => {
                         size="small"
                         required
                         type={showPassword ? 'text' : 'password'}
-                        label="Senha"
+                        label={Trans`Senha`}
                         {...formik.getFieldProps('password')}
                         endAdornment={
                             <InputAdornment position="end">

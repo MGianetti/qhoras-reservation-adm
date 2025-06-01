@@ -11,6 +11,7 @@ import LoadingOverlay from '../../../common/components/LoadingOverlay/LoadingOve
 import SuggestionGroup from '../../../common/components/rowGroups/suggestionGroup/suggestionGroup';
 
 import styles from './tabGeneralConfigs.module.scss';
+import { Trans } from '@lingui/react/macro';
 
 function TabGeneralConfigs() {
     const theme = useTheme();
@@ -22,7 +23,7 @@ function TabGeneralConfigs() {
     };
 
     const diasDaSemana = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
-    const days = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado', 'Domingo'];
+    const days = [Trans`Segunda-feira`, Trans`Terça-feira`, Trans`Quarta-feira`, Trans`Quinta-feira`, Trans`Sexta-feira`, Trans`Sábado`, Trans`Domingo`];
 
     const initialCheckedDays = days.reduce((acc, day, index) => {
         if (!scheduleState) return acc;
@@ -76,7 +77,7 @@ function TabGeneralConfigs() {
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                         <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>
-                            Salvar
+                            <Trans>Salvar</Trans>
                         </Button>
                     </div>
                 </form>

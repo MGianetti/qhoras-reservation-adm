@@ -12,6 +12,7 @@ import TabEstablishment from './tabEstablishment/tabEstablishment';
 import TabGeneralConfigs from './tabGeneralConfigs/tabGeneralConfigs';
 import LoggedLayout from '../../common/layouts/loggedLayout/loggedLayout';
 import appointmentService from '../../domains/appointment/appointmentService';
+import { Trans } from '@lingui/react/macro';
 
 function CustomTabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -66,7 +67,7 @@ export default function Configurations() {
                         <Tab
                             icon={<IoStorefrontOutline size={17} />}
                             iconPosition="start"
-                            label="Estabelecimento"
+                            label={Trans`Estabelecimento`}
                             sx={{
                                 fontSize: 14,
                                 textTransform: 'none',

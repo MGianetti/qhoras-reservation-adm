@@ -5,7 +5,7 @@ const RenderClientCell = ({ column, value, rowIndex, row, handleClickWhatsapp })
     if (column.id === 'name') {
         return (
             <div style={{ display: 'flex', alignItems: 'center' }}>
-                <img src={row.image} alt={`Imagem ${rowIndex + 1}`} width="40" height="40" style={{ marginRight: 12 }} />
+                <img src={row.image} alt={Trans`Imagem` + `${rowIndex + 1}`} width="40" height="40" style={{ marginRight: 12 }} />
                 {value}
             </div>
         );

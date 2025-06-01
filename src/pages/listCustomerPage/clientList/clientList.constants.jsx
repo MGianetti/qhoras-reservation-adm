@@ -1,3 +1,4 @@
+import { Trans } from '@lingui/react/macro';
 import avatar1 from 'src/assets/images/avatar-1.png';
 import avatar2 from 'src/assets/images/avatar-2.png';
 import avatar3 from 'src/assets/images/avatar-3.png';
@@ -9,25 +10,25 @@ const avatars = [avatar1, avatar2, avatar3, avatar4, avatar5];
 export const columns = [
     {
         id: 'name',
-        label: 'Nome',
+        label: Trans`Nome`,
         minWidth: 190,
         align: 'left'
     },
     {
         id: 'phone',
-        label: 'Telefone',
+        label: Trans`Telefone`,
         minWidth: 170,
         align: 'left'
     },
     {
         id: 'lastReservation',
-        label: 'Última Reserva',
+        label: Trans`Última Reserva`,
         minWidth: 170,
         align: 'left'
     },
     {
         id: 'actions',
-        label: 'Ações',
+        label: Trans`Ações`,
         minWidth: 170,
         align: 'center'
     }
@@ -40,7 +41,7 @@ function getRandomImage() {
 
 function createData(name, phone, lastReservationDate, loyaltyPoints) {
     const image = getRandomImage();
-    const lastReservation = lastReservationDate ? new Date(lastReservationDate).toLocaleDateString('pt-BR') : 'Sem reservas';
+    const lastReservation = lastReservationDate ? new Date(lastReservationDate).toLocaleDateString('pt-BR') : Trans`Sem reservas`;
     return { image, name, phone, lastReservation, loyaltyPoints };
 }
 

@@ -1,3 +1,4 @@
+import { Trans } from '@lingui/react/macro';
 import { Button, Chip, Grid, Stack, TableCell, TableRow } from '@mui/material';
 import { IoTrash } from 'react-icons/io5';
 
@@ -6,7 +7,7 @@ const RenderRoomCell = ({ column, value, handleOpenDeleteModal }) => {
         return (
             <Stack direction="row" justifyContent="center" spacing={1}>
                 <Chip
-                    label={value ? 'Ativo' : 'Inativo'}
+                    label={value ? Trans`Ativo` : Trans`Inativo`}
                     sx={{
                         backgroundColor: value ? '#05C00C' : '#C00505',
                         color: 'white',
@@ -21,9 +22,9 @@ const RenderRoomCell = ({ column, value, handleOpenDeleteModal }) => {
     }
 
     if (column.id === 'price') {
-        const formattedPrice = new Intl.NumberFormat('pt-BR', {
+        const formattedPrice = new Intl.NumberFormat(Trans`pt-BR`, {
             style: 'currency',
-            currency: 'BRL'
+            currency: Trans`BRL`
         }).format(value);
         return formattedPrice;
     }
