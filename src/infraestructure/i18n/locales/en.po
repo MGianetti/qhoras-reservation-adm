@@ -13,9 +13,22 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
+#. placeholder {0}: page.label
+#: src/common/components/navBar/navBar.jsx:188
+msgid "{0}"
+msgstr ""
+
+#: src/common/components/navBar/navBar.jsx:259
+msgid "Calendário"
+msgstr ""
+
 #: src/common/components/halfScreenLogin/halfScreenLogin.jsx:30
 msgid "com facilidade e eficiência"
 msgstr "with ease and efficiency"
+
+#: src/common/components/navBar/navBar.jsx:282
+msgid "Copiar link"
+msgstr ""
 
 #: src/pages/loginPage/loginPageForm/loginPageForm.jsx:74
 msgid "Email"
@@ -33,12 +46,21 @@ msgstr "Forgot my password"
 msgid "Faça login para continuar"
 msgstr "Sign in to continue"
 
-#~ msgid "Gerencie suas reservas de salas com a QHoras!"
-#~ msgstr "Manage your room bookings with QHoras!"
+#: src/common/components/halfScreenLogin/halfScreenLogin.jsx:33
+msgid "Gerencie suas reservas de salas com a QHoras!"
+msgstr "Manage your room bookings with QHoras!"
+
+#: src/common/components/navBar/navBar.jsx:282
+msgid "Link"
+msgstr ""
 
 #: src/common/components/halfScreenLogin/halfScreenLogin.jsx:29
 msgid "Organize suas reuniões e eventos"
 msgstr "Organize your meetings and events"
+
+#: src/common/components/navBar/navBar.jsx:125
+msgid "Sair"
+msgstr ""
 
 #: src/pages/loginPage/loginPageForm/loginPageForm.jsx:92
 msgid "Senha"

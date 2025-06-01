@@ -1,3 +1,4 @@
+import { Trans } from "@lingui/react/macro";
 import {
   Checkbox,
   FormControlLabel,
@@ -14,7 +15,7 @@ const AdditionalSettingsGroup = () => {
   return (
     <>
       <FormLabel component="legend" sx={{ mb: 2 }}>
-        Fidelidade
+        <Trans>Fidelidade</Trans>
       </FormLabel>
       <FormGroup>
         <Grid item xs="auto" minWidth={180}>
@@ -22,7 +23,7 @@ const AdditionalSettingsGroup = () => {
             control={
               <Checkbox onChange={handleCheckboxChange} name="loyaltyPoints" />
             }
-            label="Ativar fidelidade do cliente?"
+            label={Trans`Ativar fidelidade do cliente?`}
           />
         </Grid>
       </FormGroup>

@@ -19,6 +19,7 @@ import Container from '@mui/material/Container';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { CardMedia, useTheme, useMediaQuery } from '@mui/material';
+import { Trans } from '@lingui/react/macro';
 
 import notification from '../../utils/notification';
 import store from '../../../infraestructure/store/store';
@@ -28,15 +29,15 @@ import logoWhite from 'src/assets/images/logo-white.png';
 
 const pages = [
     {
-        label: 'calendário',
+        label: Trans`calendário`,
         path: '/'
     },
     {
-        label: 'Membros',
+        label: Trans`Membros`,
         path: '/membros'
     },
     {
-        label: 'Salas',
+        label: Trans`Salas`,
         path: '/salas'
     },
     // {
@@ -44,7 +45,7 @@ const pages = [
     //     path: '/financeiro'
     // },
     {
-        label: 'configurações',
+        label: Trans`configurações`,
         path: '/configuracoes'
     }
 ];
@@ -111,16 +112,18 @@ function NavBar() {
         navigator.clipboard
             .writeText(url)
             .then(() => {
-                notification({ message: 'Link copiado com sucesso!', type: 'success' });
+                notification({ message: Trans`Link copiado com sucesso!`, type: 'success' });
             })
             .catch((err) => {
-                notification({ message: 'Erro ao copiar link!', type: 'error' });
+                notification({ message: Trans`Erro ao copiar link!`, type: 'error' });
             });
     };
 
     const renderMenu = (
         <Menu anchorEl={anchorEl} id={menuId} keepMounted open={isMenuOpen} onClose={handleMenuClose}>
-            <MenuItem onClick={handleLogout}>Sair</MenuItem>
+            <MenuItem onClick={handleLogout}>
+                <Trans>Sair</Trans>
+            </MenuItem>
         </Menu>
     );
 
@@ -178,11 +181,11 @@ function NavBar() {
                                 }}
                             >
                                 {pages.map((page) => {
-                                    if (role != 'ADMINISTRATOR' && page.label === 'configurações') return null;
+                                    if (role != 'ADMINISTRATOR' && (page.label === 'configurações' || page.label === 'configurations')) return null;
                                     return (
                                         <MenuItem key={page.label} onClick={() => handlePageChange(page)}>
                                             <Typography textAlign="center" textTransform={'uppercase'}>
-                                                {page.label}
+                                                <Trans>{page.label}</Trans>
                                             </Typography>
                                         </MenuItem>
                                     );
@@ -234,31 +237,31 @@ function NavBar() {
 
                         <Box sx={{ flexGrow: 0, display: 'flex' }}>
                             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                              {!isMobile && (
-                                <Tooltip title="Abrir calendário" arrow>
-                                    <Button
-                                        variant="contained"
-                                        color="secondary"
-                                        startIcon={<LuCalendarDays size={20} />}
-                                        endIcon={<FaExternalLinkAlt size={12} />}
-                                        onClick={handleGoToCalendar}
-                                        sx={{
-                                            textTransform: 'none',
-                                            borderRadius: 2,
-                                            px: 2,
-                                            py: 1,
-                                            transition: 'background-color 0.3s',
-                                            '&:hover': {
-                                                bgcolor: 'secondary.dark'
-                                            }
-                                        }}
-                                    >
-                                        Calendário
-                                    </Button>
-                                </Tooltip>
-                              )}
+                                {!isMobile && (
+                                    <Tooltip title={Trans`Abrir calendário`} arrow>
+                                        <Button
+                                            variant="contained"
+                                            color="secondary"
+                                            startIcon={<LuCalendarDays size={20} />}
+                                            endIcon={<FaExternalLinkAlt size={12} />}
+                                            onClick={handleGoToCalendar}
+                                            sx={{
+                                                textTransform: 'none',
+                                                borderRadius: 2,
+                                                px: 2,
+                                                py: 1,
+                                                transition: 'background-color 0.3s',
+                                                '&:hover': {
+                                                    bgcolor: 'secondary.dark'
+                                                }
+                                            }}
+                                        >
+                                            <Trans>Calendário</Trans>
+                                        </Button>
+                                    </Tooltip>
+                                )}
 
-                                <Tooltip title="Copiar link para o calendário" arrow>
+                                <Tooltip title={Trans`Copiar link para o calendário`} arrow>
                                     <Button
                                         variant="outlined"
                                         color="inherit"
@@ -276,7 +279,7 @@ function NavBar() {
                                             }
                                         }}
                                     >
-                                        {isMobile ? 'Link' : 'Copiar link'}
+                                        {isMobile ? <Trans>Link</Trans> : <Trans>Copiar link</Trans>}
                                     </Button>
                                 </Tooltip>
                             </Box>
