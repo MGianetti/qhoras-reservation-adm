@@ -348,55 +348,58 @@ function CalendarToolbar(props) {
                             </Box>
 
                             {/* RIGHT – Export + view buttons (desktop ≥ sm) */}
-                            {location.pathname !== '/calendario' && (
-                                <Box
-                                    sx={{
-                                        display: { xs: 'none', sm: 'flex' },
-                                        alignItems: 'center',
-                                        gap: 1,
-                                        flexShrink: 0,
-                                        ml: 'auto'
-                                    }}
-                                >
+
+                            <Box
+                                sx={{
+                                    display: { xs: 'none', sm: 'flex' },
+                                    alignItems: 'center',
+                                    gap: 1,
+                                    flexShrink: 0,
+                                    ml: 'auto'
+                                }}
+                            >
+                                {location.pathname !== '/calendario' && (
                                     <StyledTooltip title="Exportar dados">
                                         <IconButton disabled={isLoading} aria-label="Exportar dados" onClick={() => setOpenExportDialog(true)}>
                                             <PiExportBold size={20} />
                                         </IconButton>
                                     </StyledTooltip>
+                                )}
 
-                                    <StyledTooltip title="Visualização Diária">
-                                        <StyledLayoutButton
-                                            selected={layout === 'day'}
-                                            disabled={isLoading}
-                                            aria-label="Visualização Diária"
-                                            onClick={() => setLayout({ option: 'day' })}
-                                        >
-                                            <MdOutlineCalendarViewDay />
-                                        </StyledLayoutButton>
-                                    </StyledTooltip>
+                                <StyledTooltip title="Visualização Diária">
+                                    <StyledLayoutButton
+                                        selected={layout === 'day'}
+                                        disabled={isLoading}
+                                        aria-label="Visualização Diária"
+                                        onClick={() => setLayout({ option: 'day' })}
+                                    >
+                                        <MdOutlineCalendarViewDay />
+                                    </StyledLayoutButton>
+                                </StyledTooltip>
 
-                                    <StyledTooltip title="Visualização Semanal">
-                                        <StyledLayoutButton
-                                            selected={layout === 'week'}
-                                            disabled={isLoading}
-                                            aria-label="Visualização Semanal"
-                                            onClick={() => setLayout({ option: 'week' })}
-                                        >
-                                            <MdOutlineViewWeek />
-                                        </StyledLayoutButton>
-                                    </StyledTooltip>
+                                <StyledTooltip title="Visualização Semanal">
+                                    <StyledLayoutButton
+                                        selected={layout === 'week'}
+                                        disabled={isLoading}
+                                        aria-label="Visualização Semanal"
+                                        onClick={() => setLayout({ option: 'week' })}
+                                    >
+                                        <MdOutlineViewWeek />
+                                    </StyledLayoutButton>
+                                </StyledTooltip>
 
-                                    <StyledTooltip title="Visualização Mensal">
-                                        <StyledLayoutButton
-                                            selected={layout === 'month'}
-                                            disabled={isLoading}
-                                            aria-label="Visualização Mensal"
-                                            onClick={() => setLayout({ option: 'month' })}
-                                        >
-                                            <MdOutlineViewModule />
-                                        </StyledLayoutButton>
-                                    </StyledTooltip>
+                                <StyledTooltip title="Visualização Mensal">
+                                    <StyledLayoutButton
+                                        selected={layout === 'month'}
+                                        disabled={isLoading}
+                                        aria-label="Visualização Mensal"
+                                        onClick={() => setLayout({ option: 'month' })}
+                                    >
+                                        <MdOutlineViewModule />
+                                    </StyledLayoutButton>
+                                </StyledTooltip>
 
+                                {location.pathname !== '/calendario' && (
                                     <StyledTooltip title="Visualização Por Lista">
                                         <StyledLayoutButton
                                             selected={layout === 'list'}
@@ -407,8 +410,8 @@ function CalendarToolbar(props) {
                                             <FaList size={18} />
                                         </StyledLayoutButton>
                                     </StyledTooltip>
-                                </Box>
-                            )}
+                                )}
+                            </Box>
                         </>
                     ) : (
                         /* ===== LIST VIEW ===== */
@@ -441,25 +444,45 @@ function CalendarToolbar(props) {
                                 </StyledTooltip>
 
                                 <StyledTooltip title="Visualização Diária">
-                                    <StyledLayoutButton selected={layout === 'day'} disabled={isLoading} aria-label="Visualização Diária" onClick={() => setLayout({ option: 'day' })}>
+                                    <StyledLayoutButton
+                                        selected={layout === 'day'}
+                                        disabled={isLoading}
+                                        aria-label="Visualização Diária"
+                                        onClick={() => setLayout({ option: 'day' })}
+                                    >
                                         <MdOutlineCalendarViewDay />
                                     </StyledLayoutButton>
                                 </StyledTooltip>
 
                                 <StyledTooltip title="Visualização Semanal">
-                                    <StyledLayoutButton selected={layout === 'week'} disabled={isLoading} aria-label="Visualização Semanal" onClick={() => setLayout({ option: 'week' })}>
+                                    <StyledLayoutButton
+                                        selected={layout === 'week'}
+                                        disabled={isLoading}
+                                        aria-label="Visualização Semanal"
+                                        onClick={() => setLayout({ option: 'week' })}
+                                    >
                                         <MdOutlineViewWeek />
                                     </StyledLayoutButton>
                                 </StyledTooltip>
 
                                 <StyledTooltip title="Visualização Mensal">
-                                    <StyledLayoutButton selected={layout === 'month'} disabled={isLoading} aria-label="Visualização Mensal" onClick={() => setLayout({ option: 'month' })}>
+                                    <StyledLayoutButton
+                                        selected={layout === 'month'}
+                                        disabled={isLoading}
+                                        aria-label="Visualização Mensal"
+                                        onClick={() => setLayout({ option: 'month' })}
+                                    >
                                         <MdOutlineViewModule />
                                     </StyledLayoutButton>
                                 </StyledTooltip>
 
                                 <StyledTooltip title="Visualização Por Lista">
-                                    <StyledLayoutButton selected={layout === 'list'} disabled={isLoading} aria-label="Visualização Por Lista" onClick={() => setLayout({ option: 'list' })}>
+                                    <StyledLayoutButton
+                                        selected={layout === 'list'}
+                                        disabled={isLoading}
+                                        aria-label="Visualização Por Lista"
+                                        onClick={() => setLayout({ option: 'list' })}
+                                    >
                                         <FaList size={18} />
                                     </StyledLayoutButton>
                                 </StyledTooltip>
