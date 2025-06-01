@@ -1,21 +1,21 @@
 import { Trans } from '@lingui/react/macro';
 
-export const createdCalendarBlockSuccess = Object.freeze({
+export const createdCalendarBlockSuccess = {
     message: Trans`Caso não haja conflito de horário, o bloqueio foi criado com sucesso!`,
     type: `success`
-});
+};
 
-export const createdCalendarBlockFail = Object.freeze({
+export const createdCalendarBlockFail = {
     message: Trans`Falha ao criar bloqueio!`,
     type: `error`
-});
+};
 
-export const deletedCalendarBlockSuccess = Object.freeze({
+export const deletedCalendarBlockSuccess = {
     message: Trans`Bloqueio removido com sucesso!`,
     type: `success`
-});
+};
 
-export const deletedCalendarBlockFail = Object.freeze({
+export const deletedCalendarBlockFail = {
     message: Trans`Falha ao remover bloqueio!`,
     type: `error`
-});
+};

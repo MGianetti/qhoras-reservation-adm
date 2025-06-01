@@ -1,31 +1,31 @@
 import { Trans } from '@lingui/react/macro';
 
-export const createdRoomSuccess = Object.freeze({
+export const createdRoomSuccess = {
     message: Trans`Sala criada com sucesso!`,
     type: `success`
-});
+};
 
-export const createdRoomFail = Object.freeze({
+export const createdRoomFail = {
     message: Trans`Falha ao criar sala!`,
     type: `error`
-});
+};
 
-export const updatedRoomSuccess = Object.freeze({
+export const updatedRoomSuccess = {
     message: Trans`Sala atualizada com sucesso!`,
     type: `success`
-});
+};
 
-export const updatedRoomFail = Object.freeze({
+export const updatedRoomFail = {
     message: Trans`Falha ao atualizar sala!`,
     type: `error`
-});
+};
 
-export const deletedRoomSuccess = Object.freeze({
+export const deletedRoomSuccess = {
     message: Trans`Sala deletada com sucesso!`,
     type: `success`
-});
+};
 
-export const deletedRoomFail = Object.freeze({
+export const deletedRoomFail = {
     message: Trans`Falha ao deletar sala!`,
     type: `error`
-});
+};

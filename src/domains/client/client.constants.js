@@ -1,21 +1,21 @@
 import { Trans } from '@lingui/react/macro';
 
-export const createdClientSuccess = Object.freeze({
+export const createdClientSuccess = {
     message: Trans`Cliente criado com sucesso!`,
     type: `success`
-});
+};
 
-export const createdClientFail = Object.freeze({
+export const createdClientFail = {
     message: Trans`Falha ao criar cliente!`,
     type: `error`
-});
+};
 
-export const updatedClientSuccess = Object.freeze({
+export const updatedClientSuccess = {
     message: Trans`Cliente atualizado com sucesso!`,
     type: `success`
-});
+};
 
-export const updatedClientFail = Object.freeze({
+export const updatedClientFail = {
     message: Trans`Falha ao atualizar cliente!`,
     type: `error`
-});
+};

@@ -1,21 +1,21 @@
 import { Trans } from '@lingui/react/macro';
 
-export const updatedUserConfigSuccess = Object.freeze({
+export const updatedUserConfigSuccess = {
     message: Trans`Configurações atualizadas com sucesso!`,
     type: `success`
-});
+};
 
-export const updatedUserConfigFail = Object.freeze({
+export const updatedUserConfigFail = {
     message: Trans`Falha ao atualizar configurações!`,
     type: `error`
-});
+};
 
-export const companyUpdatedSuccess = Object.freeze({
+export const companyUpdatedSuccess = {
     message: Trans`Dados da empresa atualizados com sucesso!`,
     type: `success`
-});
+};
 
-export const companyUpdatedFail = Object.freeze({
+export const companyUpdatedFail = {
     message: Trans`Falha ao atualizar dados da empresa!`,
     type: `error`
-});
+};
