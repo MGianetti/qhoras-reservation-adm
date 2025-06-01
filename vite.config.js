@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import path from 'path';
-import react from '@vitejs/plugin-react-swc'
+import react from '@vitejs/plugin-react-swc';
 import { fileURLToPath } from 'url';
 import { lingui } from '@lingui/vite-plugin';
 

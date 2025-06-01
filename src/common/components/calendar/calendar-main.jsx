@@ -1,145 +1,125 @@
-import { useLocation } from "react-router-dom";
-import { useCallback, useContext, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  startOfWeek,
-  endOfWeek,
-  startOfMonth,
-  endOfMonth,
-  format,
-} from "date-fns";
-import { styled } from "@mui/material/styles";
+import { useLocation } from 'react-router-dom';
+import { useCallback, useContext, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, format } from 'date-fns';
+import { styled } from '@mui/material/styles';
 
-import getWeekDays from "./common/getWeekDays";
-import CalendarLayoutMonth from "./calendar-layout-month";
-import { CalendarContext } from "./context/calendar-context";
-import CalendarLayoutDayWeek from "./calendar-layout-day-week";
-import getSelectedWeekIndex from "./common/getSelectedWeekIndex";
-import appointmentService from "../../../domains/appointment/appointmentService";
-import CalendarLayoutList from "./calendarLayout/CalendarLayoutList/calendar-list";
-import calendarBlocksService from "../../../domains/calendarBlocks/calendarBlocksService";
-import calendarReadOnlyService from "../../../domains/calendarReadOnly/calendarReadOnlyService";
+import getWeekDays from './common/getWeekDays';
+import CalendarLayoutMonth from './calendar-layout-month';
+import { CalendarContext } from './context/calendar-context';
+import CalendarLayoutDayWeek from './calendar-layout-day-week';
+import getSelectedWeekIndex from './common/getSelectedWeekIndex';
+import appointmentService from '../../../domains/appointment/appointmentService';
+import CalendarLayoutList from './calendarLayout/CalendarLayoutList/calendar-list';
+import calendarBlocksService from '../../../domains/calendarBlocks/calendarBlocksService';
+import calendarReadOnlyService from '../../../domains/calendarReadOnly/calendarReadOnlyService';
 
-const PREFIX = "CalendarMain";
+const PREFIX = 'CalendarMain';
 
 const classes = {
-  drawerHeader: `${PREFIX}-drawerHeader`,
-  content: `${PREFIX}-content`,
-  contentShift: `${PREFIX}-contentShift`,
+    drawerHeader: `${PREFIX}-drawerHeader`,
+    content: `${PREFIX}-content`,
+    contentShift: `${PREFIX}-contentShift`
 };
 
 const drawerWidth = 260;
 
-const Root = styled("div")(({ theme }) => ({
-  [`& .${classes.drawerHeader}`]: {
-    display: "flex",
-    alignItems: "center",
-    ...theme.mixins.toolbar,
-    justifyContent: "flex-center",
-  },
+const Root = styled('div')(({ theme }) => ({
+    [`& .${classes.drawerHeader}`]: {
+        display: 'flex',
+        alignItems: 'center',
+        ...theme.mixins.toolbar,
+        justifyContent: 'flex-center'
+    },
 
-  [`&.${classes.content}`]: {
-    flexGrow: 1,
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    marginLeft: -drawerWidth,
-    height: "100%",
-    width: "100%",
-    minWidth: 1000,
-  },
+    [`&.${classes.content}`]: {
+        flexGrow: 1,
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen
+        }),
+        marginLeft: -drawerWidth,
+        height: '100%',
+        width: '100%',
+        minWidth: 1000
+    },
 
-  [`&.${classes.contentShift}`]: {
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    marginLeft: 0,
-  },
+    [`&.${classes.contentShift}`]: {
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen
+        }),
+        marginLeft: 0
+    }
 }));
 
 function CalendarMain(props) {
-  const { stateCalendar } = useContext(CalendarContext);
-  const { selectedDate, layout } = stateCalendar;
-  const businessId = useSelector((state) => state.auth.user?.businessId);
-  const { data: allRooms } = useSelector((state) => state.rooms) || [];
-  const { runAnimation, setGetScheduleData, fetchRooms, selectedRoom } = props;
-  const [, setStartEndDates] = useState({
-    start: selectedDate,
-    end: selectedDate,
-  });
-  const location = useLocation();
+    const { stateCalendar } = useContext(CalendarContext);
+    const { selectedDate, layout } = stateCalendar;
+    const businessId = useSelector((state) => state.auth.user?.businessId);
+    const { data: allRooms } = useSelector((state) => state.rooms) || [];
+    const { runAnimation, setGetScheduleData, fetchRooms, selectedRoom } = props;
+    const [, setStartEndDates] = useState({
+        start: selectedDate,
+        end: selectedDate
+    });
+    const location = useLocation();
 
-  const searchParams = new URLSearchParams(location.search);
-  const businessIdQueryParams = searchParams.get("business");
+    const searchParams = new URLSearchParams(location.search);
+    const businessIdQueryParams = searchParams.get('business');
 
-  const getScheduleData = useCallback(async (id) => {
-    if (!id) return;
-    
-    let start, end;
+    const getScheduleData = useCallback(
+        async (id) => {
+            if (!id) return;
 
-    if (layout === "day") {
-      start = format(selectedDate, "yyyy-MM-dd 00:00:00");
-      end = format(selectedDate, "yyyy-MM-dd 23:59:59");
-    } else if (layout === "week") {
-      start = format(startOfWeek(selectedDate), "yyyy-MM-dd 00:00:00");
-      end = format(endOfWeek(selectedDate), "yyyy-MM-dd 23:59:59");
-    } else if (layout === "month") {
-      start = format(
-        startOfWeek(startOfMonth(selectedDate)),
-        "yyyy-MM-dd 00:00:00",
-      );
-      end = format(endOfWeek(endOfMonth(selectedDate)), "yyyy-MM-dd 23:59:59");
-    }
+            let start, end;
 
-    setStartEndDates({ start, end });
+            if (layout === 'day') {
+                start = format(selectedDate, 'yyyy-MM-dd 00:00:00');
+                end = format(selectedDate, 'yyyy-MM-dd 23:59:59');
+            } else if (layout === 'week') {
+                start = format(startOfWeek(selectedDate), 'yyyy-MM-dd 00:00:00');
+                end = format(endOfWeek(selectedDate), 'yyyy-MM-dd 23:59:59');
+            } else if (layout === 'month') {
+                start = format(startOfWeek(startOfMonth(selectedDate)), 'yyyy-MM-dd 00:00:00');
+                end = format(endOfWeek(endOfMonth(selectedDate)), 'yyyy-MM-dd 23:59:59');
+            }
 
-    let appointments;
+            setStartEndDates({ start, end });
 
-    if (businessId)
-      appointments = await appointmentService.read(id, start, end);
-    if (businessIdQueryParams)
-      appointments = await calendarReadOnlyService.readAppointments(
-        id,
-        start,
-        end,
-      );
+            let appointments;
 
-    const calendarBlocks = await calendarBlocksService.read(id, start, end);
-    fetchRooms(id);
-    return { appointments, calendarBlocks };
-  }, [selectedDate, layout, businessId, businessIdQueryParams]);
+            if (businessId) appointments = await appointmentService.read(id, start, end);
+            if (businessIdQueryParams) appointments = await calendarReadOnlyService.readAppointments(id, start, end);
 
-  useEffect(() => {
-    setGetScheduleData(() => getScheduleData);
-  }, [getScheduleData]);
+            const calendarBlocks = await calendarBlocksService.read(id, start, end);
+            fetchRooms(id);
+            return { appointments, calendarBlocks };
+        },
+        [selectedDate, layout, businessId, businessIdQueryParams]
+    );
 
-  useEffect(() => {
-    if (allRooms.length > 0 && layout !== "list" && selectedRoom) {
-      getScheduleData(selectedRoom);
-    }
-  }, [selectedDate, layout, allRooms.length, getScheduleData]);
+    useEffect(() => {
+        setGetScheduleData(() => getScheduleData);
+    }, [getScheduleData]);
 
-  const weeks = getWeekDays(selectedDate, 7);
-  const selectedWeekIndex = getSelectedWeekIndex(selectedDate, weeks, 0);
-  const selectedWeek = weeks[selectedWeekIndex];
+    useEffect(() => {
+        if (allRooms.length > 0 && layout !== 'list' && selectedRoom) {
+            getScheduleData(selectedRoom);
+        }
+    }, [selectedDate, layout, allRooms.length, getScheduleData]);
 
-  return (
-    <Root style={{ width: "100%" }}>
-      {layout === "month" && (
-        <CalendarLayoutMonth weeks={weeks} runAnimation={runAnimation} selectedRoom={selectedRoom} />
-      )}
-      {(layout === "week" || layout === "day") && (
-        <CalendarLayoutDayWeek
-          selectedWeekIndex={selectedWeekIndex}
-          selectedWeek={selectedWeek}
-          selectedRoom={selectedRoom}
-        />
-      )}
-      {layout === "list" && <CalendarLayoutList />}
-    </Root>
-  );
+    const weeks = getWeekDays(selectedDate, 7);
+    const selectedWeekIndex = getSelectedWeekIndex(selectedDate, weeks, 0);
+    const selectedWeek = weeks[selectedWeekIndex];
+
+    return (
+        <Root style={{ width: '100%' }}>
+            {layout === 'month' && <CalendarLayoutMonth weeks={weeks} runAnimation={runAnimation} selectedRoom={selectedRoom} />}
+            {(layout === 'week' || layout === 'day') && <CalendarLayoutDayWeek selectedWeekIndex={selectedWeekIndex} selectedWeek={selectedWeek} selectedRoom={selectedRoom} />}
+            {layout === 'list' && <CalendarLayoutList />}
+        </Root>
+    );
 }
 
 export default CalendarMain;

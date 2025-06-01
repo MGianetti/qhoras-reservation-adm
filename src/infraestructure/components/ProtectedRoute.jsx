@@ -1,13 +1,13 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet } from 'react-router-dom';
 
 const ProtectedRoute = () => {
-  const token = localStorage.getItem("token_qhoras_reservation");
+    const token = localStorage.getItem('token_qhoras_reservation');
 
-  if (!token) {
-    return <Navigate to="/login" />;
-  }
+    if (!token) {
+        return <Navigate to="/login" />;
+    }
 
-  return <Outlet />;
+    return <Outlet />;
 };
 
 export default ProtectedRoute;

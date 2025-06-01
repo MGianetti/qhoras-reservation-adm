@@ -9,7 +9,7 @@ import authService from '../../../infraestructure/auth/authService';
 
 import { validationSchema } from './loginPageForm.constants';
 import { useNavigate } from 'react-router-dom';
-import { Trans } from "@lingui/react/macro";
+import { Trans } from '@lingui/react/macro';
 
 const LoginPageForm = () => {
     const theme = useTheme();
