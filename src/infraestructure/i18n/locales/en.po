@@ -13,177 +13,183 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#. placeholder {0}: page.label
+#. js-lingui-explicit-id
+#: src/common/components/navBar/navBar.jsx:44
+#~ msgid "table.statusAtivo"
+#~ msgstr "Active"
+
+#. js-lingui-explicit-id
+#: src/common/components/navBar/navBar.jsx:46
+#~ msgid "table.statusInativo"
+#~ msgstr "Inactive"
+
+#. js-lingui-explicit-id
+#: src/common/components/navBar/navBar.jsx:41
+#~ msgid "table.pessoas"
+#~ msgstr "people"
+
 #: src/common/components/navBar/navBar.jsx:207
 #: src/common/components/navBar/navBar.jsx:256
-msgid "{0}"
-msgstr ""
+#~ msgid "{0}"
+#~ msgstr "{0}"
 
 #: src/common/components/rowGroups/suggestionGroup/suggestionGroup.jsx:62
 msgid "1 em 1 hora"
-msgstr ""
+msgstr "Every hour"
 
 #: src/common/components/rowGroups/suggestionGroup/suggestionGroup.jsx:59
 msgid "30 em 30 minutos"
-msgstr ""
+msgstr "Every 30 minutes"
 
 #. js-lingui-explicit-id
 #: src/common/components/modals/roomModal/roomModal.constants.jsx:27
 msgid "validation.capacityInteger"
-msgstr ""
+msgstr "Capacity must be an integer."
 
 #. js-lingui-explicit-id
 #: src/common/components/modals/roomModal/roomModal.constants.jsx:33
 msgid "validation.capacityPositive"
-msgstr ""
+msgstr "Capacity must be a positive number."
 
 #. js-lingui-explicit-id
 #: src/common/components/rowGroups/blockTimeGroup/blockTimeGroup.constants.jsx:23
 msgid "validation.endDateMin"
-msgstr ""
+msgstr "End date must be on or after the start date."
 
 #. js-lingui-explicit-id
 #: src/pages/loginPage/loginPageForm/loginPageForm.constants.jsx:21
 msgid "validation.passwordMinLength"
-msgstr ""
+msgstr "Password must be at least 8 characters long."
 
 #. js-lingui-explicit-id
 #: src/pages/resetPassword/resetPasswordForm/resetPasswordForm.constants.jsx:14
 msgid "validation.passwordPattern"
-msgstr ""
+msgstr "Password must be at least 8 characters and include letters and numbers."
 
 #. js-lingui-explicit-id
 #: src/pages/loginPage/loginPageForm/loginPageForm.constants.jsx:27
 msgid "validation.passwordRequired"
-msgstr ""
-
-#. js-lingui-explicit-id
-#: src/common/components/navBar/navBar.jsx:265
-msgid "tooltip.openCalendar"
-msgstr ""
+msgstr "Password is required."
 
 #. js-lingui-explicit-id
 #: src/pages/listCustomerPage/clientList/clientList.constants.jsx:34
 msgid "clients.columnActions"
-msgstr ""
+msgstr "Actions"
 
 #. js-lingui-explicit-id
 #: src/common/components/modals/roomModal/roomModal.constants.jsx:73
 msgid "validation.agendaConfigMin"
-msgstr ""
+msgstr "Add at least one schedule configuration."
 
 #: src/common/components/calendar/calendar-board.jsx:338
 #: src/common/components/calendar/calendar-board.jsx:361
 #: src/common/components/calendar/calendar-board.jsx:384
 msgid "Agenda fechada"
-msgstr ""
+msgstr "Schedule closed"
 
 #. js-lingui-explicit-id
 #: src/domains/appointment/appointment.constants.jsx:20
 msgid "common.updatedAppointmentSuccess"
-msgstr ""
+msgstr "Appointment updated successfully!"
 
 #. js-lingui-explicit-id
 #: src/domains/appointment/appointment.constants.jsx:4
 msgid "common.createdAppointmentSuccess"
-msgstr ""
+msgstr "Appointment created successfully!"
 
 #. js-lingui-explicit-id
 #: src/domains/appointment/appointment.constants.jsx:36
 msgid "common.deletedAppointmentSuccess"
-msgstr ""
+msgstr "Appointment deleted successfully!"
 
 #. js-lingui-explicit-id
 #: src/domains/appointment/appointment.constants.jsx:68
 msgid "common.refreshCalendarSuccess"
-msgstr ""
+msgstr "Appointments updated successfully!"
 
 #: src/common/components/modals/deleteServiceModal/deleteServiceModal.jsx:46
 #: src/common/components/modals/deleteRoomModal/deleteRoomModal.jsx:46
 msgid "Apagar"
-msgstr ""
+msgstr "Delete"
 
 #. js-lingui-explicit-id
 #: src/pages/resetPassword/resetPasswordForm/resetPasswordForm.constants.jsx:28
 msgid "validation.passwordsMatch"
-msgstr ""
+msgstr "Passwords do not match."
 
 #. js-lingui-explicit-id
 #: src/pages/rooms/roomsList/roomList.constants.jsx:66
 msgid "table.statusActive"
-msgstr ""
+msgstr "Active"
 
 #: src/pages/rooms/roomsList/renderRowRoomsList/renderRowRoomsList.jsx:10
 #: src/common/components/modals/roomModal/roomModal.jsx:160
 msgid "Ativo"
-msgstr ""
-
-#. js-lingui-explicit-id
-#: src/common/components/navBar/navBar.jsx:44
-msgid "table.statusAtivo"
-msgstr ""
+msgstr "Active"
 
 #: src/common/components/rowGroups/blockTimeGroup/blockTimeGroup.jsx:174
 msgid "Bloquear"
-msgstr ""
+msgstr "Block"
 
 #: src/common/components/rowGroups/blockTimeGroup/blockTimeGroup.jsx:91
 msgid "Bloquear horários"
-msgstr ""
+msgstr "Block times"
 
 #. js-lingui-explicit-id
 #: src/domains/calendarBlocks/calendarBlocks.constants.jsx:20
 msgid "common.deletedCalendarBlockSuccess"
-msgstr ""
+msgstr "Block removed successfully!"
 
 #: src/common/components/modals/clientModal/clientModal.jsx:114
 msgid "Cadastrar Membro"
-msgstr ""
+msgstr "Add Member"
 
 #: src/common/components/modals/roomModal/roomModal.jsx:173
 msgid "Cadastrar sala"
-msgstr ""
+msgstr "Add Room"
 
 #. js-lingui-explicit-id
-#: src/common/components/navBar/navBar.jsx:283
-msgid "nav.calendar"
-msgstr ""
+#: src/common/components/navBar/navBar.jsx:24
+msgctxt "main nav"
+msgid "nav.calendario"
+msgstr "Calendar"
 
-#: src/common/components/navBar/navBar.jsx:259
-#~ msgid "Calendário"
-#~ msgstr ""
+#. js-lingui-explicit-id
+#: src/common/components/navBar/navBar.jsx:176
+msgid "nav.calendar"
+msgstr "Calendar"
 
 #: src/common/components/modals/roomModal/roomModal.jsx:170
 #: src/common/components/modals/deleteServiceModal/deleteServiceModal.jsx:43
 #: src/common/components/modals/deleteRoomModal/deleteRoomModal.jsx:43
 #: src/common/components/modals/clientModal/clientModal.jsx:111
 msgid "Cancelar"
-msgstr ""
+msgstr "Cancel"
 
 #. js-lingui-explicit-id
-#: src/pages/rooms/roomsList/roomList.constants.jsx:50
+#: src/pages/rooms/roomsList/roomList.constants.jsx:48
 msgid "table.header.capacity"
-msgstr ""
+msgstr "Capacity"
 
 #: src/common/components/modals/roomModal/roomModal.jsx:113
 #: src/common/components/modals/roomModal/roomModal.jsx:117
 msgid "Capacidade"
-msgstr ""
+msgstr "Capacity"
 
 #. js-lingui-explicit-id
 #: src/domains/calendarBlocks/calendarBlocks.constants.jsx:4
 msgid "common.createdCalendarBlockSuccess"
-msgstr ""
+msgstr "Block created successfully!"
 
 #. js-lingui-explicit-id
 #: src/domains/client/client.constants.jsx:20
 msgid "common.updatedClientSuccess"
-msgstr ""
+msgstr "Client updated successfully!"
 
 #. js-lingui-explicit-id
 #: src/domains/client/client.constants.jsx:4
 msgid "common.createdClientSuccess"
-msgstr ""
+msgstr "Client created successfully!"
 
 #: src/common/components/halfScreenLogin/halfScreenLogin.jsx:30
 msgid "com facilidade e eficiência"
@@ -191,270 +197,272 @@ msgstr "with ease and efficiency"
 
 #: src/common/components/rowGroups/whatsappGroup/whatsappGroup.jsx:115
 msgid "Conectar WhatsApp"
-msgstr ""
+msgstr "Connect WhatsApp"
+
+#. js-lingui-explicit-id
+#: src/common/components/navBar/navBar.jsx:27
+msgctxt "main nav"
+msgid "nav.configuracoes"
+msgstr "Settings"
 
 #. js-lingui-explicit-id
 #: src/domains/user/user.constants.jsx:4
 msgid "common.updatedUserConfigSuccess"
-msgstr ""
+msgstr "Settings updated successfully!"
 
 #: src/pages/resetPassword/resetPasswordForm/resetPasswordForm.jsx:107
 msgid "Confirmação de Senha"
-msgstr ""
+msgstr "Password Confirmation"
 
 #. js-lingui-explicit-id
 #: src/pages/resetPassword/resetPasswordForm/resetPasswordForm.constants.jsx:21
 msgid "validation.confirmPasswordRequired"
-msgstr ""
+msgstr "Password confirmation is required."
 
 #: src/common/components/modals/deleteServiceModal/deleteServiceModal.jsx:24
 #: src/common/components/modals/deleteRoomModal/deleteRoomModal.jsx:24
 msgid "Confirmar exclusão"
-msgstr ""
+msgstr "Confirm deletion"
 
 #. js-lingui-explicit-id
-#: src/common/components/navBar/navBar.jsx:306
+#: src/common/components/navBar/navBar.jsx:191
 msgid "nav.copyLinkButton"
-msgstr ""
-
-#: src/common/components/navBar/navBar.jsx:282
-#~ msgid "Copiar link"
-#~ msgstr ""
+msgstr "Copy link"
 
 #. js-lingui-explicit-id
-#: src/common/components/navBar/navBar.jsx:288
+#: src/common/components/navBar/navBar.jsx:181
 msgid "tooltip.copyCalendarLink"
-msgstr ""
+msgstr "Copy link to calendar"
 
 #. js-lingui-explicit-id
 #: src/domains/user/user.constants.jsx:20
 msgid "common.companyUpdatedSuccess"
-msgstr ""
+msgstr "Company details updated successfully!"
 
 #. js-lingui-explicit-id
 #: src/common/components/rowGroups/blockTimeGroup/blockTimeGroup.constants.jsx:9
 msgid "validation.initialDateRequired"
-msgstr ""
+msgstr "Start date is required."
 
 #: src/common/components/rowGroups/whatsappGroup/whatsappGroup.jsx:111
 msgid "Deletando..."
-msgstr ""
+msgstr "Deleting..."
 
 #: src/common/components/rowGroups/whatsappGroup/whatsappGroup.jsx:113
 msgid "Desconectar WhatsApp"
-msgstr ""
+msgstr "Disconnect WhatsApp"
 
 #. js-lingui-explicit-id
 #: src/common/components/modals/roomModal/roomModal.constants.jsx:39
 msgid "validation.capacityRequired"
-msgstr ""
+msgstr "Capacity is required."
 
 #. js-lingui-explicit-id
 #: src/common/components/modals/roomModal/roomModal.constants.jsx:6
 msgid "validation.nameRequired"
-msgstr ""
+msgstr "Name is required."
 
 #. js-lingui-explicit-id
 #: src/common/components/modals/clientModal/clientModal.constants.jsx:6
 msgid "validation.clientNameRequired"
-msgstr ""
+msgstr "Client name is required."
 
 #. js-lingui-explicit-id
 #: src/common/components/modals/roomModal/roomModal.constants.jsx:13
 msgid "validation.priceRequired"
-msgstr ""
+msgstr "Price is required."
 
 #. js-lingui-explicit-id
 #: src/common/components/modals/clientModal/clientModal.constants.jsx:12
 msgid "validation.clientPhoneRequired"
-msgstr ""
+msgstr "Client phone is required."
 
 #: src/pages/resetPassword/resetPasswordForm/resetPasswordForm.jsx:77
 msgid "Digite sua nova senha"
-msgstr ""
+msgstr "Enter your new password"
 
 #. js-lingui-explicit-id
 #: src/pages/loginPage/loginPageForm/loginPageForm.constants.jsx:7
 msgid "validation.emailInvalid"
-msgstr ""
+msgstr "Enter a valid email address."
 
 #. js-lingui-explicit-id
 #: src/common/components/modals/roomModal/roomModal.constants.jsx:21
 msgid "validation.capacityNumeric"
-msgstr ""
+msgstr "Capacity must be numeric."
 
 #. js-lingui-explicit-id
 #: src/pages/configurations/tabGeneralConfigs/tabGeneralConfigs.jsx:23
 msgid "config.sunday"
-msgstr ""
+msgstr "Sunday"
 
 #. js-lingui-explicit-id
 #: src/common/components/modals/roomModal/roomModal.constants.jsx:143
 msgid "common.daySunday"
-msgstr ""
+msgstr "Sunday"
 
 #: src/common/components/modals/clientModal/clientModal.jsx:49
 #: src/common/components/modals/clientModal/clientModal.jsx:114
 msgid "Editar Membro"
-msgstr ""
+msgstr "Edit Member"
 
 #: src/common/components/modals/roomModal/roomModal.jsx:85
 #: src/common/components/modals/roomModal/roomModal.jsx:173
 msgid "Editar sala"
-msgstr ""
+msgstr "Edit Room"
 
 #: src/pages/loginPage/loginPageForm/loginPageForm.jsx:74
 msgid "Email"
-msgstr "Email"
+msgstr ""
 
 #: src/common/components/rowGroups/companyGroup/companyGroup.jsx:35
 msgid "Empresa"
-msgstr ""
+msgstr "Company"
 
 #: src/common/components/rowGroups/companyGroup/companyGroup.jsx:66
 #: src/common/components/rowGroups/companyGroup/companyGroup.jsx:70
 msgid "Endereço"
-msgstr ""
+msgstr "Address"
 
 #: src/pages/loginPage/loginPageForm/loginPageForm.jsx:117
 msgid "Entrar"
-msgstr "Sign in"
+msgstr ""
 
 #. js-lingui-explicit-id
 #: src/infraestructure/auth/auth.constants.jsx:60
 msgid "common.requestGetUserFail"
-msgstr ""
-
-#. js-lingui-explicit-id
-#: src/common/components/navBar/navBar.jsx:128
-msgid "nav.linkCopyError"
-msgstr ""
+msgstr "Failed to fetch data. Please try again."
 
 #. js-lingui-explicit-id
 #: src/infraestructure/auth/auth.constants.jsx:52
 msgid "common.hasLoginFail"
-msgstr ""
+msgstr "Login failed. Please try again."
 
 #. js-lingui-explicit-id
 #: src/infraestructure/auth/auth.constants.jsx:36
 msgid "common.resetNewPasswordFail"
-msgstr ""
+msgstr "Password reset failed. Please check the provided data."
 
 #. js-lingui-explicit-id
 #: src/infraestructure/auth/auth.constants.jsx:20
 msgid "common.requestPasswordResetFail"
-msgstr ""
+msgstr "Request failed! Please try again."
+
+#. js-lingui-explicit-id
+#: src/common/components/navBar/navBar.jsx:74
+msgid "nav.linkCopyError"
+msgstr "Error copying link!"
 
 #: src/common/components/rowGroups/whatsappGroup/whatsappGroup.jsx:82
 msgid "Escaneie o QR Code abaixo para ativar seu WhatsApp!"
-msgstr ""
+msgstr "Scan the QR Code below to activate WhatsApp!"
 
 #: src/pages/loginPage/loginPageForm/loginPageForm.jsx:120
 msgid "Esqueci minha senha"
-msgstr "Forgot my password"
+msgstr ""
 
 #: src/pages/configurations/configurations.jsx:55
 msgid "Estabelecimento"
-msgstr ""
+msgstr "Establishment"
 
 #: src/pages/resetPassword/resetPasswordForm/resetPasswordForm.jsx:135
 #: src/pages/forgotPassword/forgotPasswordForm/forgotPasswordForm.jsx:68
 msgid "Faça Login"
-msgstr ""
+msgstr "Sign In"
 
 #: src/pages/loginPage/loginPageForm/loginPageForm.jsx:70
 msgid "Faça login para continuar"
-msgstr "Sign in to continue"
+msgstr ""
 
 #. js-lingui-explicit-id
 #: src/domains/appointment/appointment.constants.jsx:28
 msgid "common.updatedAppointmentFail"
-msgstr ""
+msgstr "Failed to update appointment!"
 
 #. js-lingui-explicit-id
 #: src/domains/client/client.constants.jsx:28
 msgid "common.updatedClientFail"
-msgstr ""
+msgstr "Failed to update client!"
 
 #. js-lingui-explicit-id
 #: src/domains/user/user.constants.jsx:12
 msgid "common.updatedUserConfigFail"
-msgstr ""
+msgstr "Failed to update settings!"
 
 #. js-lingui-explicit-id
 #: src/domains/user/user.constants.jsx:28
 msgid "common.companyUpdatedFail"
-msgstr ""
+msgstr "Failed to update company data!"
 
 #. js-lingui-explicit-id
 #: src/infraestructure/auth/authService.jsx:50
 msgid "auth.tokenRefreshFail"
-msgstr ""
+msgstr "Failed to refresh token. Please log in again."
 
 #. js-lingui-explicit-id
 #: src/domains/room/room.constants.jsx:28
 msgid "common.updatedRoomFail"
-msgstr ""
+msgstr "Failed to update room!"
 
 #. js-lingui-explicit-id
 #: src/domains/appointment/appointment.constants.jsx:12
 msgid "common.createdAppointmentFail"
-msgstr ""
+msgstr "Failed to create appointment!"
 
 #. js-lingui-explicit-id
 #: src/domains/calendarBlocks/calendarBlocks.constants.jsx:12
 msgid "common.createdCalendarBlockFail"
-msgstr ""
+msgstr "Failed to create block!"
 
 #. js-lingui-explicit-id
 #: src/domains/client/client.constants.jsx:12
 msgid "common.createdClientFail"
-msgstr ""
+msgstr "Failed to create client!"
 
 #. js-lingui-explicit-id
 #: src/domains/room/room.constants.jsx:12
 msgid "common.createdRoomFail"
-msgstr ""
+msgstr "Failed to create room!"
 
 #. js-lingui-explicit-id
 #: src/domains/room/room.constants.jsx:44
 msgid "common.deletedRoomFail"
-msgstr ""
+msgstr "Failed to delete room!"
 
 #. js-lingui-explicit-id
 #: src/domains/appointment/appointment.constants.jsx:44
 msgid "common.deletedAppointmentFail"
-msgstr ""
+msgstr "Failed to delete appointment!"
 
 #: src/common/components/rowGroups/whatsappGroup/whatsappGroup.jsx:48
 msgid "Falha ao inicializar o cliente WhatsApp"
-msgstr ""
+msgstr "Failed to initialize WhatsApp client"
 
 #. js-lingui-explicit-id
 #: src/domains/calendarBlocks/calendarBlocks.constants.jsx:28
 msgid "common.deletedCalendarBlockFail"
-msgstr ""
+msgstr "Failed to remove block!"
 
 #: src/common/components/rowGroups/whatsappGroup/whatsappGroup.jsx:31
 msgid "Falha ao verificar o status do cliente WhatsApp."
-msgstr ""
+msgstr "Failed to check WhatsApp client status."
 
 #: src/common/components/rowGroups/additionalSettingsGroup/additionalSettingsGroup.jsx:12
 msgid "Fidelidade"
-msgstr ""
+msgstr "Loyalty"
 
 #: src/common/components/modals/roomModal/roomModal.jsx:208
 msgid "Fim"
-msgstr ""
+msgstr "End"
 
 #: src/common/components/rowGroups/operationGroup/operationGroup.jsx:15
 #: src/common/components/modals/roomModal/roomModal.jsx:186
 msgid "Funcionamento"
-msgstr ""
+msgstr "Operating Hours"
 
 #: src/common/components/rowGroups/whatsappGroup/whatsappGroup.jsx:109
 msgid "Gerando QR Code..."
-msgstr ""
+msgstr "Generating QR Code..."
 
 #: src/common/components/halfScreenLogin/halfScreenLogin.jsx:33
 msgid "Gerencie suas reservas de salas com a QHoras!"
@@ -463,252 +471,251 @@ msgstr "Manage your room bookings with QHoras!"
 #. js-lingui-explicit-id
 #: src/pages/listCustomerPage/clientList/renderRowClientList/renderRowClientList.jsx:8
 msgid "clients.image"
-msgstr ""
+msgstr "Image"
 
 #. js-lingui-explicit-id
 #: src/pages/rooms/roomsList/roomList.constants.jsx:70
 msgid "table.statusInactive"
-msgstr ""
+msgstr "Inactive"
 
 #: src/pages/rooms/roomsList/renderRowRoomsList/renderRowRoomsList.jsx:10
 #: src/common/components/modals/roomModal/roomModal.jsx:160
 msgid "Inativo"
-msgstr ""
-
-#. js-lingui-explicit-id
-#: src/common/components/navBar/navBar.jsx:46
-msgid "table.statusInativo"
-msgstr ""
+msgstr "Inactive"
 
 #: src/pages/forgotPassword/forgotPasswordForm/forgotPasswordForm.jsx:48
 msgid "Informe seu e-mail para solicitar uma nova senha!"
-msgstr ""
+msgstr "Enter your email to request a new password!"
 
 #: src/common/components/modals/roomModal/roomModal.jsx:208
 msgid "Início"
-msgstr ""
+msgstr "Start"
 
 #: src/pages/forgotPassword/forgotPasswordForm/forgotPasswordForm.jsx:52
 msgid "Insira seu email de acesso"
-msgstr ""
+msgstr "Enter your login email"
 
 #. js-lingui-explicit-id
-#: src/common/components/navBar/navBar.jsx:306
+#: src/common/components/navBar/navBar.jsx:190
 msgid "nav.linkShort"
-msgstr ""
-
-#: src/common/components/navBar/navBar.jsx:282
-#~ msgid "Link"
-#~ msgstr ""
+msgstr "Link"
 
 #. js-lingui-explicit-id
-#: src/common/components/navBar/navBar.jsx:122
+#: src/common/components/navBar/navBar.jsx:68
 msgid "nav.linkCopied"
-msgstr ""
+msgstr "Link copied!"
 
 #. js-lingui-explicit-id
 #: src/infraestructure/auth/auth.constants.jsx:44
 msgid "common.hasLoginSuccess"
-msgstr ""
+msgstr "Logged in successfully!"
+
+#. js-lingui-explicit-id
+#: src/common/components/navBar/navBar.jsx:205
+msgid "nav.logout"
+msgstr "Logout"
+
+#. js-lingui-explicit-id
+#: src/common/components/navBar/navBar.jsx:25
+msgctxt "main nav"
+msgid "nav.membros"
+msgstr "Clients"
 
 #: src/pages/resetPassword/resetPasswordForm/resetPasswordForm.jsx:132
 msgid "Mudar senha"
-msgstr ""
+msgstr "Change Password"
 
 #. js-lingui-explicit-id
-#: src/pages/rooms/roomsList/roomList.constants.jsx:23
+#: src/pages/rooms/roomsList/roomList.constants.jsx:21
 msgid "table.header.name"
-msgstr ""
+msgstr "Name"
 
 #. js-lingui-explicit-id
 #: src/pages/listCustomerPage/clientList/clientList.constants.jsx:13
 msgid "clients.columnName"
-msgstr ""
+msgstr "Name"
 
 #: src/common/components/modals/roomModal/roomModal.jsx:92
 #: src/common/components/modals/roomModal/roomModal.jsx:96
 #: src/common/components/modals/clientModal/clientModal.jsx:66
 #: src/common/components/modals/clientModal/clientModal.jsx:71
 msgid "Nome"
-msgstr ""
+msgstr "Name"
 
 #: src/common/components/rowGroups/companyGroup/companyGroup.jsx:40
 #: src/common/components/rowGroups/companyGroup/companyGroup.jsx:44
 msgid "Nome da empresa"
-msgstr ""
+msgstr "Company name"
 
 #: src/common/components/modals/roomModal/roomModal.jsx:85
 msgid "Nova sala"
-msgstr ""
+msgstr "New Room"
 
 #: src/pages/resetPassword/resetPasswordForm/resetPasswordForm.jsx:81
 msgid "Nova Senha"
-msgstr ""
+msgstr "New Password"
 
 #: src/common/components/modals/clientModal/clientModal.jsx:49
 msgid "Novo Membro"
-msgstr ""
+msgstr "New Member"
 
 #. js-lingui-explicit-id
 #: src/pages/loginPage/loginPageForm/loginPageForm.constants.jsx:13
 msgid "validation.emailRequired"
-msgstr ""
+msgstr "Email is required."
 
 #. js-lingui-explicit-id
 #: src/common/components/rowGroups/blockTimeGroup/blockTimeGroup.constants.jsx:34
 msgid "validation.timeRangeInvalid"
-msgstr ""
+msgstr "End time must be later than start time."
 
 #. js-lingui-explicit-id
 #: src/domains/appointment/appointment.constants.jsx:52
 msgid "common.appointmentConflict"
-msgstr ""
+msgstr "The selected time conflicts with another appointment."
 
 #. js-lingui-explicit-id
 #: src/domains/appointment/appointment.constants.jsx:60
 msgid "common.appointmentOutsideBusinessHours"
-msgstr ""
+msgstr "Selected time is outside business hours."
 
 #: src/common/components/rowGroups/whatsappGroup/whatsappGroup.jsx:67
 msgid "Ocorreu um erro ao deletar o cliente WhatsApp"
-msgstr ""
+msgstr "An error occurred while deleting the WhatsApp client"
 
 #: src/common/components/rowGroups/whatsappGroup/whatsappGroup.jsx:52
 msgid "Ocorreu um erro ao inicializar o cliente WhatsApp"
-msgstr ""
+msgstr "An error occurred while initializing the WhatsApp client"
+
+#. js-lingui-explicit-id
+#: src/common/components/navBar/navBar.jsx:167
+msgid "tooltip.openCalendar"
+msgstr "Open calendar"
 
 #: src/common/components/halfScreenLogin/halfScreenLogin.jsx:29
 msgid "Organize suas reuniões e eventos"
-msgstr "Organize your meetings and events"
+msgstr ""
 
 #: src/pages/listCustomerPage/listCustomerPage.jsx:22
 msgid "Pesquisar membros"
-msgstr ""
+msgstr "Search members"
 
 #: src/pages/rooms/rooms.jsx:22
 msgid "Pesquisar Salas"
-msgstr ""
+msgstr "Search rooms"
 
 #. js-lingui-explicit-id
 #: src/pages/rooms/roomsList/roomList.constants.jsx:61
 msgid "table.capacitySuffix"
-msgstr ""
-
-#. js-lingui-explicit-id
-#: src/common/components/navBar/navBar.jsx:41
-msgid "table.pessoas"
-msgstr ""
+msgstr "people"
 
 #: src/common/components/modals/roomModal/roomModal.jsx:139
 msgid "Preço"
-msgstr ""
+msgstr "Price"
 
 #. js-lingui-explicit-id
 #: src/pages/configurations/tabGeneralConfigs/tabGeneralConfigs.jsx:19
 msgid "config.wednesday"
-msgstr ""
+msgstr "Wednesday"
 
 #. js-lingui-explicit-id
 #: src/common/components/modals/roomModal/roomModal.constants.jsx:115
 msgid "common.dayWednesday"
-msgstr ""
+msgstr "Wednesday"
 
 #. js-lingui-explicit-id
 #: src/pages/configurations/tabGeneralConfigs/tabGeneralConfigs.jsx:20
 msgid "config.thursday"
-msgstr ""
+msgstr "Thursday"
 
 #. js-lingui-explicit-id
 #: src/common/components/modals/roomModal/roomModal.constants.jsx:122
 msgid "common.dayThursday"
-msgstr ""
+msgstr "Thursday"
 
 #: src/pages/forgotPassword/forgotPasswordForm/forgotPasswordForm.jsx:45
 msgid "Recuperação de senha"
-msgstr ""
+msgstr "Password Recovery"
 
 #: src/pages/forgotPassword/forgotPasswordForm/forgotPasswordForm.jsx:65
 msgid "Resetar Senha"
-msgstr ""
+msgstr "Reset Password"
 
 #. js-lingui-explicit-id
 #: src/pages/configurations/tabGeneralConfigs/tabGeneralConfigs.jsx:22
 msgid "config.saturday"
-msgstr ""
+msgstr "Saturday"
 
 #. js-lingui-explicit-id
 #: src/common/components/modals/roomModal/roomModal.constants.jsx:136
 msgid "common.daySaturday"
-msgstr ""
-
-#. js-lingui-explicit-id
-#: src/common/components/navBar/navBar.jsx:138
-msgid "nav.logout"
-msgstr ""
-
-#: src/common/components/navBar/navBar.jsx:125
-#~ msgid "Sair"
-#~ msgstr ""
+msgstr "Saturday"
 
 #. js-lingui-explicit-id
 #: src/domains/room/room.constants.jsx:20
 msgid "common.updatedRoomSuccess"
-msgstr ""
+msgstr "Room updated successfully!"
 
 #. js-lingui-explicit-id
 #: src/domains/room/room.constants.jsx:4
 msgid "common.createdRoomSuccess"
-msgstr ""
+msgstr "Room created successfully!"
 
 #. js-lingui-explicit-id
 #: src/domains/room/room.constants.jsx:36
 msgid "common.deletedRoomSuccess"
-msgstr ""
+msgstr "Room deleted successfully!"
 
 #. js-lingui-explicit-id
-#: src/pages/configurations/tabGeneralConfigs/tabGeneralConfigs.jsx:97
+#: src/common/components/navBar/navBar.jsx:26
+msgctxt "main nav"
+msgid "nav.salas"
+msgstr "Rooms"
+
+#. js-lingui-explicit-id
+#: src/pages/configurations/tabGeneralConfigs/tabGeneralConfigs.jsx:96
 msgid "config.save"
-msgstr ""
+msgstr "Save"
 
 #: src/common/components/rowGroups/companyGroup/companyGroup.jsx:79
 msgid "Salvar"
-msgstr ""
+msgstr "Save"
 
 #. js-lingui-explicit-id
 #: src/infraestructure/auth/auth.constants.jsx:4
 msgid "common.requestPasswordResetSuccess"
-msgstr ""
+msgstr "If this email exists in our records, check your inbox."
 
 #. js-lingui-explicit-id
 #: src/pages/configurations/tabGeneralConfigs/tabGeneralConfigs.jsx:17
 msgid "config.monday"
-msgstr ""
+msgstr "Monday"
 
 #. js-lingui-explicit-id
 #: src/common/components/modals/roomModal/roomModal.constants.jsx:101
 msgid "common.dayMonday"
-msgstr ""
+msgstr "Monday"
 
 #. js-lingui-explicit-id
 #: src/common/components/modals/roomModal/roomModal.constants.jsx:57
 msgid "validation.startTimeRequired"
-msgstr ""
+msgstr "Start time is required."
 
 #. js-lingui-explicit-id
 #: src/common/components/modals/roomModal/roomModal.constants.jsx:63
 msgid "validation.endTimeRequired"
-msgstr ""
+msgstr "End time is required."
 
 #. js-lingui-explicit-id
 #: src/common/components/modals/roomModal/roomModal.constants.jsx:51
 msgid "validation.dayRequired"
-msgstr ""
+msgstr "Day is required."
 
 #. js-lingui-explicit-id
 #: src/pages/listCustomerPage/clientList/clientList.jsx:64
 #: src/pages/listCustomerPage/clientList/clientList.constants.jsx:49
 msgid "clients.noReservations"
-msgstr ""
+msgstr "No reservations"
 
 #: src/pages/loginPage/loginPageForm/loginPageForm.jsx:92
 msgid "Senha"
@@ -717,97 +724,97 @@ msgstr "Password"
 #. js-lingui-explicit-id
 #: src/pages/resetPassword/resetPasswordForm/resetPasswordForm.constants.jsx:7
 msgid "validation.passwordRequired2"
-msgstr ""
+msgstr "Password is required."
 
 #. js-lingui-explicit-id
 #: src/infraestructure/auth/auth.constants.jsx:28
 msgid "common.resetNewPasswordSuccess"
-msgstr ""
+msgstr "Your password has been reset successfully!"
 
 #: src/common/components/rowGroups/whatsappGroup/whatsappGroup.jsx:89
 msgid "Seu WhatsApp não está conectado!"
-msgstr ""
+msgstr "Your WhatsApp is not connected!"
 
 #. js-lingui-explicit-id
 #: src/pages/configurations/tabGeneralConfigs/tabGeneralConfigs.jsx:21
 msgid "config.friday"
-msgstr ""
+msgstr "Friday"
 
 #. js-lingui-explicit-id
 #: src/common/components/modals/roomModal/roomModal.constants.jsx:129
 msgid "common.dayFriday"
-msgstr ""
+msgstr "Friday"
 
 #. js-lingui-explicit-id
-#: src/pages/rooms/roomsList/roomList.constants.jsx:32
+#: src/pages/rooms/roomsList/roomList.constants.jsx:30
 msgid "table.header.status"
-msgstr ""
+msgstr "Status"
 
 #: src/common/components/modals/roomModal/roomModal.jsx:156
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #. js-lingui-explicit-id
 #: src/infraestructure/auth/auth.constants.jsx:12
 msgid "common.passwordResetSuccess"
-msgstr ""
+msgstr "Your password has been changed successfully!"
 
 #: src/common/components/rowGroups/suggestionGroup/suggestionGroup.jsx:24
 msgid "Sugestão de horário do Whatsapp"
-msgstr ""
+msgstr "WhatsApp time suggestion"
 
 #. js-lingui-explicit-id
-#: src/pages/rooms/roomsList/roomList.constants.jsx:41
+#: src/pages/rooms/roomsList/roomList.constants.jsx:39
 msgid "table.header.price"
-msgstr ""
+msgstr "Fee"
 
 #: src/common/components/modals/roomModal/roomModal.jsx:135
 msgid "Taxa"
-msgstr ""
+msgstr "Fee"
 
 #. js-lingui-explicit-id
 #: src/pages/listCustomerPage/clientList/clientList.constants.jsx:19
 msgid "clients.columnPhone"
-msgstr ""
+msgstr "Phone"
 
 #: src/common/components/rowGroups/companyGroup/companyGroup.jsx:53
 #: src/common/components/rowGroups/companyGroup/companyGroup.jsx:57
 #: src/common/components/modals/clientModal/clientModal.jsx:88
 #: src/common/components/modals/clientModal/clientModal.jsx:93
 msgid "Telefone"
-msgstr ""
+msgstr "Phone"
 
 #: src/common/components/modals/deleteRoomModal/deleteRoomModal.jsx:39
 msgid "Tem certeza que deseja excluir a sala"
-msgstr ""
+msgstr "Are you sure you want to delete the room"
 
 #: src/common/components/modals/deleteServiceModal/deleteServiceModal.jsx:39
 msgid "Tem certeza que deseja excluir o serviço"
-msgstr ""
+msgstr "Are you sure you want to delete the service"
 
 #: src/common/components/rowGroups/suggestionGroup/suggestionGroup.jsx:47
 msgid "Tempo de sugestão"
-msgstr ""
+msgstr "Suggestion time"
 
 #. js-lingui-explicit-id
 #: src/pages/configurations/tabGeneralConfigs/tabGeneralConfigs.jsx:18
 msgid "config.tuesday"
-msgstr ""
+msgstr "Tuesday"
 
 #. js-lingui-explicit-id
 #: src/common/components/modals/roomModal/roomModal.constants.jsx:108
 msgid "common.dayTuesday"
-msgstr ""
+msgstr "Tuesday"
 
 #. js-lingui-explicit-id
 #: src/pages/listCustomerPage/clientList/clientList.constants.jsx:25
 msgid "clients.columnLastReservation"
-msgstr ""
+msgstr "Last Reservation"
 
 #: src/common/components/rowGroups/whatsappGroup/whatsappGroup.jsx:76
 msgid "WhatsApp"
-msgstr ""
+msgstr "WhatsApp"
 
 #: src/common/components/rowGroups/whatsappGroup/whatsappGroup.jsx:85
 msgid "WhatsApp está ativo!"
-msgstr ""
+msgstr "WhatsApp is active!"

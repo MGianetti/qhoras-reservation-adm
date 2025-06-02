@@ -13,11 +13,25 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#. placeholder {0}: page.label
+#. js-lingui-explicit-id
+#: src/common/components/navBar/navBar.jsx:44
+#~ msgid "table.statusAtivo"
+#~ msgstr "Ativo"
+
+#. js-lingui-explicit-id
+#: src/common/components/navBar/navBar.jsx:46
+#~ msgid "table.statusInativo"
+#~ msgstr "Inativo"
+
+#. js-lingui-explicit-id
+#: src/common/components/navBar/navBar.jsx:41
+#~ msgid "table.pessoas"
+#~ msgstr "pessoas"
+
 #: src/common/components/navBar/navBar.jsx:207
 #: src/common/components/navBar/navBar.jsx:256
-msgid "{0}"
-msgstr "{0}"
+#~ msgid "{0}"
+#~ msgstr "{0}"
 
 #: src/common/components/rowGroups/suggestionGroup/suggestionGroup.jsx:62
 msgid "1 em 1 hora"
@@ -56,11 +70,6 @@ msgstr "A senha deve ter no mínimo 8 caracteres, contendo letras e números."
 #: src/pages/loginPage/loginPageForm/loginPageForm.constants.jsx:27
 msgid "validation.passwordRequired"
 msgstr "A senha é obrigatória"
-
-#. js-lingui-explicit-id
-#: src/common/components/navBar/navBar.jsx:265
-msgid "tooltip.openCalendar"
-msgstr "Abrir calendário"
 
 #. js-lingui-explicit-id
 #: src/pages/listCustomerPage/clientList/clientList.constants.jsx:34
@@ -118,11 +127,6 @@ msgstr "Ativo"
 msgid "Ativo"
 msgstr "Ativo"
 
-#. js-lingui-explicit-id
-#: src/common/components/navBar/navBar.jsx:44
-msgid "table.statusAtivo"
-msgstr "Ativo"
-
 #: src/common/components/rowGroups/blockTimeGroup/blockTimeGroup.jsx:174
 msgid "Bloquear"
 msgstr "Bloquear"
@@ -145,7 +149,13 @@ msgid "Cadastrar sala"
 msgstr "Cadastrar sala"
 
 #. js-lingui-explicit-id
-#: src/common/components/navBar/navBar.jsx:283
+#: src/common/components/navBar/navBar.jsx:24
+msgctxt "main nav"
+msgid "nav.calendario"
+msgstr "Calendário"
+
+#. js-lingui-explicit-id
+#: src/common/components/navBar/navBar.jsx:176
 msgid "nav.calendar"
 msgstr "Calendário"
 
@@ -161,7 +171,7 @@ msgid "Cancelar"
 msgstr "Cancelar"
 
 #. js-lingui-explicit-id
-#: src/pages/rooms/roomsList/roomList.constants.jsx:50
+#: src/pages/rooms/roomsList/roomList.constants.jsx:48
 msgid "table.header.capacity"
 msgstr "Capacidade"
 
@@ -194,6 +204,12 @@ msgid "Conectar WhatsApp"
 msgstr "Conectar WhatsApp"
 
 #. js-lingui-explicit-id
+#: src/common/components/navBar/navBar.jsx:27
+msgctxt "main nav"
+msgid "nav.configuracoes"
+msgstr "Configurações"
+
+#. js-lingui-explicit-id
 #: src/domains/user/user.constants.jsx:4
 msgid "common.updatedUserConfigSuccess"
 msgstr "Configurações atualizadas com sucesso!"
@@ -212,17 +228,17 @@ msgstr "Confirmação de senha é obrigatória"
 msgid "Confirmar exclusão"
 msgstr "Confirmar exclusão"
 
-#. js-lingui-explicit-id
-#: src/common/components/navBar/navBar.jsx:306
-msgid "nav.copyLinkButton"
-msgstr "Copiar link"
-
 #: src/common/components/navBar/navBar.jsx:282
 #~ msgid "Copiar link"
 #~ msgstr "Copiar link"
 
 #. js-lingui-explicit-id
-#: src/common/components/navBar/navBar.jsx:288
+#: src/common/components/navBar/navBar.jsx:191
+msgid "nav.copyLinkButton"
+msgstr "Copiar link"
+
+#. js-lingui-explicit-id
+#: src/common/components/navBar/navBar.jsx:181
 msgid "tooltip.copyCalendarLink"
 msgstr "Copiar link para o calendário"
 
@@ -326,11 +342,6 @@ msgid "common.requestGetUserFail"
 msgstr "Erro ao buscar dados. Tente novamente."
 
 #. js-lingui-explicit-id
-#: src/common/components/navBar/navBar.jsx:128
-msgid "nav.linkCopyError"
-msgstr "Erro ao copiar link!"
-
-#. js-lingui-explicit-id
 #: src/infraestructure/auth/auth.constants.jsx:52
 msgid "common.hasLoginFail"
 msgstr "Erro ao efetuar login. Tente novamente."
@@ -344,6 +355,11 @@ msgstr "Erro ao resetar senha! Verifique os dados informados."
 #: src/infraestructure/auth/auth.constants.jsx:20
 msgid "common.requestPasswordResetFail"
 msgstr "Erro ao solicitar! Por favor, tente novamente."
+
+#. js-lingui-explicit-id
+#: src/common/components/navBar/navBar.jsx:74
+msgid "nav.linkCopyError"
+msgstr "Erro ao copiar link!"
 
 #: src/common/components/rowGroups/whatsappGroup/whatsappGroup.jsx:82
 msgid "Escaneie o QR Code abaixo para ativar seu WhatsApp!"
@@ -475,11 +491,6 @@ msgstr "Inativo"
 msgid "Inativo"
 msgstr "Inativo"
 
-#. js-lingui-explicit-id
-#: src/common/components/navBar/navBar.jsx:46
-msgid "table.statusInativo"
-msgstr "Inativo"
-
 #: src/pages/forgotPassword/forgotPasswordForm/forgotPasswordForm.jsx:48
 msgid "Informe seu e-mail para solicitar uma nova senha!"
 msgstr "Informe seu e-mail para solicitar uma nova senha!"
@@ -493,7 +504,7 @@ msgid "Insira seu email de acesso"
 msgstr "Insira seu email de acesso"
 
 #. js-lingui-explicit-id
-#: src/common/components/navBar/navBar.jsx:306
+#: src/common/components/navBar/navBar.jsx:190
 msgid "nav.linkShort"
 msgstr "Link"
 
@@ -502,7 +513,7 @@ msgstr "Link"
 #~ msgstr "Link"
 
 #. js-lingui-explicit-id
-#: src/common/components/navBar/navBar.jsx:122
+#: src/common/components/navBar/navBar.jsx:68
 msgid "nav.linkCopied"
 msgstr "Link copiado com sucesso!"
 
@@ -511,12 +522,23 @@ msgstr "Link copiado com sucesso!"
 msgid "common.hasLoginSuccess"
 msgstr "Login efetuado com sucesso!"
 
+#. js-lingui-explicit-id
+#: src/common/components/navBar/navBar.jsx:205
+msgid "nav.logout"
+msgstr "Sair"
+
+#. js-lingui-explicit-id
+#: src/common/components/navBar/navBar.jsx:25
+msgctxt "main nav"
+msgid "nav.membros"
+msgstr "Membros"
+
 #: src/pages/resetPassword/resetPasswordForm/resetPasswordForm.jsx:132
 msgid "Mudar senha"
 msgstr "Mudar senha"
 
 #. js-lingui-explicit-id
-#: src/pages/rooms/roomsList/roomList.constants.jsx:23
+#: src/pages/rooms/roomsList/roomList.constants.jsx:21
 msgid "table.header.name"
 msgstr "Nome"
 
@@ -577,6 +599,11 @@ msgstr "Ocorreu um erro ao deletar o cliente WhatsApp"
 msgid "Ocorreu um erro ao inicializar o cliente WhatsApp"
 msgstr "Ocorreu um erro ao inicializar o cliente WhatsApp"
 
+#. js-lingui-explicit-id
+#: src/common/components/navBar/navBar.jsx:167
+msgid "tooltip.openCalendar"
+msgstr "Abrir calendário"
+
 #: src/common/components/halfScreenLogin/halfScreenLogin.jsx:29
 msgid "Organize suas reuniões e eventos"
 msgstr "Organize suas reuniões e eventos"
@@ -592,11 +619,6 @@ msgstr "Pesquisar Salas"
 #. js-lingui-explicit-id
 #: src/pages/rooms/roomsList/roomList.constants.jsx:61
 msgid "table.capacitySuffix"
-msgstr "pessoas"
-
-#. js-lingui-explicit-id
-#: src/common/components/navBar/navBar.jsx:41
-msgid "table.pessoas"
 msgstr "pessoas"
 
 #: src/common/components/modals/roomModal/roomModal.jsx:139
@@ -641,11 +663,6 @@ msgstr "Sábado"
 msgid "common.daySaturday"
 msgstr "Sábado"
 
-#. js-lingui-explicit-id
-#: src/common/components/navBar/navBar.jsx:138
-msgid "nav.logout"
-msgstr "Sair"
-
 #: src/common/components/navBar/navBar.jsx:125
 #~ msgid "Sair"
 #~ msgstr "Sair"
@@ -666,7 +683,13 @@ msgid "common.deletedRoomSuccess"
 msgstr "Sala deletada com sucesso!"
 
 #. js-lingui-explicit-id
-#: src/pages/configurations/tabGeneralConfigs/tabGeneralConfigs.jsx:97
+#: src/common/components/navBar/navBar.jsx:26
+msgctxt "main nav"
+msgid "nav.salas"
+msgstr "Salas"
+
+#. js-lingui-explicit-id
+#: src/pages/configurations/tabGeneralConfigs/tabGeneralConfigs.jsx:96
 msgid "config.save"
 msgstr "Salvar"
 
@@ -739,7 +762,7 @@ msgid "common.dayFriday"
 msgstr "Sexta-feira"
 
 #. js-lingui-explicit-id
-#: src/pages/rooms/roomsList/roomList.constants.jsx:32
+#: src/pages/rooms/roomsList/roomList.constants.jsx:30
 msgid "table.header.status"
 msgstr "Status"
 
@@ -757,7 +780,7 @@ msgid "Sugestão de horário do Whatsapp"
 msgstr "Sugestão de horário do Whatsapp"
 
 #. js-lingui-explicit-id
-#: src/pages/rooms/roomsList/roomList.constants.jsx:41
+#: src/pages/rooms/roomsList/roomList.constants.jsx:39
 msgid "table.header.price"
 msgstr "Taxa"
 
