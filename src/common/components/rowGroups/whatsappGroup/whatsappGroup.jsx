@@ -28,7 +28,7 @@ const WhatsappGroup = () => {
                 }
             } catch (err) {
                 console.error('Error checking WhatsApp client heartbeat:', err);
-                setError(Trans`Falha ao verificar o status do cliente WhatsApp.`);
+                setError(<Trans>Falha ao verificar o status do cliente WhatsApp.</Trans>);
             }
         };
 
@@ -45,11 +45,11 @@ const WhatsappGroup = () => {
                 const qrCodeBase64 = await qrcode.toDataURL(response.qrCode);
                 setQrCode(qrCodeBase64);
             } else if (response.qrCode === null) {
-                setError(Trans`Falha ao inicializar o cliente WhatsApp`);
+                setError(<Trans>Falha ao inicializar o cliente WhatsApp</Trans>);
             }
-        } catch (error) {
-            console.error('Error initializing WhatsApp client:', error);
-            setError(Trans`Ocorreu um erro ao inicializar o cliente WhatsApp`);
+        } catch (err) {
+            console.error('Error initializing WhatsApp client:', err);
+            setError(<Trans>Ocorreu um erro ao inicializar o cliente WhatsApp</Trans>);
         } finally {
             setIsInitializing(false);
         }
@@ -62,9 +62,9 @@ const WhatsappGroup = () => {
             await whatsappRepository.deleteWhatsAppClient(userId);
             setQrCode(null);
             setIsClientActive(false);
-        } catch (error) {
-            console.error('Error deleting WhatsApp client:', error);
-            setError(Trans`Ocorreu um erro ao deletar o cliente WhatsApp`);
+        } catch (err) {
+            console.error('Error deleting WhatsApp client:', err);
+            setError(<Trans>Ocorreu um erro ao deletar o cliente WhatsApp</Trans>);
         } finally {
             setIsDeleting(false);
         }
@@ -75,11 +75,11 @@ const WhatsappGroup = () => {
             <FormLabel component="legend" sx={{ mb: 2 }}>
                 <Trans>WhatsApp</Trans>
             </FormLabel>
-            <Grid container alignItems={'center'} justifyContent={'space-between'}>
+            <Grid container alignItems="center" justifyContent="space-between">
                 <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                     <Typography variant="subtitle1" sx={{ color: '#606062' }}>
                         {qrCode ? (
-                            Trans`Escaneie o QR Code abaixo para ativar seu WhatsApp!`
+                            <Trans>Escaneie o QR Code abaixo para ativar seu WhatsApp!</Trans>
                         ) : isClientActive ? (
                             <span style={{ color: 'green', fontSize: '1.4em' }}>
                                 <Trans>WhatsApp está ativo!</Trans>
@@ -105,14 +105,22 @@ const WhatsappGroup = () => {
                         onClick={isClientActive ? handleDeleteClient : handleInitializeClient}
                         disabled={isInitializing || isDeleting}
                     >
-                        {isInitializing ? Trans`Gerando QR Code...` : isDeleting ? Trans`Deletando...` : isClientActive ? Trans`Desconectar WhatsApp` : Trans`Conectar WhatsApp`}
+                        {isInitializing ? (
+                            <Trans>Gerando QR Code...</Trans>
+                        ) : isDeleting ? (
+                            <Trans>Deletando...</Trans>
+                        ) : isClientActive ? (
+                            <Trans>Desconectar WhatsApp</Trans>
+                        ) : (
+                            <Trans>Conectar WhatsApp</Trans>
+                        )}
                     </Button>
                 </Box>
 
                 {qrCode ? (
-                    <CardMedia component="img" sx={{ width: '200px' }} image={qrCode} alt={Trans`QR Code para WhatsApp`} />
+                    <CardMedia component="img" sx={{ width: '200px' }} image={qrCode} alt="QR Code para WhatsApp" />
                 ) : (
-                    <CardMedia component="img" sx={{ width: '200px' }} image={logoB} alt={Trans`Logo QHoras`} />
+                    <CardMedia component="img" sx={{ width: '200px' }} image={logoB} alt="Logo QHoras" />
                 )}
             </Grid>
         </>

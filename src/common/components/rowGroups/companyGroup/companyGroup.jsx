@@ -1,11 +1,12 @@
 import { useFormik } from 'formik';
 import { useSelector } from 'react-redux';
 import { Button, FormControl, FormGroup, FormLabel, InputLabel, OutlinedInput } from '@mui/material';
+import { Trans } from '@lingui/react/macro';
 import userService from '../../../../domains/user/userService';
 
 const CompanyGroup = () => {
     const { business } = useSelector((state) => state?.auth.user) || {
-        email: undefined
+        business: undefined
     };
 
     const handleSubmit = (values) => {
@@ -40,7 +41,7 @@ const CompanyGroup = () => {
                     </InputLabel>
                     <OutlinedInput
                         id="companyName"
-                        label={Trans`Nome da empresa`}
+                        label={<Trans>Nome da empresa</Trans>}
                         size="small"
                         value={formik.values.companyName}
                         onChange={(e) => formik.setFieldValue('companyName', e.target.value)}
@@ -51,7 +52,13 @@ const CompanyGroup = () => {
                     <InputLabel htmlFor="phone" size="small">
                         <Trans>Telefone</Trans>
                     </InputLabel>
-                    <OutlinedInput id="phone" label={Trans`Telefone`} size="small" value={formik.values.phone} onChange={(e) => formik.setFieldValue('phone', e.target.value)} />
+                    <OutlinedInput
+                        id="phone"
+                        label={<Trans>Telefone</Trans>}
+                        size="small"
+                        value={formik.values.phone}
+                        onChange={(e) => formik.setFieldValue('phone', e.target.value)}
+                    />
                 </FormControl>
 
                 <FormControl>
@@ -60,7 +67,7 @@ const CompanyGroup = () => {
                     </InputLabel>
                     <OutlinedInput
                         id="address"
-                        label={Trans`Endereço`}
+                        label={<Trans>Endereço</Trans>}
                         size="small"
                         value={formik.values.address}
                         onChange={(e) => formik.setFieldValue('address', e.target.value)}

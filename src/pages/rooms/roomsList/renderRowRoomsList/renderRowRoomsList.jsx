@@ -1,5 +1,5 @@
 import { Trans } from '@lingui/react/macro';
-import { Button, Chip, Grid, Stack, TableCell, TableRow } from '@mui/material';
+import { Button, Chip, Grid, TableCell, TableRow, Stack } from '@mui/material';
 import { IoTrash } from 'react-icons/io5';
 
 const RenderRoomCell = ({ column, value, handleOpenDeleteModal }) => {
@@ -7,7 +7,7 @@ const RenderRoomCell = ({ column, value, handleOpenDeleteModal }) => {
         return (
             <Stack direction="row" justifyContent="center" spacing={1}>
                 <Chip
-                    label={value ? Trans`Ativo` : Trans`Inativo`}
+                    label={value ? <Trans>Ativo</Trans> : <Trans>Inativo</Trans>}
                     sx={{
                         backgroundColor: value ? '#05C00C' : '#C00505',
                         color: 'white',
@@ -22,19 +22,18 @@ const RenderRoomCell = ({ column, value, handleOpenDeleteModal }) => {
     }
 
     if (column.id === 'price') {
-        const formattedPrice = new Intl.NumberFormat(Trans`pt-BR`, {
+        const formattedPrice = new Intl.NumberFormat('pt-BR', {
             style: 'currency',
-            currency: Trans`BRL`
+            currency: 'BRL'
         }).format(value);
         return formattedPrice;
     }
+
     if (column.id === 'duration') {
         const hours = Math.floor(value / 60);
         const minutes = value % 60;
         if (hours > 0) {
             return `${hours}h${minutes.toString().padStart(2, '0')}`;
-        } else if (minutes === 1) {
-            return `${minutes} min`;
         } else {
             return `${minutes} min`;
         }

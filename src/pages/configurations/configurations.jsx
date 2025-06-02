@@ -2,16 +2,12 @@ import PropTypes from 'prop-types';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import Tabs from '@mui/material/Tabs';
-import { GoGear } from 'react-icons/go';
-import { useSelector } from 'react-redux';
-import React, { useEffect, useState } from 'react';
 import { IoStorefrontOutline } from 'react-icons/io5';
+import { useSelector } from 'react-redux';
+import React, { useState } from 'react';
 
-import userService from '../../domains/user/userService';
 import TabEstablishment from './tabEstablishment/tabEstablishment';
-import TabGeneralConfigs from './tabGeneralConfigs/tabGeneralConfigs';
 import LoggedLayout from '../../common/layouts/loggedLayout/loggedLayout';
-import appointmentService from '../../domains/appointment/appointmentService';
 import { Trans } from '@lingui/react/macro';
 
 function CustomTabPanel(props) {
@@ -48,26 +44,15 @@ export default function Configurations() {
         setValue(newValue);
     };
 
-    // useEffect(() => {
-    //     userService.read(businessId)
-    // }, [businessId]);
-
     return (
         <LoggedLayout>
             <Box sx={{ width: '100%', pt: 2 }}>
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                    <Tabs value={value} onChange={handleChange} aria-label="icon position tabs example" sx={{ minHeight: 'unset' }}>
-                        {/* <Tab
-                            icon={<GoGear size={17} />}
-                            iconPosition="start"
-                            label="Configurações"
-                            sx={{ fontSize: 14, textTransform: 'none', minHeight: 20, fontWeight: 'unset' }}
-                            {...a11yProps(0)}
-                        /> */}
+                    <Tabs value={value} onChange={handleChange} aria-label="configurações tabs" sx={{ minHeight: 'unset' }}>
                         <Tab
                             icon={<IoStorefrontOutline size={17} />}
                             iconPosition="start"
-                            label={Trans`Estabelecimento`}
+                            label={<Trans>Estabelecimento</Trans>}
                             sx={{
                                 fontSize: 14,
                                 textTransform: 'none',
@@ -78,9 +63,6 @@ export default function Configurations() {
                         />
                     </Tabs>
                 </Box>
-                {/* <CustomTabPanel value={value} index={0}>
-                    <TabGeneralConfigs />
-                </CustomTabPanel> */}
                 <CustomTabPanel value={value} index={0}>
                     <TabEstablishment />
                 </CustomTabPanel>

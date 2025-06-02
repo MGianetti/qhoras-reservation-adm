@@ -5,7 +5,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import { FormControl, Box, InputLabel, OutlinedInput, Rating, Typography, Grid } from '@mui/material';
+import { FormControl, Box, InputLabel, OutlinedInput, Typography, Grid } from '@mui/material';
 
 import phoneMask from '../../../masks/phoneMask';
 import clientService from '../../../../domains/client/clientService';
@@ -45,80 +45,78 @@ const ClientModal = (props) => {
     };
 
     return (
-        <>
-            <Dialog maxWidth="sm" fullWidth={true} open={open} onClose={handleClose}>
-                <DialogTitle id="responsive-dialog-title">{valuesLine ? Trans`Editar Membro` : Trans`Novo Membro`}</DialogTitle>
-                <DialogContent>
-                    <Box
-                        component="form"
-                        onSubmit={formik.handleSubmit}
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            m: 'auto',
-                            pt: 2,
-                            gap: 3
-                        }}
-                    >
-                        <Grid container spacing={2}>
-                            <Grid item xs={6}>
-                                <FormControl fullWidth>
-                                    <InputLabel htmlFor="name" size="small">
-                                        <Trans>Nome</Trans>
-                                    </InputLabel>
-                                    <OutlinedInput
-                                        id="name"
-                                        name="name"
-                                        label={Trans`Nome`}
-                                        size="small"
-                                        value={formik.values.name}
-                                        onChange={formik.handleChange}
-                                        error={formik.touched.name && Boolean(formik.errors.name)}
-                                    />
-                                    {formik.touched.name && formik.errors.name ? (
-                                        <Typography variant="caption" color="error">
-                                            {formik.errors.name}
-                                        </Typography>
-                                    ) : null}
-                                </FormControl>
-                            </Grid>
-
-                            <Grid item xs={6}>
-                                <FormControl fullWidth>
-                                    <InputLabel htmlFor="phoneNumber" size="small">
-                                        <Trans>Telefone</Trans>
-                                    </InputLabel>
-                                    <OutlinedInput
-                                        id="phoneNumber"
-                                        name="phoneNumber"
-                                        label={Trans`Telefone`}
-                                        size="small"
-                                        value={formik.values.phoneNumber}
-                                        inputProps={{ maxLength: 15 }}
-                                        onChange={(e) => formik.setFieldValue('phoneNumber', phoneMask(e.target.value))}
-                                        error={formik.touched.phoneNumber && Boolean(formik.errors.phoneNumber)}
-                                    />
-                                    {formik.touched.phoneNumber && formik.errors.phoneNumber ? (
-                                        <Typography variant="caption" color="error">
-                                            {formik.errors.phoneNumber}
-                                        </Typography>
-                                    ) : null}
-                                </FormControl>
-                            </Grid>
+        <Dialog maxWidth="sm" fullWidth={true} open={open} onClose={handleClose}>
+            <DialogTitle id="responsive-dialog-title">{valuesLine ? <Trans>Editar Membro</Trans> : <Trans>Novo Membro</Trans>}</DialogTitle>
+            <DialogContent>
+                <Box
+                    component="form"
+                    onSubmit={formik.handleSubmit}
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        m: 'auto',
+                        pt: 2,
+                        gap: 3
+                    }}
+                >
+                    <Grid container spacing={2}>
+                        <Grid item xs={6}>
+                            <FormControl fullWidth>
+                                <InputLabel htmlFor="name" size="small">
+                                    <Trans>Nome</Trans>
+                                </InputLabel>
+                                <OutlinedInput
+                                    id="name"
+                                    name="name"
+                                    label={<Trans>Nome</Trans>}
+                                    size="small"
+                                    value={formik.values.name}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.name && Boolean(formik.errors.name)}
+                                />
+                                {formik.touched.name && formik.errors.name ? (
+                                    <Typography variant="caption" color="error">
+                                        {formik.errors.name}
+                                    </Typography>
+                                ) : null}
+                            </FormControl>
                         </Grid>
 
-                        <DialogActions>
-                            <Button autoFocus onClick={handleClose}>
-                                Cancelar
-                            </Button>
-                            <Button autoFocus type="submit" variant="contained">
-                                {valuesLine ? Trans`Editar Membro` : Trans`Cadastrar Membro`}
-                            </Button>
-                        </DialogActions>
-                    </Box>
-                </DialogContent>
-            </Dialog>
-        </>
+                        <Grid item xs={6}>
+                            <FormControl fullWidth>
+                                <InputLabel htmlFor="phoneNumber" size="small">
+                                    <Trans>Telefone</Trans>
+                                </InputLabel>
+                                <OutlinedInput
+                                    id="phoneNumber"
+                                    name="phoneNumber"
+                                    label={<Trans>Telefone</Trans>}
+                                    size="small"
+                                    value={formik.values.phoneNumber}
+                                    inputProps={{ maxLength: 15 }}
+                                    onChange={(e) => formik.setFieldValue('phoneNumber', phoneMask(e.target.value))}
+                                    error={formik.touched.phoneNumber && Boolean(formik.errors.phoneNumber)}
+                                />
+                                {formik.touched.phoneNumber && formik.errors.phoneNumber ? (
+                                    <Typography variant="caption" color="error">
+                                        {formik.errors.phoneNumber}
+                                    </Typography>
+                                ) : null}
+                            </FormControl>
+                        </Grid>
+                    </Grid>
+
+                    <DialogActions>
+                        <Button autoFocus onClick={handleClose}>
+                            <Trans>Cancelar</Trans>
+                        </Button>
+                        <Button autoFocus type="submit" variant="contained">
+                            {valuesLine ? <Trans>Editar Membro</Trans> : <Trans>Cadastrar Membro</Trans>}
+                        </Button>
+                    </DialogActions>
+                </Box>
+            </DialogContent>
+        </Dialog>
     );
 };
 

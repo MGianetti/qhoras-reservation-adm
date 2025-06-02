@@ -2,6 +2,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useTheme } from '@mui/material/styles';
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material';
+import { i18n } from '@lingui/core';
 
 import { clear } from '../../../domains/room/roomSlice';
 import roomService from '../../../domains/room/roomService';
@@ -28,11 +29,11 @@ const RoomList = (props) => {
         if (businessId) {
             roomService.read({ businessId, page: page + 1, limit: rowsPerPage, search });
         }
-    }, [businessId, page, rowsPerPage, dispatch, search]);
+    }, [businessId, page, rowsPerPage, search]);
 
     useEffect(() => {
         dispatch(clear());
-    }, []);
+    }, [dispatch]);
 
     useEffect(() => {
         fetchRooms();
@@ -59,14 +60,10 @@ const RoomList = (props) => {
         setDeleteRowValues(rowValues);
     };
 
-    // TODO: Verificar se é necessário filtrar a lista de salas
-
     const filteredList = useMemo(() => {
         const term = search.trim().toLowerCase();
         return roomList.filter((room) => room.name.toLowerCase().includes(term));
     }, [roomList, search]);
-
-    const paginatedRows = filteredList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
     return (
         <>
@@ -84,7 +81,7 @@ const RoomList = (props) => {
                                             backgroundColor: 'unset'
                                         }}
                                     >
-                                        {column.label}
+                                        {i18n._(column.label)}
                                     </TableCell>
                                 ))}
                             </TableRow>

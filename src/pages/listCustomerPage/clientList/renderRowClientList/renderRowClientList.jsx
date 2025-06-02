@@ -1,11 +1,14 @@
 import { Button, Grid, Rating, TableCell, TableRow } from '@mui/material';
 import Icon from '../../../../common/components/icon/Icon';
+import { defineMessage } from '@lingui/core/macro';
+import { i18n } from '@lingui/core';
 
 const RenderClientCell = ({ column, value, rowIndex, row, handleClickWhatsapp }) => {
     if (column.id === 'name') {
+        const altText = `${i18n._(defineMessage({ id: 'clients.image', message: 'Imagem' }))} ${rowIndex + 1}`;
         return (
             <div style={{ display: 'flex', alignItems: 'center' }}>
-                <img src={row.image} alt={Trans`Imagem` + `${rowIndex + 1}`} width="40" height="40" style={{ marginRight: 12 }} />
+                <img src={row.image} alt={altText} width="40" height="40" style={{ marginRight: 12 }} />
                 {value}
             </div>
         );
@@ -18,19 +21,6 @@ const RenderClientCell = ({ column, value, rowIndex, row, handleClickWhatsapp })
     if (column.id === 'actions') {
         return (
             <Grid container justifyContent="center" spacing={1}>
-                {/* <Grid item>
-                    <Button
-                        sx={{
-                            p: 1,
-                            minWidth: 'unset',
-                            borderRadius: '50%',
-                            backgroundColor: '#C00505',
-                            '&:hover': { backgroundColor: '#C00505' }
-                        }}
-                    >
-                        <Icon name="block" width={24} />
-                    </Button>
-                </Grid> */}
                 <Grid item>
                     <Button
                         sx={{

@@ -6,7 +6,7 @@ import notification from '../../common/utils/notification';
 import persistAuthToken from './utils/setAuthToken';
 import store from '../store/store';
 import { useNavigate } from 'react-router-dom';
-import { Trans } from '@lingui/react/macro';
+import { defineMessage } from '@lingui/core/macro';
 
 const dispatch = (action) => store.dispatch(action);
 
@@ -46,7 +46,13 @@ const sendNewPassword = async (newPassword, token) => {
 };
 
 const handleAuthFailure = () => {
-    notification(Trans`Falha ao atualizar o token. Por favor, faça login novamente.`);
+    notification({
+        message: defineMessage({
+            id: 'auth.tokenRefreshFail',
+            message: 'Falha ao atualizar o token. Por favor, faça login novamente.'
+        }),
+        type: 'error'
+    });
     removeAuthToken();
     delete apiService.defaults.headers.common['Authorization'];
     const navigate = useNavigate();

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Grid } from '@mui/material';
+import { Trans } from '@lingui/react/macro';
 
 import ClientList from './clientList/clientList';
 import ClientModal from '../../common/components/modals/clientModal/clientModal';
@@ -12,13 +13,13 @@ const ListCustomerPage = () => {
     const [open, setOpen] = useState(false);
     const [valuesLine, setValuesLine] = useState(null);
     const [search, setSearch] = useState('');
-    // const isLoading = useSelector((state) => state?.clients.isLoading);
     const isLoading = false;
+
     return (
         <LoggedLayout>
             <Grid container spacing={2}>
                 <Grid item xs={12}>
-                    <ListActionsBar handleOpen={setOpen} setValuesLine={setValuesLine} icon="addClient" labelSearch={Trans`Pesquisar membros`} setSearch={setSearch} />
+                    <ListActionsBar handleOpen={setOpen} setValuesLine={setValuesLine} icon="addClient" labelSearch={<Trans>Pesquisar membros</Trans>} setSearch={setSearch} />
                 </Grid>
                 <Grid item xs={12}>
                     <LoadingOverlay isLoading={isLoading} />

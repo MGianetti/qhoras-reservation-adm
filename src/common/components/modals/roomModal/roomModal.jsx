@@ -5,12 +5,13 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import { FormControl, InputLabel, OutlinedInput, Switch, Grid, FormControlLabel, FormLabel, Box, Typography } from '@mui/material';
+import { FormControl, InputLabel, OutlinedInput, Switch, Grid, FormControlLabel, FormLabel, Box, Typography, FormGroup, Checkbox } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { MultiInputTimeRangeField } from '@mui/x-date-pickers-pro';
-import FormGroup from '@mui/material/FormGroup';
-import Checkbox from '@mui/material/Checkbox';
+
+import { i18n } from '@lingui/core';
+import { Trans } from '@lingui/react/macro';
 
 import moneyMask from '../../../masks/moneyMask';
 import roomService from '../../../../domains/room/roomService';
@@ -18,12 +19,9 @@ import roomService from '../../../../domains/room/roomService';
 import { formatRoomPayload, validationSchema, days } from './roomModal.constants';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
-import { Trans } from '@lingui/react/macro';
 
 const RoomModal = ({ open, setOpen, valuesLine }) => {
-    const { businessId } = useSelector((state) => state?.auth.user) || {
-        businessId: undefined
-    };
+    const { businessId } = useSelector((state) => state?.auth.user) || { businessId: undefined };
 
     const initialValues = useMemo(
         () => ({
@@ -35,7 +33,6 @@ const RoomModal = ({ open, setOpen, valuesLine }) => {
                 ? valuesLine.agendaConfigurations.map((config) => ({
                       day: config.day,
                       isActive: config.isActive,
-                      // Store as dayjs objects for later formatting
                       timeRange: [dayjs(`1970-01-01T${config.startTime}`), dayjs(`1970-01-01T${config.endTime}`)]
                   }))
                 : days.map((day) => ({
@@ -48,12 +45,10 @@ const RoomModal = ({ open, setOpen, valuesLine }) => {
     );
 
     const formik = useFormik({
-        initialValues: initialValues,
+        initialValues,
         enableReinitialize: true,
-        // validationSchema,
-        onSubmit: (values) => {
-            handleSubmit(values);
-        }
+        validationSchema,
+        onSubmit: (values) => handleSubmit(values)
     });
 
     const handleClose = () => {
@@ -86,8 +81,8 @@ const RoomModal = ({ open, setOpen, valuesLine }) => {
     };
 
     return (
-        <Dialog maxWidth="sm" fullWidth={true} open={open} onClose={handleClose}>
-            <DialogTitle>{valuesLine ? Trans`Editar sala` : Trans`Nova sala`}</DialogTitle>
+        <Dialog maxWidth="sm" fullWidth open={open} onClose={handleClose}>
+            <DialogTitle>{valuesLine ? <Trans>Editar sala</Trans> : <Trans>Nova sala</Trans>}</DialogTitle>
             <DialogContent>
                 <Box component="form" onSubmit={formik.handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 3, pt: 2 }}>
                     <Grid container spacing={2}>
@@ -98,7 +93,7 @@ const RoomModal = ({ open, setOpen, valuesLine }) => {
                                 </InputLabel>
                                 <OutlinedInput
                                     id="name"
-                                    label={Trans`Nome`}
+                                    label={<Trans>Nome</Trans>}
                                     size="small"
                                     value={formik.values.name}
                                     onChange={formik.handleChange}
@@ -119,7 +114,7 @@ const RoomModal = ({ open, setOpen, valuesLine }) => {
                                 </InputLabel>
                                 <OutlinedInput
                                     id="capacity"
-                                    label={Trans`Capacidade`}
+                                    label={<Trans>Capacidade</Trans>}
                                     size="small"
                                     type="number"
                                     value={formik.values.capacity}
@@ -141,14 +136,14 @@ const RoomModal = ({ open, setOpen, valuesLine }) => {
                                 </InputLabel>
                                 <OutlinedInput
                                     id="price"
-                                    label={Trans`Preço`}
+                                    label={<Trans>Preço</Trans>}
                                     size="small"
                                     value={formik.values.price}
                                     onChange={(e) => formik.setFieldValue('price', moneyMask(e.target.value))}
                                     error={formik.touched.price && Boolean(formik.errors.price)}
                                 />
                                 {formik.touched.price && formik.errors.price && (
-                                    <Typography variant="cdayaption" color="error">
+                                    <Typography variant="caption" color="error">
                                         {formik.errors.price}
                                     </Typography>
                                 )}
@@ -162,7 +157,7 @@ const RoomModal = ({ open, setOpen, valuesLine }) => {
                                 </FormLabel>
                                 <FormControlLabel
                                     control={<Switch name="status" checked={formik.values.status} onChange={(e) => formik.setFieldValue('status', e.target.checked)} />}
-                                    label={formik.values.status ? Trans`Ativo` : Trans`Inativo`}
+                                    label={formik.values.status ? <Trans>Ativo</Trans> : <Trans>Inativo</Trans>}
                                 />
                             </FormControl>
                         </Grid>
@@ -175,7 +170,7 @@ const RoomModal = ({ open, setOpen, valuesLine }) => {
                             <Trans>Cancelar</Trans>
                         </Button>
                         <Button type="submit" variant="contained">
-                            {valuesLine ? Trans`Editar sala` : Trans`Cadastrar sala`}
+                            {valuesLine ? <Trans>Editar sala</Trans> : <Trans>Cadastrar sala</Trans>}
                         </Button>
                     </DialogActions>
                 </Box>
@@ -201,7 +196,7 @@ const OperationGroup = ({ formik }) => {
                                         onChange={(e) => formik.setFieldValue(`agendaConfigurations.${index}.isActive`, e.target.checked)}
                                     />
                                 }
-                                label={day.name}
+                                label={i18n._(day.name)}
                             />
                         </Grid>
 
@@ -210,7 +205,7 @@ const OperationGroup = ({ formik }) => {
                                 <MultiInputTimeRangeField
                                     slotProps={{
                                         textField: ({ position }) => ({
-                                            label: position === 'start' ? 'Início' : 'Fim',
+                                            label: position === 'start' ? <Trans>Início</Trans> : <Trans>Fim</Trans>,
                                             size: 'small'
                                         })
                                     }}

@@ -1,23 +1,21 @@
 import { useSelector } from 'react-redux';
 import { useTheme } from '@mui/material/styles';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material';
+import { i18n } from '@lingui/core';
+import { defineMessage } from '@lingui/core/macro';
 
 import clientService from '../../../domains/client/clientService';
 import { RenderRowClientList } from './renderRowClientList/renderRowClientList';
-import { columns, rows } from './clientList.constants';
+import { columns } from './clientList.constants';
 import { useDebounce } from '../../../common/utils/useDebounce';
 
 const ClientList = (props) => {
     const { handleOpenModal, setValuesLine, search } = props;
     const theme = useTheme();
 
-    const { businessId } = useSelector((state) => state?.auth.user) || {
-        businessId: undefined
-    };
+    const { businessId } = useSelector((state) => state?.auth.user) || { businessId: undefined };
     const { data: clientList, pagination } = useSelector((state) => state?.clients) || { data: [], pagination: {} };
-
-    // const { data: clientList, pagination } = { data: [], pagination: {} };
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -56,10 +54,21 @@ const ClientList = (props) => {
     const handleChangeRowsPerPage = (event) => {
         const newRowsPerPage = parseInt(event.target.value, 10);
         setRowsPerPage(newRowsPerPage);
-        setPage(0); // Reset to the first page
+        setPage(0);
     };
 
-    const paginatedRows = useMemo(() => rows(clientList), [clientList]);
+    // Helper to format last reservation
+    const formatLastReservation = (date) => {
+        if (!date) {
+            return i18n._(
+                defineMessage({
+                    id: 'clients.noReservations',
+                    message: 'Sem reservas'
+                })
+            );
+        }
+        return new Date(date).toLocaleDateString('pt-BR');
+    };
 
     return (
         <Paper sx={{ width: '100%', overflow: 'hidden', boxShadow: theme.shadows[0] }}>
@@ -76,23 +85,33 @@ const ClientList = (props) => {
                                         backgroundColor: 'unset'
                                     }}
                                 >
-                                    {column.label}
+                                    {i18n._(column.label)}
                                 </TableCell>
                             ))}
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {rows(clientList).map((row, rowIndex) => (
-                            <RenderRowClientList
-                                key={rowIndex}
-                                row={row}
-                                columns={columns}
-                                rowIndex={rowIndex}
-                                handleOpenModal={handleOpenModal}
-                                setValuesLine={setValuesLine}
-                                unformattedData={clientList}
-                            />
-                        ))}
+                        {clientList.map((client, rowIndex) => {
+                            const row = {
+                                image: client.avatarUrl || null,
+                                name: client.name,
+                                phone: client.phoneNumber,
+                                lastReservation: formatLastReservation(client.lastReservationDate),
+                                loyaltyPoints: client.loyaltyPoints,
+                                rawData: client
+                            };
+                            return (
+                                <RenderRowClientList
+                                    key={rowIndex}
+                                    row={row}
+                                    columns={columns}
+                                    rowIndex={rowIndex}
+                                    handleOpenModal={handleOpenModal}
+                                    setValuesLine={setValuesLine}
+                                    unformattedData={clientList}
+                                />
+                            );
+                        })}
                     </TableBody>
                 </Table>
             </TableContainer>
