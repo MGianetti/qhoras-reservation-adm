@@ -5,7 +5,7 @@ export const validationSchema = Yup.object({
     password: Yup.string()
         .required(
             defineMessage({
-                id: 'validation.passwordRequired',
+                id: 'validation.passwordRequired2',
                 message: 'Senha é obrigatória'
             })
         )

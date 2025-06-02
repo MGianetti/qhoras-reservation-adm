@@ -37,7 +37,7 @@ export const columns = [
     }
 ];
 
-function getRandomImage() {
+export function getRandomImage() {
     const imageNumber = Math.floor(Math.random() * avatars.length);
     return avatars[imageNumber];
 }
@@ -47,6 +47,7 @@ function createData(name, phone, lastReservationDate, loyaltyPoints) {
     const lastReservation = lastReservationDate
         ? new Date(lastReservationDate).toLocaleDateString('pt-BR')
         : defineMessage({ id: 'clients.noReservations', message: 'Sem reservas' });
+
     return { image, name, phone, lastReservation, loyaltyPoints };
 }
 

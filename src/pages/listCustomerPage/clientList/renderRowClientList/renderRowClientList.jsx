@@ -6,6 +6,7 @@ import { i18n } from '@lingui/core';
 const RenderClientCell = ({ column, value, rowIndex, row, handleClickWhatsapp }) => {
     if (column.id === 'name') {
         const altText = `${i18n._(defineMessage({ id: 'clients.image', message: 'Imagem' }))} ${rowIndex + 1}`;
+        console.log(row.image);
         return (
             <div style={{ display: 'flex', alignItems: 'center' }}>
                 <img src={row.image} alt={altText} width="40" height="40" style={{ marginRight: 12 }} />

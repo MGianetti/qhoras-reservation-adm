@@ -7,7 +7,7 @@ import { defineMessage } from '@lingui/core/macro';
 
 import clientService from '../../../domains/client/clientService';
 import { RenderRowClientList } from './renderRowClientList/renderRowClientList';
-import { columns } from './clientList.constants';
+import { columns, getRandomImage } from './clientList.constants';
 import { useDebounce } from '../../../common/utils/useDebounce';
 
 const ClientList = (props) => {
@@ -93,7 +93,7 @@ const ClientList = (props) => {
                     <TableBody>
                         {clientList.map((client, rowIndex) => {
                             const row = {
-                                image: client.avatarUrl || null,
+                                image: getRandomImage(),
                                 name: client.name,
                                 phone: client.phoneNumber,
                                 lastReservation: formatLastReservation(client.lastReservationDate),
