@@ -1,8 +1,7 @@
-import { ptBR } from 'date-fns/locale';
+import { format } from 'date-fns';
 import { useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
-import { format, differenceInMinutes } from 'date-fns';
-import { useCallback, useEffect, useState, useMemo, useContext } from 'react';
 import {
     Paper,
     Table,
@@ -10,7 +9,6 @@ import {
     TableCell,
     TableContainer,
     TableHead,
-    TablePagination,
     TableRow,
     TableSortLabel,
     Box,
@@ -22,135 +20,129 @@ import {
     Tooltip,
     PaginationItem
 } from '@mui/material';
+import { ptBR } from 'date-fns/locale';
+import { useState, useEffect, useCallback, useMemo, useContext } from 'react';
 
 import { CalendarContext } from '../../context/calendar-context';
+import LoadingOverlay from '../../../LoadingOverlay/LoadingOverlay';
 import DeleteRoomModal from '../../../modals/deleteRoomModal/deleteRoomModal';
+import { EnhancedTableToolbar } from './enhancedTableToolbar/enhancedTableToolbar';
 import { RenderRowCalendarList } from './renderRowCalendarList/renderRowCalendarList';
 import appointmentService from '../../../../../domains/appointment/appointmentService';
+import calendarReadOnlyService from '../../../../../domains/calendarReadOnly/calendarReadOnlyService';
 
 import { columnsCalendarList, rowsCalendarList } from './calendar-list.constants';
-import { useLocation } from 'react-router-dom';
-import calendarReadOnlyService from '../../../../../domains/calendarReadOnly/calendarReadOnlyService';
-import LoadingOverlay from '../../../LoadingOverlay/LoadingOverlay';
 
 const CalendarLayoutList = () => {
     const theme = useTheme();
+    const { businessId } = useSelector((state) => state.auth.user) || {};
+    const { data: reservations = [], pageData: { totalCount = 0 } = {}, isLoading } = useSelector((state) => state.appointments) || {};
 
-    const { businessId } = useSelector((state) => state?.auth.user) || {};
-    const {
-        data: reservations = [],
-        pageData: { totalCount = 0, page: pageAppointments = 0 } = {
-            totalCount: 0,
-            page: 0
-        },
-        isLoading
-    } = useSelector((state) => state?.appointments) || {};
-
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const { stateCalendar, setStateCalendar } = useContext(CalendarContext);
+    const location = useLocation();
+    const queryBusinessId = new URLSearchParams(location.search).get('business');
 
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [deleteRowValues, setDeleteRowValues] = useState(null);
-    const { stateCalendar, setStateCalendar } = useContext(CalendarContext);
 
-    const [order, setOrder] = useState('desc');
-    const [orderBy, setOrderBy] = useState('createdAt');
+    const [params, setParams] = useState({
+        page: 1,
+        rowsPerPage: 10,
+        order: 'desc',
+        orderBy: 'createdAt',
+        filters: {}
+    });
 
-    const location = useLocation();
+    const totalPages = Math.max(1, Math.ceil(totalCount / params.rowsPerPage));
 
-    const searchParams = new URLSearchParams(location.search);
-    const businessIdQueryParams = searchParams.get('business');
+    useEffect(() => {
+        if (params.page > totalPages) {
+            setParams((p) => ({ ...p, page: totalPages }));
+        }
+    }, [totalPages, params.page]);
 
     const fetchCalendarList = useCallback(async () => {
-        if (businessId) {
-            await appointmentService.readCalendarList({
-                businessId,
-                page: page + 1,
-                limit: rowsPerPage,
-                order,
-                orderBy: orderBy === 'member' ? 'client.name' : orderBy === 'room' ? 'room.name' : orderBy
-            });
-        }
+        const service = queryBusinessId ? calendarReadOnlyService : appointmentService;
+        const bid = queryBusinessId || businessId;
+        if (!bid) return;
 
-        if (businessIdQueryParams) {
-            await calendarReadOnlyService.readCalendarList({
-                businessId: businessIdQueryParams,
-                page: page + 1,
-                limit: rowsPerPage,
-                order,
-                orderBy: orderBy === 'member' ? 'client.name' : orderBy === 'room' ? 'room.name' : orderBy
-            });
-        }
-    }, [businessId, page, rowsPerPage, order, orderBy]);
+        await service.readCalendarList({
+            businessId: bid,
+            page: params.page,
+            limit: params.rowsPerPage,
+            order: params.order,
+            orderBy: params.orderBy === 'member' ? 'client.name' : params.orderBy === 'room' ? 'room.name' : params.orderBy,
+            filters: params.filters
+        });
+    }, [businessId, queryBusinessId, params]);
 
     useEffect(() => {
         fetchCalendarList();
     }, [fetchCalendarList]);
 
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
+    const handleChangePage = (_, newPage) => {
+        setParams((p) => ({ ...p, page: newPage }));
     };
-
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
+    const handleChangeRowsPerPage = (e) => {
+        const value = parseInt(e.target.value, 10);
+        setParams((p) => ({
+            ...p,
+            rowsPerPage: value,
+            page: 1
+        }));
     };
-
-    useEffect(() => {
-        if (pageAppointments === 1) {
-            setPage(0);
-        }
-    }, [pageAppointments]);
+    const handleRequestSort = (_, property) => {
+        setParams((p) => {
+            const isAsc = p.orderBy === property && p.order === 'asc';
+            return {
+                ...p,
+                order: isAsc ? 'desc' : 'asc',
+                orderBy: property,
+                page: 1
+            };
+        });
+    };
+    const handleApplyFilters = (newFilters) => {
+        setParams((p) => ({
+            ...p,
+            filters: newFilters,
+            page: 1
+        }));
+    };
 
     const handleClickLine = (rowData) => {
-        const eventBeginDate = new Date(rowData.begin);
-        const eventEndDate = new Date(rowData.end);
-        const beginTime = format(eventBeginDate, 'H:mm', { locale: ptBR });
-        const endTime = format(eventEndDate, 'H:mm', { locale: ptBR });
-
-        const room = rowData?.room?.id;
-        const client = rowData?.client?.id;
-        const clientName = rowData?.client?.name;
-        const status = rowData?.status;
-        const description = rowData?.description;
-        const isPaid = rowData?.isPaid;
-
+        const begin = new Date(rowData.begin);
+        const end = new Date(rowData.end);
         setStateCalendar({
             ...stateCalendar,
             openDialog: true,
-            eventBeginDate: eventBeginDate,
-            eventBeginTime: { value: beginTime, label: beginTime },
-            eventEndDate: eventEndDate,
-            eventEndTime: { value: endTime, label: endTime },
-            room,
-            client,
-            clientName,
-            status,
-            isPaid,
-            description,
-            eventID: (rowData && rowData.id) || 0,
+            eventBeginDate: begin,
+            eventBeginTime: {
+                value: format(begin, 'H:mm', { locale: ptBR }),
+                label: format(begin, 'H:mm', { locale: ptBR })
+            },
+            eventEndDate: end,
+            eventEndTime: {
+                value: format(end, 'H:mm', { locale: ptBR }),
+                label: format(end, 'H:mm', { locale: ptBR })
+            },
+            room: rowData.room.id,
+            client: rowData.client.id,
+            clientName: rowData.client.name,
+            status: rowData.status,
+            description: rowData.description,
+            isPaid: rowData.isPaid,
+            eventID: rowData.id,
             calendarEvent: rowData,
             isList: true,
             updateParams: {
                 businessId,
-                page: page + 1,
-                limit: rowsPerPage,
-                order,
-                orderBy: orderBy === 'member' ? 'client.name' : orderBy === 'room' ? 'room.name' : orderBy
+                page: params.page,
+                limit: params.rowsPerPage,
+                order: params.order,
+                orderBy: params.orderBy === 'member' ? 'client.name' : params.orderBy === 'room' ? 'room.name' : params.orderBy
             }
         });
-    };
-
-    const handleOpenDeleteModal = (e, rowValues) => {
-        e.stopPropagation();
-        setDeleteModalOpen(true);
-        setDeleteRowValues(rowValues);
-    };
-
-    const handleRequestSort = (event, property) => {
-        const isAsc = orderBy === property && order === 'asc';
-        setOrder(isAsc ? 'desc' : 'asc');
-        setOrderBy(property);
     };
 
     const formattedRows = useMemo(() => rowsCalendarList(reservations), [reservations]);
@@ -159,78 +151,66 @@ const CalendarLayoutList = () => {
         <>
             <LoadingOverlay isLoading={isLoading} />
             <Paper sx={{ width: '100%', overflow: 'hidden', boxShadow: theme.shadows[0] }}>
+                <EnhancedTableToolbar handleApplyFilters={handleApplyFilters} />
+
                 <TableContainer>
-                    <Table stickyHeader aria-label="sticky table">
+                    <Table stickyHeader>
                         <TableHead>
                             <TableRow>
-                                {columnsCalendarList.map((column) => (
-                                    <TableCell
-                                        key={column.id}
-                                        align={column.align}
-                                        style={{
-                                            minWidth: column.minWidth,
-                                            backgroundColor: 'unset'
-                                        }}
-                                        sortDirection={orderBy === column.id ? order : false}
-                                    >
+                                {columnsCalendarList.map((col) => (
+                                    <TableCell key={col.id} align={col.align} style={{ minWidth: col.minWidth }} sortDirection={params.orderBy === col.id ? params.order : false}>
                                         <TableSortLabel
-                                            active={orderBy === column.id}
-                                            direction={orderBy === column.id ? order : 'asc'}
-                                            onClick={(event) => handleRequestSort(event, column.id)}
+                                            active={params.orderBy === col.id}
+                                            direction={params.orderBy === col.id ? params.order : 'asc'}
+                                            onClick={(e) => handleRequestSort(e, col.id)}
                                         >
-                                            {column.label}
-                                            {orderBy === column.id ? (
-                                                <Box component="span" sx={{ visibility: 'hidden' }}>
-                                                    {order === 'desc' ? 'ordenado decrescente' : 'ordenado crescente'}
-                                                </Box>
-                                            ) : null}
+                                            {col.label}
                                         </TableSortLabel>
                                     </TableCell>
                                 ))}
                             </TableRow>
                         </TableHead>
+
                         <TableBody>
-                            {formattedRows.map((row, rowIndex) => (
-                                <RenderRowCalendarList
-                                    key={rowIndex}
-                                    row={row}
-                                    columns={columnsCalendarList}
-                                    handleClickLine={() => handleClickLine(reservations[rowIndex])}
-                                    unformattedData={reservations}
-                                    rowIndex={rowIndex}
-                                />
-                            ))}
+                            {formattedRows.length === 0 ? (
+                                <TableRow>
+                                    <TableCell colSpan={columnsCalendarList.length} align="center">
+                                        Nenhum registro encontrado
+                                    </TableCell>
+                                </TableRow>
+                            ) : (
+                                formattedRows.map((row, i) => (
+                                    <RenderRowCalendarList
+                                        key={i}
+                                        row={row}
+                                        columns={columnsCalendarList}
+                                        handleClickLine={() => handleClickLine(reservations[i])}
+                                        unformattedData={reservations}
+                                        rowIndex={i}
+                                    />
+                                ))
+                            )}
                         </TableBody>
                     </Table>
                 </TableContainer>
+
                 <Box
                     sx={{
                         display: 'flex',
-                        flexDirection: { xs: 'column', sm: 'row' }, // column on mobile, row on desktop
-                        justifyContent: 'end',
-                        alignItems: 'right',
+                        flexDirection: { xs: 'column', sm: 'row' },
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
                         p: 2,
                         gap: 2
                     }}
                 >
-                    {/* Tooltip no seletor de linhas por página */}
-                    <Tooltip title="Selecione o número de registros por página">
-                        <FormControl
-                            size="medium"
-                            fullWidth
-                            sx={{
-                                width: { xs: '100%', sm: 'auto' },
-                                minWidth: { sm: 150 }
-                            }}
-                        >
+                    <Tooltip>
+                        <FormControl size="small" fullWidth sx={{ width: { xs: '100%', sm: 'auto' }, minWidth: { sm: 150 } }}>
                             <InputLabel>Registros por página</InputLabel>
                             <Select
-                                value={rowsPerPage}
+                                value={params.rowsPerPage}
                                 label="Registros por página"
-                                onChange={(e) => {
-                                    setRowsPerPage(parseInt(e.target.value, 10));
-                                    setPage(0);
-                                }}
+                                onChange={handleChangeRowsPerPage}
                                 sx={{
                                     textAlign: 'center',
                                     '& .MuiSelect-select': {
@@ -239,20 +219,19 @@ const CalendarLayoutList = () => {
                                     }
                                 }}
                             >
-                                {[10, 25, 50, 100].map((opt) => (
-                                    <MenuItem key={opt} value={opt}>
-                                        {opt}
+                                {[10, 25, 50, 100].map((n) => (
+                                    <MenuItem key={n} value={n}>
+                                        {n}
                                     </MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
                     </Tooltip>
 
-                    {/* Paginação numerada com tooltips em cada botão */}
                     <Pagination
-                        count={Math.ceil(totalCount / rowsPerPage)}
-                        page={page + 1}
-                        onChange={(_, value) => setPage(value - 1)}
+                        count={totalPages}
+                        page={params.page}
+                        onChange={handleChangePage}
                         showFirstButton
                         showLastButton
                         siblingCount={1}
@@ -260,26 +239,15 @@ const CalendarLayoutList = () => {
                         shape="rounded"
                         color="primary"
                         renderItem={(item) => {
-                            let title = '';
-                            switch (item.type) {
-                                case 'first':
-                                    title = 'Primeira página';
-                                    break;
-                                case 'previous':
-                                    title = 'Página anterior';
-                                    break;
-                                case 'page':
-                                    title = `Página ${item.page}`;
-                                    break;
-                                case 'next':
-                                    title = 'Próxima página';
-                                    break;
-                                case 'last':
-                                    title = 'Última página';
-                                    break;
-                            }
+                            const titles = {
+                                first: 'Primeira página',
+                                previous: 'Página anterior',
+                                next: 'Próxima página',
+                                last: 'Última página'
+                            };
+                            const title = titles[item.type] ?? `Página ${item.page}`;
                             return (
-                                <Tooltip title={title} placement="top">
+                                <Tooltip title={title}>
                                     <PaginationItem {...item} />
                                 </Tooltip>
                             );

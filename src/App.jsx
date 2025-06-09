@@ -1,4 +1,3 @@
-import { useSelector } from "react-redux";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 import LoginPage from "./pages/loginPage/loginPage";
@@ -14,7 +13,6 @@ import ListCustomerPage from "./pages/listCustomerPage/listCustomerPage";
 import CalendarReadOnly from "./pages/calendarReadOnly/calendarReadOnly";
 
 function App() {
-  const role = useSelector((state) => state?.auth?.user?.role);
 
   return (
     <Router>
@@ -29,9 +27,11 @@ function App() {
           <Route path="/membros" element={<ListCustomerPage />} />
           <Route path="/salas" element={<Rooms />} />
           <Route path="/updates" element={<Updates />} />
-          {role === "ADMINISTRATOR" && (
+          <Route
+            element={<ProtectedRoute allowedRoles={['ADMINISTRATOR']} />}
+          >
             <Route path="/configuracoes" element={<Configurations />} />
-          )}
+          </Route>
         </Route>
       </Routes>
     </Router>
