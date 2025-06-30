@@ -42,6 +42,12 @@ export const columns = [
     minWidth: 170,
     align: "center",
   },
+  {
+    id: "actions",
+    label: "Ações",
+    minWidth: 170,
+    align: "center",
+  },
 ];
 
 function createData(name, statusBoolean, priceNumber, capacityNumber) {
