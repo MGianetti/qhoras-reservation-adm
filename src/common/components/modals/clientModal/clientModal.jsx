@@ -42,10 +42,11 @@ const ClientModal = (props) => {
   };
 
   const handleSubmit = (values) => {
+    const phoneOnlyNumbers = values.phoneNumber.replace(/\D/g, '');
     if (valuesLine) {
-      clientService.update(valuesLine.id, values);
+      clientService.update(valuesLine.id, { ...values, phoneNumber: phoneOnlyNumbers });
     } else {
-      clientService.create(businessId, values);
+      clientService.create(businessId, { ...values, phoneNumber: phoneOnlyNumbers });
     }
     formik.resetForm();
     setOpen(false);

@@ -69,6 +69,18 @@ const RenderClientCell = ({
 
   if (!value) return "-";
 
+  if (column.id === 'phone') {
+
+    const formatPhoneNumber = (raw) => {
+        if (!raw) return '';
+        const digitsOnly = raw.replace(/\D/g, '');
+        const withAreaCode = digitsOnly.replace(/^(\d{2})(\d)/g, '($1) $2');
+        const formatted = withAreaCode.replace(/(\d)(\d{4})$/, '$1-$2');
+        return formatted;
+    };
+    return formatPhoneNumber(value);
+}
+
   return value;
 };
 
