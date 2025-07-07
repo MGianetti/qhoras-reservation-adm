@@ -337,7 +337,7 @@ function CalendarLayoutMonth(props) {
                             });
                         }}
                     >
-                        {`${event.client?.name} - ${event.room?.name}`}
+                        {`${event?.description}`}
                     </div>
                 ));
         });
