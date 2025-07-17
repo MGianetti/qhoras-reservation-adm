@@ -4,6 +4,8 @@ import { IoMdSend } from 'react-icons/io';
 import { useMachine } from '@xstate/react';
 import { createMachine } from 'xstate';
 
+import chatBg from 'src/assets/images/chat-background.jpg';
+
 const chatMachine = createMachine({
     id: 'chat',
     initial: 'isMember',
@@ -297,7 +299,7 @@ const Chat = () => {
                     flexGrow: 1,
                     p: 2,
                     overflowY: 'auto',
-                    backgroundImage: "url('src/assets/images/chat-background.jpg')",
+                    backgroundImage: `url(${chatBg})`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat'
