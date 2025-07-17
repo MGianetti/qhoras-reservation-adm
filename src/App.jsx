@@ -11,6 +11,7 @@ import Configurations from "./pages/configurations/configurations";
 import ProtectedRoute from "./infraestructure/components/ProtectedRoute";
 import ListCustomerPage from "./pages/listCustomerPage/listCustomerPage";
 import CalendarReadOnly from "./pages/calendarReadOnly/calendarReadOnly";
+import Chat from "./pages/chat/Chat";
 
 function App() {
 
@@ -21,7 +22,7 @@ function App() {
         <Route path="/esqueci-senha" element={<ForgotPassword />} />
         <Route path="/redefinir-senha" element={<ResetPassword />} />
         <Route path="/calendario" element={<CalendarReadOnly />} />
-
+        <Route path="/chat" element={<Chat/>}/>
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<Calendar />} />
           <Route path="/membros" element={<ListCustomerPage />} />
