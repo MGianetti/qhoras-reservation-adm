@@ -338,7 +338,7 @@ function CalendarLayoutMonth(props) {
                                 });
                             }}
                         >
-                            {selectedRoom === 'ALL' && (
+                            {/* {selectedRoom === 'ALL' && (
                                 <span
                                     style={{
                                         display: 'inline-block',
@@ -350,7 +350,7 @@ function CalendarLayoutMonth(props) {
                                         flexShrink: 0
                                     }}
                                 />
-                            )}
+                            )} */}
                             {`${event?.description} - ${evHour.hour}h `}
                         </div>
                     );
