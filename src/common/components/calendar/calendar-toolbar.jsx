@@ -335,6 +335,7 @@ function CalendarToolbar(props) {
                                 <FormControl size="small" className={classes.roomSelector} sx={{ width: '100%', maxWidth: 420 }}>
                                     <InputLabel>Sala</InputLabel>
                                     <Select value={selectedRoom || ''} label="Sala" onChange={handleRoomChange} fullWidth>
+                                        {layout === 'month' && <MenuItem value="ALL">Todas as salas</MenuItem>}
                                         {rooms
                                             ?.slice()
                                             .sort((a, b) => a.name.localeCompare(b.name))
@@ -497,6 +498,7 @@ function CalendarToolbar(props) {
                         <FormControl size="small" className={classes.roomSelectorSmall} fullWidth>
                             <InputLabel>Sala</InputLabel>
                             <Select value={selectedRoom || ''} label="Sala" onChange={handleRoomChange} fullWidth>
+                                {layout === 'month' && <MenuItem value="ALL">Todas as salas</MenuItem>}
                                 {rooms?.map((room) => (
                                     <MenuItem key={room.id} value={room.id}>
                                         {room.name}

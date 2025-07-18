@@ -64,7 +64,7 @@ function CalendarMain(props) {
   const { selectedDate, layout } = stateCalendar;
   const businessId = useSelector((state) => state.auth.user?.businessId);
   const { data: allRooms } = useSelector((state) => state.rooms) || [];
-  const { runAnimation, setGetScheduleData, fetchRooms, selectedRoom } = props;
+  const { runAnimation, setGetScheduleData, fetchRooms, selectedRoom, roomColors } = props;
   const [, setStartEndDates] = useState({
     start: selectedDate,
     end: selectedDate,
@@ -128,7 +128,7 @@ function CalendarMain(props) {
   return (
     <Root style={{ width: "100%" }}>
       {layout === "month" && (
-        <CalendarLayoutMonth weeks={weeks} runAnimation={runAnimation} selectedRoom={selectedRoom} />
+        <CalendarLayoutMonth roomColors={roomColors} weeks={weeks} runAnimation={runAnimation} selectedRoom={selectedRoom} />
       )}
       {(layout === "week" || layout === "day") && (
         <CalendarLayoutDayWeek
