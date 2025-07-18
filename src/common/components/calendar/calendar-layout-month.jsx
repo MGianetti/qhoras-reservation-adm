@@ -187,7 +187,7 @@ const Root = styled('div')(({ theme }) => ({
 }));
 
 function CalendarLayoutMonth(props) {
-    const { selectedRoom, roomColors } = props;
+    const { selectedRoom } = props;
 
     const viewEvent = (viewEventProps) => {
         const { calendarEvent } = viewEventProps;
@@ -311,7 +311,6 @@ function CalendarLayoutMonth(props) {
             return dayEvents
                 .filter((event) => new Date(event.begin).getHours() === evHour.hour)
                 .map((event) => {
-                    const bgDot = roomColors[event.room.id] || '#888';
                     return (
                         <div
                             title={`${event.room?.name}`}
@@ -338,19 +337,6 @@ function CalendarLayoutMonth(props) {
                                 });
                             }}
                         >
-                            {/* {selectedRoom === 'ALL' && (
-                                <span
-                                    style={{
-                                        display: 'inline-block',
-                                        width: 6,
-                                        height: 6,
-                                        borderRadius: '999px',
-                                        backgroundColor: bgDot,
-                                        marginRight: 4,
-                                        flexShrink: 0
-                                    }}
-                                />
-                            )} */}
                             {`${event?.description} - ${evHour.hour}h `}
                         </div>
                     );

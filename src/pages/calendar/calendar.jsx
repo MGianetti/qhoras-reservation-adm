@@ -177,19 +177,6 @@ const Calendar = () => {
         }
     };
 
-    const [roomColors, setRoomColors] = useState({});
-
-    useEffect(() => {
-        if (!rooms.length) return;
-        // evenly distribute hues around the color wheel
-        const map = rooms.reduce((acc, room, idx) => {
-            const hue = Math.round((idx * 360) / rooms.length);
-            acc[room.id] = `hsl(${hue}, 70%, 50%)`;
-            return acc;
-        }, {});
-        setRoomColors(map);
-    }, [rooms]);
-
     return (
         <LoggedLayout>
             <StyledCalendarContextProvider value={{ stateCalendar, setStateCalendar }}>
@@ -240,7 +227,6 @@ const Calendar = () => {
                                 setGetScheduleData={setGetScheduleData}
                                 fetchRooms={fetchRooms}
                                 selectedRoom={selectedRoom}
-                                roomColors={roomColors}
                             />
                             <CalendarEventDialog isLoading={isLoading} refreshCalendar={refreshCalendar} roomsList={rooms} />
                             <ExportReservationDialog open={openExportDialog} setOpenExportDialog={setOpenExportDialog} />
