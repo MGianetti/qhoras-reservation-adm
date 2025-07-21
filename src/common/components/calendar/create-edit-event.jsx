@@ -27,6 +27,7 @@ export default function createEditEvent(props) {
 
   let title = "";
   let description = "";
+  let name = "";
   let room = null;
   let client = null;
   let clientName = null;
@@ -41,12 +42,11 @@ export default function createEditEvent(props) {
     endTime = format(eventEndDate, "H:mm", { locale: ptBR });
     title = calendarEvent.title;
     description = calendarEvent.description;
-
+    name = calendarEvent.name;
     room = calendarEvent?.room?.id;
     client = calendarEvent?.client?.id;
     clientName = calendarEvent?.client?.name;
     status = calendarEvent?.status;
-    description = calendarEvent?.description;
     isPaid = calendarEvent?.isPaid;
   } else {
     if (eventEl.target.dataset.date === undefined) return false;
@@ -94,6 +94,7 @@ export default function createEditEvent(props) {
     eventID: (calendarEvent && calendarEvent.id) || 0,
     title,
     description,
+    name,
     room,
     client,
     clientName,
