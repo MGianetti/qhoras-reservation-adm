@@ -56,6 +56,7 @@ export const validationSchema = (
 ) =>
   Yup.object({
     roomTF: Yup.string().required("Escolha uma sala."),
+    nameTF: Yup.string().required("Nome do evento é obrigatório."),
     descriptionTF: Yup.string().required("Descrição é obrigatória."),
     clientTF: Yup.object().test(
       "is-empty",
