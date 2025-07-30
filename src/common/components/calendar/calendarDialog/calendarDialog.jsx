@@ -62,6 +62,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
         clientName,
         status,
         isPaid,
+        name,
         description,
         recurrenceType,
         dayOfWeek,
@@ -79,6 +80,10 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
     const [clientInput, setClientInput] = useState('');
     const [scopeDialogOpen, setScopeDialogOpen] = useState(false);
     const [markerDataForUpdate, setMarkerDataForUpdate] = useState(null);
+
+    console.log(stateCalendar);
+    console.log("descricao", description);
+    console.log("name", name);
 
     const theme = useTheme();
     const isSmUp = useMediaQuery(theme.breakpoints.up('sm'));
@@ -114,6 +119,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
             clientId: v.clientTF.value,
             businessId: business.id,
             roomId: v.roomTF,
+            name: v.nameTF,
             description: v.descriptionTF,
             dateAndTime: baseDate,
             endTime: baseEndDate,
@@ -158,6 +164,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                 room || (roomsList.length > 0 ? roomsList[0].id : ''),
             clientTF: client ? { value: client, label: clientName } : { value: '', label: '' },
             statusTF: status || 'SCHEDULED',
+            nameTF: name || '',
             descriptionTF: description || '',
             isPaidTF: isPaid || false,
             beginDate: safeBeginDate,
@@ -396,6 +403,26 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                                 </FormControl>
                             </Grid>
                         </Grid>
+
+                        <FormControl fullWidth>
+                            <InputLabel htmlFor="nameTF" size="small">
+                                Nome do evento
+                            </InputLabel>
+                            <OutlinedInput
+                                id="nameTF"
+                                name="nameTF"
+                                label="Nome do evento"
+                                size="small"
+                                value={formik.values.nameTF}
+                                onChange={formik.handleChange}
+                                error={formik.touched.nameTF && Boolean(formik.errors.nameTF)}
+                            />
+                            {formik.touched.nameTF && formik.errors.nameTF && (
+                                <Typography variant="caption" color="error">
+                                    {formik.errors.nameTF}
+                                </Typography>
+                            )}
+                        </FormControl>
 
                         {/* Campo de Descrição */}
                         <FormControl fullWidth>

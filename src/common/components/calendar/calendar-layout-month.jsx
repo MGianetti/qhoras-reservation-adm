@@ -206,7 +206,7 @@ function CalendarLayoutMonth(props) {
         let isPaid = false;
         let description = '';
         let clientName = '';
-
+        let name = '';
         if (calendarEvent !== null) {
             eventBeginDate = new Date(calendarEvent.begin);
             eventEndDate = new Date(calendarEvent.end);
@@ -219,6 +219,7 @@ function CalendarLayoutMonth(props) {
             client = calendarEvent?.client?.id;
             clientName = calendarEvent?.client?.name;
             status = calendarEvent?.status;
+            name = calendarEvent?.name;
             description = calendarEvent?.description;
             isPaid = calendarEvent?.isPaid;
         } else {
@@ -260,6 +261,7 @@ function CalendarLayoutMonth(props) {
             clientName,
             status,
             isPaid,
+            name,
             description,
             eventID: (calendarEvent && calendarEvent.id) || 0,
             calendarEvent
@@ -337,7 +339,7 @@ function CalendarLayoutMonth(props) {
                                 });
                             }}
                         >
-                            {`${event?.description} - ${evHour.hour}h `}
+                            {`${event?.name ?? event?.description} - ${evHour.hour}h `}
                         </div>
                     );
                 });

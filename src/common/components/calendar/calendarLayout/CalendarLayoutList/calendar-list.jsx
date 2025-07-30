@@ -130,6 +130,7 @@ const CalendarLayoutList = () => {
             client: rowData.client.id,
             clientName: rowData.client.name,
             status: rowData.status,
+            name: rowData.name,
             description: rowData.description,
             isPaid: rowData.isPaid,
             eventID: rowData.id,

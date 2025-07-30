@@ -190,7 +190,7 @@ function EventMark(props) {
     const beginDate = calendarEvent.begin;
     const endDate = calendarEvent.end;
 
-    const descriptionFormatted = calendarEvent.description ? `${calendarEvent.description}` : '';
+    const descriptionFormatted = calendarEvent.name ?? calendarEvent.description ?? '';
 
     const currentDay = beginDate;
     const initTime = new Date(format(currentDay, 'yyyy/MM/dd 0:0:0', { locale: ptBR }));
@@ -216,7 +216,8 @@ function EventMark(props) {
         let status = calendarEvent?.status;
         let isPaid = calendarEvent?.isPaid;
         let description = calendarEvent?.description;
-
+        let name = calendarEvent?.name;
+        
         setStateCalendar({
             ...stateCalendar,
             openDialog: true,
@@ -229,6 +230,7 @@ function EventMark(props) {
             status,
             isPaid,
             description,
+            name,
             eventID: (calendarEvent && calendarEvent.id) || 0,
             calendarEvent
         });
