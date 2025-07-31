@@ -1,8 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Box, Paper, TextField, Button, MenuItem, IconButton } from '@mui/material';
 import { IoMdSend } from 'react-icons/io';
 import { useMachine } from '@xstate/react';
 import { createMachine } from 'xstate';
+import { useLocation } from 'react-router-dom';
+import calendarReadOnlyService from '../../domains/calendarReadOnly/calendarReadOnlyService';
+import chatService from '../../domains/chat/chatService';
+import dayjs from 'dayjs';
 
 const chatMachine = createMachine({
     id: 'chat',
@@ -54,11 +58,18 @@ const prompts = {
     confirmReservation: 'Confira todos os dados e confirme:'
 };
 
-const RoomSelect = ({ value, onChange }) => (
+const RoomSelect = ({ value, onChange, rooms }) => (
     <TextField select fullWidth value={value} onChange={(e) => onChange(e.target.value)}>
-        <MenuItem value="Sala A">Sala A</MenuItem>
-        <MenuItem value="Sala B">Sala B</MenuItem>
-        <MenuItem value="Sala C">Sala C</MenuItem>
+        {rooms.map((room) => (
+            <MenuItem key={room.id} value={room.id}>{room.name}</MenuItem>
+        ))}
+    </TextField>
+);
+const TimeSelect = ({ value, onChange, timeSlots }) => (
+    <TextField select fullWidth value={value} onChange={(e) => onChange(e.target.value)}>
+        {timeSlots.map((timeSlot, index) => (
+            <MenuItem key={index} value={timeSlot}>{timeSlot}</MenuItem>
+        ))}
     </TextField>
 );
 
@@ -80,6 +91,36 @@ const Chat = () => {
     const [topicInput, setTopicInput] = useState('');
     const [ministryInput, setMinistryInput] = useState('');
     const [recurrenceInput, setRecurrenceInput] = useState('');
+
+    const [rooms, setRooms] = useState([]);
+    const [initialTimeSlots, setInitialTimeSlots] = useState([]);
+    const [initialEndTimeSlots, setInitialEndTimeSlots] = useState([]);
+
+    const location = useLocation();
+
+    const searchParams = new URLSearchParams(location.search);
+    const businessIdQueryParams = searchParams.get("business");
+
+    const fetchRooms = useCallback(
+        async () => {
+            try {
+                if (!businessIdQueryParams) return;
+                const roomsData = await calendarReadOnlyService.readRoom({
+                    businessId: businessIdQueryParams,
+                    page: 1,
+                    limit: 1000
+                });
+                setRooms(roomsData);
+            } catch (error) {
+                console.error('Failed to fetch rooms:', error);
+            }
+        },
+        [businessIdQueryParams]
+    );
+
+    useEffect(() => {
+        fetchRooms();
+    }, [fetchRooms]);
 
     // auto-scroll
     useEffect(() => {
@@ -104,17 +145,21 @@ const Chat = () => {
     // summary at confirmReservation
     useEffect(() => {
         if (state.value === 'confirmReservation') {
-            const summary = Object.entries(data)
-                .map(([_, v]) => v)
-                .join('\n');
-            setIsTyping(true);
-            const t = setTimeout(() => {
-                setIsTyping(false);
-                setMessages((m) => [...m, { from: 'bot', text: summary }]);
-            }, 700);
-            return () => clearTimeout(t);
+          const summary = Object.entries(data)
+            .map(([k, v]) => {
+              if (k === 'SalaId') return ''; // opcional: não mostrar o id cru
+              return `${k}: ${v}`;
+            })
+            .filter(Boolean)
+            .join('\n');
+          setIsTyping(true);
+          const t = setTimeout(() => {
+            setIsTyping(false);
+            setMessages((m) => [...m, { from: 'bot', text: summary }]);
+          }, 700);
+          return () => clearTimeout(t);
         }
-    }, [state.value, data]);
+      }, [state.value, data]);
 
     const handleEvent = (type, userText) => {
         if (userText) setMessages((m) => [...m, { from: 'user', text: userText }]);
@@ -138,6 +183,37 @@ const Chat = () => {
         handleEvent(eventType, value);
     };
 
+    const handleSelectRoom = async () => {
+        if (!roomInput) return;
+        const room = rooms.find(r => r.id === roomInput);
+        const roomName = room ? room.name : roomInput;
+        setData(d => ({ ...d, SalaId: roomInput, Sala: roomName }));
+        handleEvent('SELECT_ROOM', roomName);
+    };
+
+    const handleSelectDate = async () => {
+        if (!dateInput) return;
+        const date = dayjs(dateInput).format('DD/MM/YYYY');
+        setData(d => ({ ...d, Data: date }));
+        const availableTimeSlots = await chatService.readAvailableTimeSlots(roomInput, date);
+        setInitialTimeSlots(availableTimeSlots);
+        handleEvent('SELECT_DATE', date);
+    };
+
+    const handleSelectStartTime = async () => {
+        if (!startInput) return;
+        setData(d => ({ ...d, Início: startInput }));
+        const availableEndTimeSlots = await chatService.readAvailableEndTimeSlots(roomInput, data.Data, startInput);
+        setInitialEndTimeSlots(availableEndTimeSlots);
+        handleEvent('SELECT_START', startInput);
+    };
+
+    const handleSelectEndTime = async () => {
+        if (!endInput) return;
+        setData(d => ({ ...d, Término: endInput }));
+        handleEvent('SELECT_END', endInput);
+    };
+
     const renderWidget = () => {
         if (blocked) return null;
         switch (state.value) {
@@ -153,8 +229,8 @@ const Chat = () => {
             case 'roomSelection':
                 return (
                     <Box sx={{ display: 'flex', gap: 1 }}>
-                        <RoomSelect value={roomInput} onChange={setRoomInput} />
-                        <IconButton onClick={() => handleSelect('Sala', roomInput, 'SELECT_ROOM')}>
+                        <RoomSelect value={roomInput} rooms={rooms} onChange={setRoomInput} />
+                        <IconButton onClick={handleSelectRoom}>
                             <IoMdSend />
                         </IconButton>
                     </Box>
@@ -163,7 +239,7 @@ const Chat = () => {
                 return (
                     <Box sx={{ display: 'flex', gap: 1 }}>
                         <TextField type="date" fullWidth value={dateInput} InputLabelProps={{ shrink: true }} onChange={(e) => setDateInput(e.target.value)} />
-                        <IconButton onClick={() => handleSelect('Data', dateInput, 'SELECT_DATE')}>
+                        <IconButton onClick={handleSelectDate}>
                             <IoMdSend />
                         </IconButton>
                     </Box>
@@ -171,8 +247,8 @@ const Chat = () => {
             case 'startTimeSelection':
                 return (
                     <Box sx={{ display: 'flex', gap: 1 }}>
-                        <TextField type="time" fullWidth value={startInput} InputLabelProps={{ shrink: true }} onChange={(e) => setStartInput(e.target.value)} />
-                        <IconButton onClick={() => handleSelect('Início', startInput, 'SELECT_START')}>
+                        <TimeSelect value={startInput} timeSlots={initialTimeSlots} onChange={setStartInput} />
+                        <IconButton onClick={handleSelectStartTime}>
                             <IoMdSend />
                         </IconButton>
                     </Box>
@@ -180,8 +256,8 @@ const Chat = () => {
             case 'endTimeSelection':
                 return (
                     <Box sx={{ display: 'flex', gap: 1 }}>
-                        <TextField type="time" fullWidth value={endInput} InputLabelProps={{ shrink: true }} onChange={(e) => setEndInput(e.target.value)} />
-                        <IconButton onClick={() => handleSelect('Término', endInput, 'SELECT_END')}>
+                        <TimeSelect value={endInput} timeSlots={initialEndTimeSlots} onChange={setEndInput} />
+                        <IconButton onClick={handleSelectEndTime}>
                             <IoMdSend />
                         </IconButton>
                     </Box>

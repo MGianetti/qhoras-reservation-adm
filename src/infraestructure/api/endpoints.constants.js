@@ -24,6 +24,8 @@ const endpoints = {
     calendarListPublic: "calendarPublic/calendar-list/${BUSINESS-ID}",
     appointmentsPublic: "calendarPublic/appointments/${ROOM-ID}",
     exportReservations: "appointments/export-reservations/${BUSINESS-ID}",
+    availableTimeSlots: "chat/available-time-slots/${ROOM-ID}",
+    availableEndTimeSlots: "chat/available-end-time-slots/${ROOM-ID}",
   },
 
   create: {
