@@ -4,7 +4,7 @@ import notification from '../../common/utils/notification';
 import tagRepository from './tagsRepository.js';
 import { readItem, addItem, updateItem, removeItem, setLoading, clearItems } from './tagsSlice.js';
 
-import { createdTagSuccess, createdTagFail, updatedTagSuccess, updatedTagFail, deletedTagSuccess, deletedTagFail } from './tag.constants';
+import { createdTagSuccess, createdTagFail, updatedTagSuccess, updatedTagFail, deletedTagSuccess, deletedTagFail } from './tags.constants';
 
 const dispatch = (action) => store.dispatch(action);
 
