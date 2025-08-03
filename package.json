@@ -29,6 +29,7 @@
     "dayjs": "^1.11.10",
     "formik": "^2.4.6",
     "material-ui-popup-state": "^5.3.6",
+    "mui-phone-input": "^0.1.5",
     "notistack": "^3.0.1",
     "prettier": "^3.5.3",
     "prop-types": "^15.8.1",

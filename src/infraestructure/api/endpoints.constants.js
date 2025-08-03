@@ -26,6 +26,7 @@ const endpoints = {
     exportReservations: "appointments/export-reservations/${BUSINESS-ID}",
     availableTimeSlots: "chat/available-time-slots/${ROOM-ID}",
     availableEndTimeSlots: "chat/available-end-time-slots/${ROOM-ID}",
+    getUserByPhoneNumber: "chat/get-user-by-phone-number/${BUSINESS-ID}",
   },
 
   create: {
@@ -33,6 +34,8 @@ const endpoints = {
     rooms: "rooms/${BUSINESS-ID}",
     appointments: "appointments/${BUSINESS-ID}",
     calendarBlock: "calendar-blocks/${BUSINESS-ID}",
+    clientViaChat: "chat/create-client/${BUSINESS-ID}",
+    createSolicitationViaChat: "chat/create-solicitation/${BUSINESS-ID}",
   },
 
   update: {
