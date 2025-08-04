@@ -129,7 +129,7 @@ function NavBar() {
             <AppBar component={'nav'} sx={{ boxShadow: theme.shadows[1] }}>
                 <Container maxWidth="false">
                     <Toolbar disableGutters>
-                        <CardMedia component="img" sx={{ display: { xs: 'none', md: 'flex' }, mr: 8, width: 100 }} image={logoWhite} alt="Logo QHoras" />
+                        <CardMedia component="img" sx={{ display: { xs: 'none', md: 'flex' }, mr: { md: 2, lg: 8 }, width: 100 }} image={logoWhite} alt="Logo QHoras" />
                         {isLocalhost && (
                             <Typography
                                 sx={{
@@ -196,7 +196,7 @@ function NavBar() {
                                 flexGrow: 1
                             }}
                         >
-                            <CardMedia component="img" sx={{ mr: 2, display: { xs: 'flex', md: 'none' }, width: 100 }} image={logoWhite} alt="Logo QHoras" />
+                            <CardMedia component="img" sx={{ display: { xs: 'flex', md: 'none' }, width: 100 }} image={logoWhite} alt="Logo QHoras" />
                         </Typography>
                         <Box
                             sx={{
@@ -214,7 +214,7 @@ function NavBar() {
                                         sx={{
                                             borderRadius: 0,
                                             py: 3,
-                                            px: 4,
+                                            px: { md: 2, lg: 4 },
                                             color: 'white',
                                             display: 'block',
                                             textTransform: 'uppercase',
@@ -233,29 +233,29 @@ function NavBar() {
 
                         <Box sx={{ flexGrow: 0, display: 'flex' }}>
                             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                              {!isMobile && (
-                                <Tooltip title="Abrir calendário" arrow>
-                                    <Button
-                                        variant="contained"
-                                        color="secondary"
-                                        startIcon={<LuCalendarDays size={20} />}
-                                        endIcon={<FaExternalLinkAlt size={12} />}
-                                        onClick={handleGoToCalendar}
-                                        sx={{
-                                            textTransform: 'none',
-                                            borderRadius: 2,
-                                            px: 2,
-                                            py: 1,
-                                            transition: 'background-color 0.3s',
-                                            '&:hover': {
-                                                bgcolor: 'secondary.dark'
-                                            }
-                                        }}
-                                    >
-                                        Calendário
-                                    </Button>
-                                </Tooltip>
-                              )}
+                                {!isMobile && (
+                                    <Tooltip title="Abrir calendário" arrow>
+                                        <Button
+                                            variant="contained"
+                                            color="secondary"
+                                            startIcon={<LuCalendarDays size={20} />}
+                                            endIcon={<FaExternalLinkAlt size={12} />}
+                                            onClick={handleGoToCalendar}
+                                            sx={{
+                                                textTransform: 'none',
+                                                borderRadius: 2,
+                                                px: 2,
+                                                py: 1,
+                                                transition: 'background-color 0.3s',
+                                                '&:hover': {
+                                                    bgcolor: 'secondary.dark'
+                                                }
+                                            }}
+                                        >
+                                            Calendário
+                                        </Button>
+                                    </Tooltip>
+                                )}
 
                                 <Tooltip title="Copiar link para o calendário" arrow>
                                     <Button
@@ -264,6 +264,7 @@ function NavBar() {
                                         startIcon={<FaRegCopy size={16} />}
                                         onClick={handleCopyLink}
                                         sx={{
+                                            whiteSpace: 'nowrap',
                                             textTransform: 'none',
                                             borderRadius: 2,
                                             px: 2,

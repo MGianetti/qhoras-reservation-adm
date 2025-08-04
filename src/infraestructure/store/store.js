@@ -6,6 +6,7 @@ import roomSlice from "../../domains/room/roomSlice";
 import appointmentSlice from "../../domains/appointment/appointmentSlice";
 import userSlice from "../../domains/user/userSlice";
 import calendarBlocksSlice from "../../domains/calendarBlocks/calendarBlocksSlice";
+import tagsSlice from "../../domains/tags/tagsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -15,6 +16,7 @@ export const store = configureStore({
     appointments: appointmentSlice,
     user: userSlice,
     calendarBlocks: calendarBlocksSlice,
+    tags: tagsSlice
   },
 });
 

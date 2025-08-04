@@ -81,10 +81,6 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
     const [scopeDialogOpen, setScopeDialogOpen] = useState(false);
     const [markerDataForUpdate, setMarkerDataForUpdate] = useState(null);
 
-    console.log(stateCalendar);
-    console.log("descricao", description);
-    console.log("name", name);
-
     const theme = useTheme();
     const isSmUp = useMediaQuery(theme.breakpoints.up('sm'));
 
@@ -105,6 +101,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
     };
     const { data: appointments } = useSelector((state) => state?.appointments) || { data: [] };
     const { data: calendarBlocks } = useSelector((state) => state?.calendarBlocks) || { data: [] };
+    const { data: tagsList = [] } = useSelector((state) => state.tags || { data: [] });
     const [scheduleState, setScheduleState] = useState([]);
 
     const [filteredClientsList, setFilteredClientsList] = useState(clientsList);
@@ -124,7 +121,8 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
             dateAndTime: baseDate,
             endTime: baseEndDate,
             isPaid: v.isPaidTF,
-            appointmentStatus: v.statusTF
+            appointmentStatus: v.statusTF,
+            tagId: v.tagTF || null
         };
 
         if (v.recurrenceType !== 'NONE') {
@@ -170,7 +168,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
             beginDate: safeBeginDate,
             beginTime: eventBeginTime,
             endTime: eventEndTime,
-
+            tagTF: stateCalendar.calendarEvent?.tagId || '',
             /* Recorrência */
             recurrenceType: 'NONE',
             dayOfWeek: null,
@@ -422,6 +420,34 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                                     {formik.errors.nameTF}
                                 </Typography>
                             )}
+                        </FormControl>
+
+                        <FormControl fullWidth>
+                            <InputLabel htmlFor="tagTF" size="small">
+                                Etiqueta
+                            </InputLabel>
+                            <Select id="tagTF" name="tagTF" label="Etiqueta" size="small" value={formik.values.tagTF} onChange={formik.handleChange}>
+                                <MenuItem value="">
+                                    <em>Nenhuma</em>
+                                </MenuItem>
+                                {tagsList.map((tag) => (
+                                    <MenuItem key={tag.id} value={tag.id}>
+                                        <Box
+                                            component="span"
+                                            sx={{
+                                                display: 'inline-block',
+                                                width: 12,
+                                                height: 12,
+                                                bgcolor: tag.color,
+                                                borderRadius: '50%',
+                                                mr: 1,
+                                                verticalAlign: 'middle'
+                                            }}
+                                        />
+                                        {tag.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
                         </FormControl>
 
                         {/* Campo de Descrição */}

@@ -1,7 +1,7 @@
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import { styled } from '@mui/material/styles';
 import { blue } from '@mui/material/colors';
-import { Grid, Typography } from '@mui/material';
+import { Box, Grid, Tooltip, Typography } from '@mui/material';
 import clsx from 'clsx';
 
 import { format, differenceInMinutes, getYear, getMonth, getDate, addMinutes } from 'date-fns';
@@ -111,7 +111,6 @@ const Root = styled('div')(({ theme }) => ({
     },
 
     [`& .${classes.monthMarker}`]: {
-        overflow: 'hidden',
         minHeight: 23,
         color: '#fff',
         padding: '1px 3px',
@@ -120,7 +119,9 @@ const Root = styled('div')(({ theme }) => ({
         borderTopRightRadius: 3,
         cursor: 'pointer',
         zIndex: 1,
-        textOverflow: 'ellipsis',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyItems: 'center',
         fontSize: 12,
         [theme.breakpoints.down('md')]: {
             fontSize: 9
@@ -188,6 +189,7 @@ const Root = styled('div')(({ theme }) => ({
 
 function CalendarLayoutMonth(props) {
     const { selectedRoom } = props;
+    const tags = useSelector((s) => s.tags.data || []);
 
     const viewEvent = (viewEventProps) => {
         const { calendarEvent } = viewEventProps;
@@ -313,6 +315,7 @@ function CalendarLayoutMonth(props) {
             return dayEvents
                 .filter((event) => new Date(event.begin).getHours() === evHour.hour)
                 .map((event) => {
+                    const eventTag = event.tagId ? tags.find((t) => t.id === event.tagId) : null;
                     return (
                         <div
                             title={`${event.room?.name}`}
@@ -339,6 +342,25 @@ function CalendarLayoutMonth(props) {
                                 });
                             }}
                         >
+                            {eventTag && (
+                                <Tooltip title={eventTag.name} arrow>
+                                    <Box
+                                        component="span"
+                                        sx={{
+                                            display: 'inline-block',
+                                            minWidth: 8,
+                                            minHeight: 8,
+                                            maxWidth: 8,
+                                            maxHeight: 8,
+                                            mt: 0.6,
+                                            bgcolor: eventTag.color,
+                                            borderRadius: '1000%',
+                                            mr: 0.5,
+                                            verticalAlign: 'middle'
+                                        }}
+                                    />
+                                </Tooltip>
+                            )}
                             {`${event?.name ?? event?.description} - ${evHour.hour}h `}
                         </div>
                     );

@@ -6,6 +6,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { addMonths, addWeeks, addDays, subMonths, subWeeks, subDays } from 'date-fns';
 
 import roomsService from '../../domains/room/roomService';
+import tagsService from '../../domains/tags/tagsService';
 import notification from '../../common/utils/notification';
 import LoggedLayout from '../../common/layouts/loggedLayout/loggedLayout';
 import CalendarMain from '../../common/components/calendar/calendar-main';
@@ -88,6 +89,8 @@ const Calendar = () => {
                 page: 1,
                 limit: 1000
             });
+
+            tagsService.read(auth.user.businessId);
             setRooms(data);
             if (data.length > 0 && !room) {
                 setSelectedRoom(data[0].id);
