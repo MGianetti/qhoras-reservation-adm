@@ -1,10 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Box, Paper, TextField, Button, MenuItem, IconButton } from '@mui/material';
+import dayjs from 'dayjs';
+import { createMachine } from 'xstate';
+import PhoneInput from 'mui-phone-input';
 import { IoMdSend } from 'react-icons/io';
 import { useMachine } from '@xstate/react';
-import { createMachine } from 'xstate';
+import { useLocation } from 'react-router-dom';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Box, Paper, TextField, Button, MenuItem, IconButton, FormHelperText } from '@mui/material';
 
-import chatBg from 'src/assets/images/chat-background.jpg';
+import chatService from '../../domains/chat/chatService';
+import calendarReadOnlyService from '../../domains/calendarReadOnly/calendarReadOnlyService';
+
+dayjs.extend(customParseFormat);
 
 const chatMachine = createMachine({
     id: 'chat',
@@ -21,7 +28,9 @@ const chatMachine = createMachine({
         eventNameSelection: { on: { SUBMIT_EVENT_NAME: 'eventTopicSelection' } },
         eventTopicSelection: { on: { SUBMIT_EVENT_TOPIC: 'eventMinistrySelection' } },
         eventMinistrySelection: { on: { SUBMIT_EVENT_MINISTRY: 'eventRecurrenceSelection' } },
-        eventRecurrenceSelection: { on: { SUBMIT_EVENT_RECURRENCE: 'confirmReservation' } },
+        eventRecurrenceSelection: { on: { SUBMIT_EVENT_RECURRENCE: 'contactPhone' } },
+        contactPhone: { on: { SUBMIT_CONTACT_PHONE: 'contactName' } },
+        contactName: { on: { SUBMIT_CONTACT_NAME: 'confirmReservation' } },
         confirmReservation: { on: { CONFIRM: 'done', EDIT: 'editChoice' } },
         editChoice: {
             on: {
@@ -33,7 +42,9 @@ const chatMachine = createMachine({
                 SUBMIT_EVENT_NAME: 'eventNameSelection',
                 SUBMIT_EVENT_TOPIC: 'eventTopicSelection',
                 SUBMIT_EVENT_MINISTRY: 'eventMinistrySelection',
-                SUBMIT_EVENT_RECURRENCE: 'eventRecurrenceSelection'
+                SUBMIT_EVENT_RECURRENCE: 'eventRecurrenceSelection',
+                EDIT_CONTACT_PHONE: 'contactPhone',
+                EDIT_CONTACT_NAME: 'contactName'
             }
         },
         done: { type: 'final' }
@@ -52,15 +63,29 @@ const prompts = {
     eventNameSelection: 'Qual o nome do evento?',
     eventTopicSelection: 'Sobre o que será o evento?',
     eventMinistrySelection: 'De qual ministério você faz parte?',
-    eventRecurrenceSelection: 'O evento será recorrente? Se sim, informe o período, senão digite "Não".',
+    eventRecurrenceSelection:
+        'O evento será recorrente? Se sim, informe o período, senão digite "Não".\nExemplo: Este evento terá a recorrência do dia 14/04/2025 até o dia 18/04/2025.',
+    contactPhone: 'Qual o número do whatsapp para contato?',
+    contactName: 'Qual o seu nome?',
     confirmReservation: 'Confira todos os dados e confirme:'
 };
 
-const RoomSelect = ({ value, onChange }) => (
+const RoomSelect = ({ value, onChange, rooms }) => (
     <TextField select fullWidth value={value} onChange={(e) => onChange(e.target.value)}>
-        <MenuItem value="Sala A">Sala A</MenuItem>
-        <MenuItem value="Sala B">Sala B</MenuItem>
-        <MenuItem value="Sala C">Sala C</MenuItem>
+        {rooms.map((room) => (
+            <MenuItem key={room.id} value={room.id}>
+                {room.name}
+            </MenuItem>
+        ))}
+    </TextField>
+);
+const TimeSelect = ({ value, onChange, timeSlots }) => (
+    <TextField select fullWidth value={value} onChange={(e) => onChange(e.target.value)}>
+        {timeSlots.map((timeSlot, index) => (
+            <MenuItem key={index} value={timeSlot}>
+                {timeSlot}
+            </MenuItem>
+        ))}
     </TextField>
 );
 
@@ -72,7 +97,6 @@ const Chat = () => {
     const [isTyping, setIsTyping] = useState(false);
     const containerRef = useRef(null);
 
-    // buffered inputs
     const [roomInput, setRoomInput] = useState('');
     const [dateInput, setDateInput] = useState('');
     const [startInput, setStartInput] = useState('');
@@ -82,14 +106,44 @@ const Chat = () => {
     const [topicInput, setTopicInput] = useState('');
     const [ministryInput, setMinistryInput] = useState('');
     const [recurrenceInput, setRecurrenceInput] = useState('');
+    const [reserverNameInput, setReserverNameInput] = useState('');
+    const [contactPhoneInput, setContactPhoneInput] = useState('');
 
-    // auto-scroll
+    const [rooms, setRooms] = useState([]);
+    const [initialTimeSlots, setInitialTimeSlots] = useState([]);
+    const [initialEndTimeSlots, setInitialEndTimeSlots] = useState([]);
+    const [isNameLocked, setIsNameLocked] = useState(false);
+
+    const location = useLocation();
+
+    const searchParams = new URLSearchParams(location.search);
+    const businessIdQueryParams = searchParams.get('business');
+
+    const today = dayjs().format('YYYY-MM-DD');
+
+    const fetchRooms = useCallback(async () => {
+        try {
+            if (!businessIdQueryParams) return;
+            const roomsData = await calendarReadOnlyService.readRoom({
+                businessId: businessIdQueryParams,
+                page: 1,
+                limit: 1000
+            });
+            setRooms(roomsData);
+        } catch (error) {
+            console.error('Failed to fetch rooms:', error);
+        }
+    }, [businessIdQueryParams]);
+
+    useEffect(() => {
+        fetchRooms();
+    }, [fetchRooms]);
+
     useEffect(() => {
         const el = containerRef.current;
         if (el) el.scrollTop = el.scrollHeight;
     }, [messages, isTyping]);
 
-    // show prompts + auto-advance init
     useEffect(() => {
         const prompt = prompts[state.value];
         if (prompt) {
@@ -103,11 +157,14 @@ const Chat = () => {
         }
     }, [state.value, send]);
 
-    // summary at confirmReservation
     useEffect(() => {
         if (state.value === 'confirmReservation') {
             const summary = Object.entries(data)
-                .map(([_, v]) => v)
+                .map(([k, v]) => {
+                    if (k === 'SalaId') return '';
+                    return `${k}: ${v}`;
+                })
+                .filter(Boolean)
                 .join('\n');
             setIsTyping(true);
             const t = setTimeout(() => {
@@ -140,6 +197,205 @@ const Chat = () => {
         handleEvent(eventType, value);
     };
 
+    const handleSelectRoom = async () => {
+        if (!roomInput) return;
+        const room = rooms.find((r) => r.id === roomInput);
+        const roomName = room ? room.name : roomInput;
+        setData((d) => ({ ...d, SalaId: roomInput, Sala: roomName }));
+        handleEvent('SELECT_ROOM', roomName);
+    };
+
+    const handleSelectDate = async () => {
+        if (!dateInput) return;
+        if (dayjs(dateInput).isBefore(dayjs(today), 'day')) {
+            setMessages((m) => [...m, { from: 'bot', text: 'Reserve apenas para dias futuros. Escolha uma data válida.' }]);
+            return;
+        }
+        const date = dayjs(dateInput).format('DD/MM/YYYY');
+        setData((d) => ({ ...d, Data: date }));
+        const availableTimeSlots = await chatService.readAvailableTimeSlots(roomInput, date);
+        setInitialTimeSlots(availableTimeSlots);
+        handleEvent('SELECT_DATE', date);
+    };
+
+    const handleSelectStartTime = async () => {
+        if (!startInput) return;
+        setData((d) => ({ ...d, Início: startInput }));
+        const availableEndTimeSlots = await chatService.readAvailableEndTimeSlots(roomInput, data.Data, startInput);
+        setInitialEndTimeSlots(availableEndTimeSlots);
+        handleEvent('SELECT_START', startInput);
+    };
+
+    const handleSelectEndTime = async () => {
+        if (!endInput) return;
+        setData((d) => ({ ...d, Término: endInput }));
+        handleEvent('SELECT_END', endInput);
+    };
+
+    const handleSelectPeopleNumber = () => {
+        const num = parseInt(peopleInput, 10);
+        if (isNaN(num) || num <= 0) {
+            setMessages((m) => [...m, { from: 'bot', text: 'Informe um número válido de pessoas (maior que zero).' }]);
+            return;
+        }
+
+        const roomId = data.SalaId || roomInput;
+        const room = rooms.find((r) => r.id === roomId);
+        const capacity = room ? parseInt(room.capacity, 10) : undefined;
+
+        if (capacity !== undefined && !isNaN(capacity) && num > capacity) {
+            setMessages((m) => [
+                ...m,
+                {
+                    from: 'bot',
+                    text: `A sala selecionada tem capacidade máxima de ${capacity} pessoas. Você colocou ${num}, por favor reduza.`
+                }
+            ]);
+            return;
+        }
+
+        setData((d) => ({ ...d, Pessoas: num }));
+        handleEvent('SELECT_NUMBER', String(num));
+    };
+
+    const formatPhoneE164 = (phoneObj) => {
+        if (!phoneObj || typeof phoneObj !== 'object') return '';
+        const { countryCode, areaCode, phoneNumber } = phoneObj;
+        return `+${countryCode || ''}${areaCode || ''}${phoneNumber || ''}`;
+    };
+
+    const buildLocalPhone = (phoneObj) => {
+        if (!phoneObj || typeof phoneObj !== 'object') return '';
+        const { areaCode, phoneNumber } = phoneObj;
+        return `${areaCode || ''}${phoneNumber || ''}`;
+    };
+
+    const handleSubmitContactPhone = async () => {
+        if (!contactPhoneInput || typeof contactPhoneInput !== 'object') {
+            setMessages((m) => [...m, { from: 'bot', text: 'Telefone inválido. Informe um número válido.' }]);
+            return;
+        }
+
+        const isValid = typeof contactPhoneInput.valid === 'function' ? contactPhoneInput.valid(true) : false;
+
+        if (!isValid) {
+            setMessages((m) => [...m, { from: 'bot', text: 'Telefone inválido. Informe um número válido.' }]);
+            return;
+        }
+
+        const e164 = formatPhoneE164(contactPhoneInput);
+        const localNumber = buildLocalPhone(contactPhoneInput);
+
+        setData((d) => ({ ...d, Telefone: e164 }));
+        handleEvent('SUBMIT_CONTACT_PHONE', e164);
+
+        try {
+            const user = await chatService.getUserByPhoneNumber(businessIdQueryParams, localNumber);
+            if (user) {
+                setIsNameLocked(true);
+                setData((d) => ({ ...d, clientId: user.id, 'Nome do responsável': user.name }));
+
+                setMessages((m) => [...m, { from: 'bot', text: `Nome do responsável encontrado: ${user.name}` }]);
+
+                send({ type: 'SUBMIT_CONTACT_NAME' });
+            } else {
+                setIsNameLocked(false);
+            }
+        } catch (err) {
+            console.error('Erro ao buscar usuário por telefone:', err);
+            setIsNameLocked(false);
+        }
+    };
+
+    const handleSubmitContactName = () => {
+        if (isNameLocked) {
+            setMessages((m) => [...m, { from: 'bot', text: 'O nome foi preenchido automaticamente a partir do telefone e não pode ser editado.' }]);
+            return;
+        }
+        if (!reserverNameInput.trim()) {
+            setMessages((m) => [...m, { from: 'bot', text: 'Por favor informe o nome da pessoa responsável.' }]);
+            return;
+        }
+        setData((d) => ({ ...d, 'Nome do responsável': reserverNameInput.trim() }));
+        handleEvent('SUBMIT_CONTACT_NAME', reserverNameInput.trim());
+    };
+
+    const handleConfirmReservation = async () => {
+        if (!businessIdQueryParams) {
+            setMessages((m) => [...m, { from: 'bot', text: 'Erro interno: nenhum businessId fornecido.' }]);
+            return;
+        }
+
+        const roomId = data.SalaId || roomInput;
+        if (!roomId) {
+            setMessages((m) => [...m, { from: 'bot', text: 'Você precisa selecionar uma sala.' }]);
+            return;
+        }
+        if (!dateInput || !startInput || !endInput) {
+            setMessages((m) => [...m, { from: 'bot', text: 'Data e horários precisam estar preenchidos.' }]);
+            return;
+        }
+
+        let clientId = data.clientId;
+        if (!clientId) {
+            const clientName = data['Nome do responsável'] || reserverNameInput;
+            if (!clientName || !clientName.trim()) {
+                setMessages((m) => [...m, { from: 'bot', text: 'Nome do responsável é obrigatório.' }]);
+                return;
+            }
+            const localPhone = buildLocalPhone(contactPhoneInput);
+            if (!localPhone) {
+                setMessages((m) => [...m, { from: 'bot', text: 'Telefone é obrigatório para criar o cliente.' }]);
+                return;
+            }
+
+            const clientPayload = {
+                clientName: clientName.trim(),
+                clientPhoneNumber: localPhone
+            };
+
+            const createdClient = await chatService.createClientViaChat(businessIdQueryParams, clientPayload);
+            if (!createdClient || !createdClient.id) {
+                setMessages((m) => [...m, { from: 'bot', text: 'Falha ao criar cliente. Tente novamente.' }]);
+                return;
+            }
+            clientId = createdClient.id;
+            setData((d) => ({ ...d, clientId }));
+            setMessages((m) => [...m, { from: 'bot', text: `Cliente criado: ${clientName}` }]);
+        }
+
+        const eventTopic = data['Assunto'] || topicInput || '';
+        const eventMinistry = data['Ministério'] || ministryInput || '';
+        const selectedPeopleNumber = data['Pessoas'] || peopleInput || '';
+        const eventName = data['Nome do evento'] || nameInput || '';
+        const eventRecurrence = data['Recorrência'] || recurrenceInput || '';
+
+        const dateAndTimeStart = dayjs(`${dateInput} ${startInput}`, 'YYYY-MM-DD HH:mm').format('YYYY/MM/DD HH:mm:ss');
+
+        const dateAndTimeEnd = dayjs(`${dateInput} ${endInput}`, 'YYYY-MM-DD HH:mm').format('YYYY/MM/DD HH:mm:ss');
+
+        const solicitationPayload = {
+            clientId,
+            roomId,
+            dateAndTimeStart,
+            dateAndTimeEnd,
+            eventTopic,
+            eventMinistry,
+            selectedPeopleNumber,
+            eventName,
+            eventRecurrence
+        };
+
+        const solicitation = await chatService.createSolicitationViaChat(businessIdQueryParams, solicitationPayload);
+        if (!solicitation || !solicitation.id) {
+            setMessages((m) => [...m, { from: 'bot', text: 'Falha ao criar solicitação. Tente novamente mais tarde.' }]);
+            return;
+        }
+
+        setMessages((m) => [...m, { from: 'bot', text: 'Sua solicitação foi criada com sucesso!' }]);
+        handleEvent('CONFIRM', 'Confirmar!');
+    };
+
     const renderWidget = () => {
         if (blocked) return null;
         switch (state.value) {
@@ -155,8 +411,8 @@ const Chat = () => {
             case 'roomSelection':
                 return (
                     <Box sx={{ display: 'flex', gap: 1 }}>
-                        <RoomSelect value={roomInput} onChange={setRoomInput} />
-                        <IconButton onClick={() => handleSelect('Sala', roomInput, 'SELECT_ROOM')}>
+                        <RoomSelect value={roomInput} rooms={rooms} onChange={setRoomInput} />
+                        <IconButton onClick={handleSelectRoom}>
                             <IoMdSend />
                         </IconButton>
                     </Box>
@@ -164,17 +420,25 @@ const Chat = () => {
             case 'daySelection':
                 return (
                     <Box sx={{ display: 'flex', gap: 1 }}>
-                        <TextField type="date" fullWidth value={dateInput} InputLabelProps={{ shrink: true }} onChange={(e) => setDateInput(e.target.value)} />
-                        <IconButton onClick={() => handleSelect('Data', dateInput, 'SELECT_DATE')}>
+                        <TextField
+                            type="date"
+                            fullWidth
+                            value={dateInput}
+                            InputLabelProps={{ shrink: true }}
+                            inputProps={{ min: dayjs().format('YYYY-MM-DD') }}
+                            onChange={(e) => setDateInput(e.target.value)}
+                        />
+                        <IconButton onClick={handleSelectDate}>
                             <IoMdSend />
                         </IconButton>
                     </Box>
                 );
+
             case 'startTimeSelection':
                 return (
                     <Box sx={{ display: 'flex', gap: 1 }}>
-                        <TextField type="time" fullWidth value={startInput} InputLabelProps={{ shrink: true }} onChange={(e) => setStartInput(e.target.value)} />
-                        <IconButton onClick={() => handleSelect('Início', startInput, 'SELECT_START')}>
+                        <TimeSelect value={startInput} timeSlots={initialTimeSlots} onChange={setStartInput} />
+                        <IconButton onClick={handleSelectStartTime}>
                             <IoMdSend />
                         </IconButton>
                     </Box>
@@ -182,8 +446,8 @@ const Chat = () => {
             case 'endTimeSelection':
                 return (
                     <Box sx={{ display: 'flex', gap: 1 }}>
-                        <TextField type="time" fullWidth value={endInput} InputLabelProps={{ shrink: true }} onChange={(e) => setEndInput(e.target.value)} />
-                        <IconButton onClick={() => handleSelect('Término', endInput, 'SELECT_END')}>
+                        <TimeSelect value={endInput} timeSlots={initialEndTimeSlots} onChange={setEndInput} />
+                        <IconButton onClick={handleSelectEndTime}>
                             <IoMdSend />
                         </IconButton>
                     </Box>
@@ -192,7 +456,7 @@ const Chat = () => {
                 return (
                     <Box sx={{ display: 'flex', gap: 1 }}>
                         <TextField type="number" fullWidth value={peopleInput} onChange={(e) => setPeopleInput(e.target.value)} />
-                        <IconButton onClick={() => handleSelect('Pessoas', peopleInput, 'SELECT_NUMBER')}>
+                        <IconButton onClick={handleSelectPeopleNumber}>
                             <IoMdSend />
                         </IconButton>
                     </Box>
@@ -240,10 +504,44 @@ const Chat = () => {
                         </IconButton>
                     </Box>
                 );
+            case 'contactPhone': {
+                const isInvalid = contactPhoneInput && typeof contactPhoneInput === 'object' && typeof contactPhoneInput.valid === 'function' && !contactPhoneInput.valid(true);
+
+                return (
+                    <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                        <Box sx={{ flexGrow: 1 }}>
+                            <PhoneInput
+                                value={contactPhoneInput}
+                                onChange={(val) => {
+                                    setContactPhoneInput(val);
+                                    setIsNameLocked(false);
+                                }}
+                                label="Telefone"
+                                variant="outlined"
+                                fullWidth
+                            />
+                            {isInvalid && <FormHelperText error>Número inválido</FormHelperText>}
+                        </Box>
+                        <IconButton onClick={handleSubmitContactPhone}>
+                            <IoMdSend />
+                        </IconButton>
+                    </Box>
+                );
+            }
+
+            case 'contactName':
+                return (
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                        <TextField multiline rows={1} fullWidth placeholder="Nome" value={reserverNameInput} onChange={(e) => setReserverNameInput(e.target.value)} />
+                        <IconButton onClick={handleSubmitContactName}>
+                            <IoMdSend />
+                        </IconButton>
+                    </Box>
+                );
             case 'confirmReservation':
                 return (
                     <Box sx={{ display: 'flex', gap: 1 }}>
-                        <Button variant="contained" onClick={() => handleEvent('CONFIRM', 'Confirmar!')}>
+                        <Button variant="contained" onClick={handleConfirmReservation}>
                             Confirmar!
                         </Button>
                         <Button variant="outlined" onClick={() => handleEvent('EDIT', 'Corrigir')}>
@@ -263,6 +561,8 @@ const Chat = () => {
                         <Button onClick={() => handleEvent('SUBMIT_EVENT_TOPIC', 'Editar Assunto')}>Assunto</Button>
                         <Button onClick={() => handleEvent('SUBMIT_EVENT_MINISTRY', 'Editar Ministério')}>Ministério</Button>
                         <Button onClick={() => handleEvent('SUBMIT_EVENT_RECURRENCE', 'Editar Recorrência')}>Recorrência</Button>
+                        <Button onClick={() => handleEvent('EDIT_CONTACT_PHONE', 'Editar telefone')}>Telefone</Button>
+                        {!isNameLocked && <Button onClick={() => handleEvent('EDIT_CONTACT_NAME', 'Editar nome')}>Nome</Button>}
                     </Box>
                 );
             case 'done':
@@ -287,7 +587,7 @@ const Chat = () => {
             sx={{
                 width: '100%',
                 maxWidth: 400,
-                height: '100vh',
+                height: '91vh',
                 mx: 'auto',
                 display: 'flex',
                 flexDirection: 'column'
@@ -299,7 +599,7 @@ const Chat = () => {
                     flexGrow: 1,
                     p: 2,
                     overflowY: 'auto',
-                    backgroundImage: `url(${chatBg})`,
+                    backgroundImage: "url('src/assets/images/chat-background.jpg')",
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat'

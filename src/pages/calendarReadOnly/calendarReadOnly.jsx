@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux';
 import { styled } from '@mui/material/styles';
 import { addMonths, addWeeks, addDays, subMonths, subWeeks, subDays } from 'date-fns';
 import { ThemeProvider } from '@mui/material/styles';
-import { CssBaseline, useTheme } from '@mui/material';
+import { Box, Button, CssBaseline, useTheme } from '@mui/material';
 import { useEffect, useState, useCallback } from 'react';
 
 import roomsService from '../../domains/room/roomService';
@@ -198,6 +198,32 @@ const CalendarReadOnly = () => {
                             rooms={rooms}
                             handleRoomChange={handleRoomChange}
                         />
+                        <Box
+                            sx={{
+                                px: 2,
+                                py: 1.5,
+                                borderBottom: '1px solid #eee',
+                                backgroundColor: '#fafafa'
+                            }}
+                        >
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: { xs: 'column', sm: 'row' },
+                                    justifyContent: 'space-between',
+                                    alignItems: { xs: 'flex-start', sm: 'center' },
+                                    gap: 1
+                                }}
+                            >
+                                <Box sx={{ fontWeight: 'bold', fontSize: '1.1rem' }}>Visualização da Agenda</Box>
+                                <Box sx={{ mt: { xs: 1, sm: 0 } }}>
+                                    <Button variant="outlined" sx={{ mt: { sm: 2 } }} size="small" onClick={() => window.open(`/chat?business=${businessId}`, '_blank')}>
+                                        Agendar agora
+                                    </Button>
+                                </Box>
+                            </Box>
+                            <Box sx={{ fontSize: '0.95rem', color: 'text.secondary', mt: 0.5 }}>Veja os horários ocupados e clique abaixo para fazer uma reserva</Box>
+                        </Box>
 
                         <div style={{ display: 'flex', width: '100%', position: 'relative' }}>
                             <LoadingOverlay isLoading={isLoading} />
