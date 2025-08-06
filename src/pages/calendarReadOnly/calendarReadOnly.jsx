@@ -222,7 +222,7 @@ const CalendarReadOnly = () => {
                                     </Button>
                                 </Box>
                             </Box>
-                            <Box sx={{ fontSize: '0.95rem', color: 'text.secondary', mt: 0.5 }}>Veja os horários ocupados e clique abaixo para fazer uma reserva</Box>
+                            <Box sx={{ fontSize: '0.95rem', color: 'text.secondary', mt: 0.5 }}>Veja os horários e clique em "Agendar agora" para reservar</Box>
                         </Box>
 
                         <div style={{ display: 'flex', width: '100%', position: 'relative' }}>
