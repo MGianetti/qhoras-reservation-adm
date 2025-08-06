@@ -207,7 +207,7 @@ const Chat = () => {
 
     const handleSelectDate = async () => {
         if (!dateInput) return;
-        if (dayjs(dateInput).isBefore(dayjs(today).add(1, 'day'), 'day')) {
+        if (dayjs(dateInput).isBefore(dayjs(today), 'day')) {
             setMessages((m) => [...m, { from: 'bot', text: 'Reserve apenas para dias futuros. Escolha uma data válida.' }]);
             return;
         }
@@ -425,7 +425,7 @@ const Chat = () => {
                             fullWidth
                             value={dateInput}
                             InputLabelProps={{ shrink: true }}
-                            inputProps={{ min: dayjs(today).add(1, 'day').format('YYYY-MM-DD') }}
+                            inputProps={{ min: dayjs().format('YYYY-MM-DD') }}
                             onChange={(e) => setDateInput(e.target.value)}
                         />
                         <IconButton onClick={handleSelectDate}>
@@ -433,6 +433,7 @@ const Chat = () => {
                         </IconButton>
                     </Box>
                 );
+
             case 'startTimeSelection':
                 return (
                     <Box sx={{ display: 'flex', gap: 1 }}>
