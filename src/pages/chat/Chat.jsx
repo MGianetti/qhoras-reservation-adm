@@ -5,6 +5,7 @@ import { IoMdSend } from 'react-icons/io';
 import { useMachine } from '@xstate/react';
 import { useLocation } from 'react-router-dom';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
+import chatBg from 'src/assets/images/chat-background.jpg';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Box, Paper, TextField, Button, MenuItem, IconButton, FormHelperText } from '@mui/material';
 
@@ -599,7 +600,7 @@ const Chat = () => {
                     flexGrow: 1,
                     p: 2,
                     overflowY: 'auto',
-                    backgroundImage: "url('src/assets/images/chat-background.jpg')",
+                    backgroundImage: `url(${chatBg})`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat'
