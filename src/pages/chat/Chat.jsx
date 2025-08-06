@@ -587,7 +587,7 @@ const Chat = () => {
             sx={{
                 width: '100%',
                 maxWidth: 400,
-                height: '100vh',
+                height: '91vh',
                 mx: 'auto',
                 display: 'flex',
                 flexDirection: 'column'
