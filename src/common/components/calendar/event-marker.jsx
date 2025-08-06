@@ -8,6 +8,8 @@ import { ptBR } from 'date-fns/locale';
 import { CalendarContext } from './context/calendar-context';
 import clsx from 'clsx';
 import { useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { Box, Tooltip } from '@mui/material';
 
 const PREFIX = 'EventMark';
 
@@ -60,8 +62,9 @@ const Root = styled('div')(({ theme }) => ({
         overflow: 'hidden',
         fontSize: 12,
         display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center'
+        flexDirection: 'row',
+        justifyContent: 'left',
+        alignItems: 'center'
     },
 
     [`& .${classes.extraInfo}`]: {
@@ -186,11 +189,12 @@ function EventMark(props) {
 
     const { calendarEvent, len, sq } = props;
 
+    const tags = useSelector((s) => s.tags.data || []);
 
     const beginDate = calendarEvent.begin;
     const endDate = calendarEvent.end;
 
-    const descriptionFormatted = calendarEvent.description ? `${calendarEvent.description}` : '';
+    const descriptionFormatted = calendarEvent.name ?? calendarEvent.description ?? '';
 
     const currentDay = beginDate;
     const initTime = new Date(format(currentDay, 'yyyy/MM/dd 0:0:0', { locale: ptBR }));
@@ -216,6 +220,7 @@ function EventMark(props) {
         let status = calendarEvent?.status;
         let isPaid = calendarEvent?.isPaid;
         let description = calendarEvent?.description;
+        let name = calendarEvent?.name;
 
         setStateCalendar({
             ...stateCalendar,
@@ -229,6 +234,7 @@ function EventMark(props) {
             status,
             isPaid,
             description,
+            name,
             eventID: (calendarEvent && calendarEvent.id) || 0,
             calendarEvent
         });
@@ -273,6 +279,8 @@ function EventMark(props) {
         });
     };
 
+    const eventTag = calendarEvent.tagId ? tags.find((t) => t.id === calendarEvent.tagId) : null;
+
     return (
         <Root
             id={calendarEvent.id}
@@ -314,6 +322,22 @@ function EventMark(props) {
                     cursor: location.pathname === '/calendario' ? 'default' : 'pointer'
                 }}
             >
+                {eventTag && (
+                    <Tooltip title={eventTag.name} arrow>
+                        <Box
+                            component="span"
+                            sx={{
+                                display: 'inline-block',
+                                width: 8,
+                                height: 8,
+                                bgcolor: eventTag.color,
+                                borderRadius: '50%',
+                                mr: 0.5,
+                                verticalAlign: 'middle'
+                            }}
+                        />
+                    </Tooltip>
+                )}
                 <span>{descriptionFormatted}</span>
             </div>
             <div

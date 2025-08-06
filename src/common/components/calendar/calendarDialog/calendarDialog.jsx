@@ -62,6 +62,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
         clientName,
         status,
         isPaid,
+        name,
         description,
         recurrenceType,
         dayOfWeek,
@@ -100,6 +101,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
     };
     const { data: appointments } = useSelector((state) => state?.appointments) || { data: [] };
     const { data: calendarBlocks } = useSelector((state) => state?.calendarBlocks) || { data: [] };
+    const { data: tagsList = [] } = useSelector((state) => state.tags || { data: [] });
     const [scheduleState, setScheduleState] = useState([]);
 
     const [filteredClientsList, setFilteredClientsList] = useState(clientsList);
@@ -114,11 +116,13 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
             clientId: v.clientTF.value,
             businessId: business.id,
             roomId: v.roomTF,
+            name: v.nameTF,
             description: v.descriptionTF,
             dateAndTime: baseDate,
             endTime: baseEndDate,
             isPaid: v.isPaidTF,
-            appointmentStatus: v.statusTF
+            appointmentStatus: v.statusTF,
+            tagId: v.tagTF || null
         };
 
         if (v.recurrenceType !== 'NONE') {
@@ -158,12 +162,13 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                 room || (roomsList.length > 0 ? roomsList[0].id : ''),
             clientTF: client ? { value: client, label: clientName } : { value: '', label: '' },
             statusTF: status || 'SCHEDULED',
+            nameTF: name || '',
             descriptionTF: description || '',
             isPaidTF: isPaid || false,
             beginDate: safeBeginDate,
             beginTime: eventBeginTime,
             endTime: eventEndTime,
-
+            tagTF: stateCalendar.calendarEvent?.tagId || '',
             /* Recorrência */
             recurrenceType: 'NONE',
             dayOfWeek: null,
@@ -396,6 +401,54 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                                 </FormControl>
                             </Grid>
                         </Grid>
+
+                        <FormControl fullWidth>
+                            <InputLabel htmlFor="nameTF" size="small">
+                                Nome do evento
+                            </InputLabel>
+                            <OutlinedInput
+                                id="nameTF"
+                                name="nameTF"
+                                label="Nome do evento"
+                                size="small"
+                                value={formik.values.nameTF}
+                                onChange={formik.handleChange}
+                                error={formik.touched.nameTF && Boolean(formik.errors.nameTF)}
+                            />
+                            {formik.touched.nameTF && formik.errors.nameTF && (
+                                <Typography variant="caption" color="error">
+                                    {formik.errors.nameTF}
+                                </Typography>
+                            )}
+                        </FormControl>
+
+                        <FormControl fullWidth>
+                            <InputLabel htmlFor="tagTF" size="small">
+                                Etiqueta
+                            </InputLabel>
+                            <Select id="tagTF" name="tagTF" label="Etiqueta" size="small" value={formik.values.tagTF} onChange={formik.handleChange}>
+                                <MenuItem value="">
+                                    <em>Nenhuma</em>
+                                </MenuItem>
+                                {tagsList.map((tag) => (
+                                    <MenuItem key={tag.id} value={tag.id}>
+                                        <Box
+                                            component="span"
+                                            sx={{
+                                                display: 'inline-block',
+                                                width: 12,
+                                                height: 12,
+                                                bgcolor: tag.color,
+                                                borderRadius: '50%',
+                                                mr: 1,
+                                                verticalAlign: 'middle'
+                                            }}
+                                        />
+                                        {tag.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
 
                         {/* Campo de Descrição */}
                         <FormControl fullWidth>

@@ -1,7 +1,7 @@
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import { styled } from '@mui/material/styles';
 import { blue } from '@mui/material/colors';
-import { Grid, Typography } from '@mui/material';
+import { Box, Grid, Tooltip, Typography } from '@mui/material';
 import clsx from 'clsx';
 
 import { format, differenceInMinutes, getYear, getMonth, getDate, addMinutes } from 'date-fns';
@@ -107,12 +107,10 @@ const Root = styled('div')(({ theme }) => ({
         width: '100%',
         marginTop: theme.spacing(1),
         overflow: 'hidden',
-        whiteSpace: 'nowrap',
         textOverflow: 'ellipsis'
     },
 
     [`& .${classes.monthMarker}`]: {
-        overflow: 'hidden',
         minHeight: 23,
         color: '#fff',
         padding: '1px 3px',
@@ -121,7 +119,9 @@ const Root = styled('div')(({ theme }) => ({
         borderTopRightRadius: 3,
         cursor: 'pointer',
         zIndex: 1,
-        textOverflow: 'ellipsis',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyItems: 'center',
         fontSize: 12,
         [theme.breakpoints.down('md')]: {
             fontSize: 9
@@ -189,6 +189,7 @@ const Root = styled('div')(({ theme }) => ({
 
 function CalendarLayoutMonth(props) {
     const { selectedRoom } = props;
+    const tags = useSelector((s) => s.tags.data || []);
 
     const viewEvent = (viewEventProps) => {
         const { calendarEvent } = viewEventProps;
@@ -207,7 +208,7 @@ function CalendarLayoutMonth(props) {
         let isPaid = false;
         let description = '';
         let clientName = '';
-
+        let name = '';
         if (calendarEvent !== null) {
             eventBeginDate = new Date(calendarEvent.begin);
             eventEndDate = new Date(calendarEvent.end);
@@ -220,6 +221,7 @@ function CalendarLayoutMonth(props) {
             client = calendarEvent?.client?.id;
             clientName = calendarEvent?.client?.name;
             status = calendarEvent?.status;
+            name = calendarEvent?.name;
             description = calendarEvent?.description;
             isPaid = calendarEvent?.isPaid;
         } else {
@@ -261,6 +263,7 @@ function CalendarLayoutMonth(props) {
             clientName,
             status,
             isPaid,
+            name,
             description,
             eventID: (calendarEvent && calendarEvent.id) || 0,
             calendarEvent
@@ -308,44 +311,66 @@ function CalendarLayoutMonth(props) {
             !acc.some((accItem) => accItem.hour === hour) && acc.push({ hour, len });
             return acc;
         }, []);
-
         const markers = eventsByHour.map((evHour) => {
             return dayEvents
                 .filter((event) => new Date(event.begin).getHours() === evHour.hour)
-                .map((event) => (
-                    <div
-                        style={{
-                            cursor: location.pathname === '/calendario' ? 'default' : 'pointer'
-                        }}
-                        key={`event-${event.id}`}
-                        className={clsx(classes.monthMarker, {
-                            [classes.markerPending]: event.status === 'PENDING',
-                            [classes.markerScheduled]: event.status === 'SCHEDULED',
-                            [classes.markerCompleted]: event.status === 'COMPLETED',
-                            [classes.markerCancelled]: event.status === 'CANCELLED',
-                            [classes.markerRescheduled]: event.status === 'RESCHEDULED',
-                            [classes.markerNoShow]: event.status === 'NO_SHOW'
-                        })}
-                        onClick={(eventEl) => {
-                            viewEvent({
-                                eventEl,
-                                calendarEvent: event,
-                                defaultEventDuration,
-                                stateCalendar,
-                                setStateCalendar,
-                                selectedRoom
-                            });
-                        }}
-                    >
-                        {`${event?.description}`}
-                    </div>
-                ));
+                .map((event) => {
+                    const eventTag = event.tagId ? tags.find((t) => t.id === event.tagId) : null;
+                    return (
+                        <div
+                            title={`${event.room?.name}`}
+                            style={{
+                                cursor: location.pathname === '/calendario' ? 'default' : 'pointer'
+                            }}
+                            key={`event-${event.id}`}
+                            className={clsx(classes.monthMarker, {
+                                [classes.markerPending]: event.status === 'PENDING',
+                                [classes.markerScheduled]: event.status === 'SCHEDULED',
+                                [classes.markerCompleted]: event.status === 'COMPLETED',
+                                [classes.markerCancelled]: event.status === 'CANCELLED',
+                                [classes.markerRescheduled]: event.status === 'RESCHEDULED',
+                                [classes.markerNoShow]: event.status === 'NO_SHOW'
+                            })}
+                            onClick={(eventEl) => {
+                                viewEvent({
+                                    eventEl,
+                                    calendarEvent: event,
+                                    defaultEventDuration,
+                                    stateCalendar,
+                                    setStateCalendar,
+                                    selectedRoom
+                                });
+                            }}
+                        >
+                            {eventTag && (
+                                <Tooltip title={eventTag.name} arrow>
+                                    <Box
+                                        component="span"
+                                        sx={{
+                                            display: 'inline-block',
+                                            minWidth: 8,
+                                            minHeight: 8,
+                                            maxWidth: 8,
+                                            maxHeight: 8,
+                                            mt: 0.6,
+                                            bgcolor: eventTag.color,
+                                            borderRadius: '1000%',
+                                            mr: 0.5,
+                                            verticalAlign: 'middle'
+                                        }}
+                                    />
+                                </Tooltip>
+                            )}
+                            {`${event?.name ?? event?.description} - ${evHour.hour}h `}
+                        </div>
+                    );
+                });
         });
         return markers;
     };
 
     return (
-        <Root style={{ height: 'calc(-162px + 100vh)', overflow: 'auto' }}>
+        <Root style={{ overflow: 'auto' }}>
             <Grid container spacing={0} direction="row" justify="center" alignItems="center" wrap="nowrap">
                 {weeks[0].map((weekDay, index) => {
                     return (
