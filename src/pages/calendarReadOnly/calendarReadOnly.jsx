@@ -33,7 +33,7 @@ const StyledCalendarContextProvider = styled(CalendarContext.Provider)(() => ({
 }));
 
 const initialSelectedDate = new Date();
-const initialLayout = 'week';
+const initialLayout = 'month';
 const initialOpenDialog = false;
 const initialOpenViewDialog = false;
 
@@ -75,7 +75,7 @@ const CalendarReadOnly = () => {
     const [getScheduleData, setGetScheduleData] = useState(null);
 
     const [rooms, setRooms] = useState([]);
-    const [selectedRoom, setSelectedRoom] = useState(null);
+    const [selectedRoom, setSelectedRoom] = useState('ALL');
 
     const fetchRooms = useCallback(
         async (room = selectedRoom) => {
@@ -87,8 +87,8 @@ const CalendarReadOnly = () => {
                     limit: 1000
                 });
                 setRooms(data);
-                if (data.length > 0 && !room) {
-                    setSelectedRoom(data[0].id);
+                if (data.length > 0 && (!room || room === null)) {
+                    setSelectedRoom('ALL');
                 }
             } catch (error) {
                 console.error('Failed to fetch rooms:', error);
