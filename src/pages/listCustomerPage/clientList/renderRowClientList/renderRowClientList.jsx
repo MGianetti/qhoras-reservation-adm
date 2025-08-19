@@ -1,4 +1,6 @@
+import {getFormattedNumber} from "react-phone-hooks";
 import { Button, Grid, Link, Rating, TableCell, TableRow } from '@mui/material';
+
 import Icon from '../../../../common/components/icon/Icon';
 
 const RenderClientCell = ({ column, value, rowIndex, row, handleClickWhatsapp }) => {
@@ -52,14 +54,7 @@ const RenderClientCell = ({ column, value, rowIndex, row, handleClickWhatsapp })
     if (!value) return '-';
 
     if (column.id === 'phone') {
-        const formatPhoneNumber = (raw) => {
-            if (!raw) return '';
-            const digitsOnly = raw.replace(/\D/g, '');
-            const withAreaCode = digitsOnly.replace(/^(\d{2})(\d)/g, '($1) $2');
-            const formatted = withAreaCode.replace(/(\d)(\d{4})$/, '$1-$2');
-            return formatted;
-        };
-        return formatPhoneNumber(value);
+        return getFormattedNumber(value);
     }
 
     return value;
