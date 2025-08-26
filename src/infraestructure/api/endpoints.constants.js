@@ -3,7 +3,11 @@ const endpoints = {
         initializeClient: '/whatsapp/initialize-whatsapp-client',
         deleteClient: '/whatsapp/delete-whatsapp-client',
         generateQRCode: '/whatsapp/generate-qrcode',
-        checkWhatsAppHeartbeat: '/whatsapp/whatsapp-client-heartbeat'
+        checkWhatsAppHeartbeat: '/whatsapp/whatsapp-client-heartbeat',
+
+    // novos
+    templates: '/whatsapp/templates',
+    templateByName: (name) => `/whatsapp/templates/${encodeURIComponent(name)}`
     },
     auth: {
         login: '/auth/login',

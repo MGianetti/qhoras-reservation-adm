@@ -24,9 +24,24 @@ const checkWhatsAppHeartbeat = (userId) =>
     ),
   );
 
+  const createTemplate = (wabaId, template) =>
+    makeRequest(() => apiService.post(endpoints.whatsapp.templates, { wabaId, template }));
+  
+  const listTemplates = () => {
+    return makeRequest(() => apiService.get(endpoints.whatsapp.templates));
+  };
+  
+  const deleteTemplate = (wabaId, name) => {
+    const query = new URLSearchParams({ wabaId }).toString();
+    return makeRequest(() => apiService.delete(`${endpoints.whatsapp.templateByName(name)}?${query}`));
+  };
+
 export default {
   initializeWhatsAppClient,
   deleteWhatsAppClient,
   generateQRCode,
   checkWhatsAppHeartbeat,
+  createTemplate,
+  listTemplates,
+  deleteTemplate,
 };
