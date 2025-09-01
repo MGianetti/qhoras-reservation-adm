@@ -1,3 +1,4 @@
+//appointmentSlice.js
 import { createSlice } from "@reduxjs/toolkit";
 
 import createStandardReducers from "../../infraestructure/reducers/baseReducers";
