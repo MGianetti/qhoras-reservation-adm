@@ -90,6 +90,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
             openViewDialog: false
         });
         setClientInput('');
+        setRecurrenceConflict(null);
     };
 
     const { business } = useSelector((state) => state?.auth.user) || {
