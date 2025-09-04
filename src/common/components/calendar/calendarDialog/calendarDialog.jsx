@@ -4,17 +4,15 @@ import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { format } from 'date-fns';
 import { useFormik } from 'formik';
-import * as Yup from 'yup';
 import { ptBR } from 'date-fns/locale';
 import { IoMdTime } from 'react-icons/io';
 import { useSelector } from 'react-redux';
-import { MdDeleteOutline } from 'react-icons/md';
+import { MdDeleteOutline, MdErrorOutline } from 'react-icons/md';
 import { FaRegCircleQuestion } from 'react-icons/fa6';
 import { useContext, useEffect, useMemo, useState } from 'react';
-import { CalendarContext } from '../context/calendar-context';
+
 import {
     Button,
-    Dialog,
     InputLabel,
     Typography,
     DialogTitle,
@@ -27,20 +25,20 @@ import {
     Grid,
     Autocomplete,
     Box,
-    DialogContentText,
     TextField,
     useMediaQuery,
     useTheme,
     IconButton,
     OutlinedInput,
-    InputAdornment
+    InputAdornment,
+    Alert
 } from '@mui/material';
 
+import { CalendarContext } from '../context/calendar-context';
 import TimeSelect from '../time-select';
 import Datepicker from '../date-picker';
 import clientService from '../../../../domains/client/clientService';
 import appointmentService from '../../../../domains/appointment/appointmentService';
-
 import { StyledDialog, timeOptions, validationSchema as baseValidationSchema, classes, StyledTooltip, getInitialAndEndTime, timeToMinutes } from './calendarDialog.constants';
 import { useDebounce } from '../../../utils/useDebounce';
 import UpdateRecurrenceDialog from './updateRecurrenceDialog/updateRecurrenceDialog';
@@ -76,6 +74,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
     } = stateCalendar;
 
     const isRecurrentEvent = Boolean(stateCalendar?.calendarEvent?.recurrenceRuleId);
+    const [recurrenceConflict, setRecurrenceConflict] = useState(null);
     const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
     const [clientInput, setClientInput] = useState('');
     const [scopeDialogOpen, setScopeDialogOpen] = useState(false);
@@ -91,6 +90,7 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
             openViewDialog: false
         });
         setClientInput('');
+        setRecurrenceConflict(null);
     };
 
     const { business } = useSelector((state) => state?.auth.user) || {
@@ -138,20 +138,37 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
             });
         }
 
-        if (eventID) {
-            // alert(isRecurrentEvent);
-            if (isRecurrentEvent) {
-                setMarkerDataForUpdate(payload);
-                setScopeDialogOpen(true);
+        try {
+            if (eventID) {
+                if (isRecurrentEvent) {
+                    setMarkerDataForUpdate(payload);
+                    setScopeDialogOpen(true);
+                    return;
+                }
+                await appointmentService.update(eventID, payload, 'single', isList, updateParams);
+            } else {
+                await appointmentService.create(business.id, payload);
+            }
+
+            setRecurrenceConflict(null);
+            if (!isList) refreshCalendar(false);
+            handleClose();
+        } catch (err) {
+            const status = err?.response?.status;
+            const data = err?.response?.data;
+
+            if (status === 409 && (data?.code === 'RECURRENCE_CONFLICT' || data?.message)) {
+                setRecurrenceConflict({
+                    message: data?.message || 'Foram encontrados conflitos nesta recorrência.',
+                    room: data?.room,
+                    totalOccurrences: data?.totalOccurrences,
+                    conflicts: Array.isArray(data?.conflicts) ? data.conflicts : []
+                });
                 return;
             }
-            await appointmentService.update(eventID, payload, 'single', isList, updateParams);
-        } else {
-            await appointmentService.create(business.id, payload);
-        }
 
-        if (!isList) refreshCalendar(false);
-        handleClose();
+            throw err;
+        }
     };
 
     const initialValues = useMemo(
@@ -305,510 +322,622 @@ function CalendarEventDialog({ refreshCalendar, roomsList }) {
                     </div>
                 </DialogTitle>
                 <DialogContent>
-                    <Box
-                        component="form"
-                        onSubmit={formik.handleSubmit}
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            m: 'auto',
-                            pt: 2,
-                            gap: 3
-                        }}
-                    >
-                        {/* Campo de Sala */}
-                        <FormControl>
-                            <InputLabel htmlFor="roomTF" size="small">
-                                Sala
-                            </InputLabel>
-                            <Select
-                                id="roomTF"
-                                name="roomTF"
-                                label="Sala"
-                                size="small"
-                                value={formik.values.roomTF}
-                                onChange={formik.handleChange}
-                                error={formik.touched.roomTF && Boolean(formik.errors.roomTF)}
-                            >
-                                {roomsList
-                                    .sort((a, b) => a.name.localeCompare(b.name))
-                                    .map((room) => (
-                                        <MenuItem key={room.id} value={room.id}>
-                                            {room.name}
+                    {!recurrenceConflict && (
+                        <Box
+                            component="form"
+                            onSubmit={formik.handleSubmit}
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                m: 'auto',
+                                pt: 2,
+                                gap: 3
+                            }}
+                        >
+                            {/* Campo de Sala */}
+                            <FormControl>
+                                <InputLabel htmlFor="roomTF" size="small">
+                                    Sala
+                                </InputLabel>
+                                <Select
+                                    id="roomTF"
+                                    name="roomTF"
+                                    label="Sala"
+                                    size="small"
+                                    value={formik.values.roomTF}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.roomTF && Boolean(formik.errors.roomTF)}
+                                >
+                                    {roomsList
+                                        .sort((a, b) => a.name.localeCompare(b.name))
+                                        .map((room) => (
+                                            <MenuItem key={room.id} value={room.id}>
+                                                {room.name}
+                                            </MenuItem>
+                                        ))}
+                                </Select>
+                                {formik.touched.roomTF && formik.errors.roomTF && (
+                                    <Typography variant="caption" color="error">
+                                        {formik.errors.roomTF}
+                                    </Typography>
+                                )}
+                            </FormControl>
+
+                            {/* Campo de Membro e Status */}
+                            <Grid container spacing={2} alignItems="center">
+                                <Grid item xs={12} sm={6}>
+                                    <FormControl fullWidth>
+                                        <Autocomplete
+                                            size="small"
+                                            id="clientTF"
+                                            name="clientTF"
+                                            disableClearable
+                                            sx={{ width: '100%' }}
+                                            value={formik.values.clientTF}
+                                            onChange={(e, value) => formik.setFieldValue('clientTF', value)}
+                                            onInputChange={(e, value) => setClientInput(value)}
+                                            options={filteredClientsList.map((client) => {
+                                                const name = client.name === 'Novo Membro' ? `${client.name} - ${client.phone}` : client.name;
+                                                return { value: client.id, label: name };
+                                            })}
+                                            getOptionLabel={(option) => option?.label}
+                                            renderInput={(params) => <TextField {...params} label="Membro" />}
+                                            isOptionEqualToValue={(option, value) => option?.value === value?.value}
+                                        />
+                                        {formik.touched.clientTF && formik.errors.clientTF && (
+                                            <Typography variant="caption" color="error">
+                                                {formik.errors.clientTF}
+                                            </Typography>
+                                        )}
+                                    </FormControl>
+                                </Grid>
+
+                                <Grid item xs={12} sm={6}>
+                                    <FormControl fullWidth>
+                                        <InputLabel htmlFor="statusTF" size="small">
+                                            Status
+                                        </InputLabel>
+                                        <Select
+                                            id="statusTF"
+                                            name="statusTF"
+                                            label="Status"
+                                            size="small"
+                                            value={formik.values.statusTF}
+                                            onChange={formik.handleChange}
+                                            error={formik.touched.statusTF && Boolean(formik.errors.statusTF)}
+                                        >
+                                            <MenuItem value="PENDING">Pendente</MenuItem>
+                                            <MenuItem value="SCHEDULED">Agendado</MenuItem>
+                                            <MenuItem value="COMPLETED">Concluído</MenuItem>
+                                            <MenuItem value="CANCELLED">Cancelado</MenuItem>
+                                        </Select>
+                                        {formik.touched.statusTF && formik.errors.statusTF && (
+                                            <Typography variant="caption" color="error">
+                                                {formik.errors.statusTF}
+                                            </Typography>
+                                        )}
+                                    </FormControl>
+                                </Grid>
+                            </Grid>
+
+                            <FormControl fullWidth>
+                                <InputLabel htmlFor="nameTF" size="small">
+                                    Nome do evento
+                                </InputLabel>
+                                <OutlinedInput
+                                    id="nameTF"
+                                    name="nameTF"
+                                    label="Nome do evento"
+                                    size="small"
+                                    value={formik.values.nameTF}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.nameTF && Boolean(formik.errors.nameTF)}
+                                />
+                                {formik.touched.nameTF && formik.errors.nameTF && (
+                                    <Typography variant="caption" color="error">
+                                        {formik.errors.nameTF}
+                                    </Typography>
+                                )}
+                            </FormControl>
+
+                            <FormControl fullWidth>
+                                <InputLabel htmlFor="tagTF" size="small">
+                                    Etiqueta
+                                </InputLabel>
+                                <Select id="tagTF" name="tagTF" label="Etiqueta" size="small" value={formik.values.tagTF} onChange={formik.handleChange}>
+                                    <MenuItem value="">
+                                        <em>Nenhuma</em>
+                                    </MenuItem>
+                                    {tagsList.map((tag) => (
+                                        <MenuItem key={tag.id} value={tag.id}>
+                                            <Box
+                                                component="span"
+                                                sx={{
+                                                    display: 'inline-block',
+                                                    width: 12,
+                                                    height: 12,
+                                                    bgcolor: tag.color,
+                                                    borderRadius: '50%',
+                                                    mr: 1,
+                                                    verticalAlign: 'middle'
+                                                }}
+                                            />
+                                            {tag.name}
                                         </MenuItem>
                                     ))}
-                            </Select>
-                            {formik.touched.roomTF && formik.errors.roomTF && (
-                                <Typography variant="caption" color="error">
-                                    {formik.errors.roomTF}
-                                </Typography>
-                            )}
-                        </FormControl>
+                                </Select>
+                            </FormControl>
 
-                        {/* Campo de Membro e Status */}
-                        <Grid container spacing={2} alignItems="center">
-                            <Grid item xs={12} sm={6}>
-                                <FormControl fullWidth>
-                                    <Autocomplete
-                                        size="small"
-                                        id="clientTF"
-                                        name="clientTF"
-                                        disableClearable
-                                        sx={{ width: '100%' }}
-                                        value={formik.values.clientTF}
-                                        onChange={(e, value) => formik.setFieldValue('clientTF', value)}
-                                        onInputChange={(e, value) => setClientInput(value)}
-                                        options={filteredClientsList.map((client) => {
-                                            const name = client.name === 'Novo Membro' ? `${client.name} - ${client.phone}` : client.name;
-                                            return { value: client.id, label: name };
-                                        })}
-                                        getOptionLabel={(option) => option?.label}
-                                        renderInput={(params) => <TextField {...params} label="Membro" />}
-                                        isOptionEqualToValue={(option, value) => option?.value === value?.value}
-                                    />
-                                    {formik.touched.clientTF && formik.errors.clientTF && (
-                                        <Typography variant="caption" color="error">
-                                            {formik.errors.clientTF}
-                                        </Typography>
+                            {/* Campo de Descrição */}
+                            <FormControl fullWidth>
+                                <InputLabel htmlFor="descriptionTF" size="small">
+                                    Descrição
+                                </InputLabel>
+                                <OutlinedInput
+                                    id="descriptionTF"
+                                    name="descriptionTF"
+                                    label="Descrição"
+                                    size="small"
+                                    multiline
+                                    rows={3}
+                                    value={formik.values.descriptionTF}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.descriptionTF && Boolean(formik.errors.descriptionTF)}
+                                    endAdornment={
+                                        <InputAdornment position="end">
+                                            <StyledTooltip
+                                                style={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    backgroundColor: '#1976D2',
+                                                    borderRadius: '50%',
+                                                    padding: 2
+                                                }}
+                                                placement="bottom-start"
+                                                title={`Quantas pessoas irão participar? Faz parte de algum ministério? Sobre o que será o evento?`}
+                                            >
+                                                <IconButton>
+                                                    <FaRegCircleQuestion fontSize={16} style={{ color: '#ffffff', cursor: 'pointer' }} />
+                                                </IconButton>
+                                            </StyledTooltip>
+                                        </InputAdornment>
+                                    }
+                                />
+                                {formik.touched.descriptionTF && formik.errors.descriptionTF && (
+                                    <Typography variant="caption" color="error">
+                                        {formik.errors.descriptionTF}
+                                    </Typography>
+                                )}
+                            </FormControl>
+
+                            {/* Data do agendamento e exibição do horário */}
+                            <FormControl className={clsx(classes.formControl, classes.formControlFlex)}>
+                                <Grid container spacing={2} alignItems="center">
+                                    {(!eventID || !isRecurrentEvent) && (
+                                        <Grid item xs={12} sm={7} style={{ paddingBlock: 15 }}>
+                                            <div
+                                                style={{
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    gap: 10
+                                                }}
+                                            >
+                                                <Typography>Data do agendamento</Typography>
+                                                <div
+                                                    style={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: 10
+                                                    }}
+                                                >
+                                                    <Datepicker
+                                                        styleCls={classes.datepicker}
+                                                        dateFormat="dd/MM/yyyy"
+                                                        originalValue={
+                                                            formik.values.beginDate && !isNaN(new Date(formik.values.beginDate).getTime())
+                                                                ? new Date(formik.values.beginDate)
+                                                                : null
+                                                        }
+                                                        onChange={(datePicked) => {
+                                                            formik.setFieldValue('beginDate', datePicked);
+                                                            setStateCalendar({
+                                                                ...stateCalendar,
+                                                                eventBeginDate: datePicked
+                                                            });
+                                                        }}
+                                                    />
+                                                    <Typography className={classes.dayOfWeek}>
+                                                        {formik.values.beginDate !== null &&
+                                                            format(new Date(formik.values.beginDate), 'eeee', {
+                                                                locale: ptBR
+                                                            })}
+                                                    </Typography>
+                                                </div>
+                                                {formik.touched.beginDate && formik.errors.beginDate && (
+                                                    <Typography variant="caption" color="error">
+                                                        {formik.errors.beginDate}
+                                                    </Typography>
+                                                )}
+                                            </div>
+                                        </Grid>
                                     )}
-                                </FormControl>
-                            </Grid>
-
-                            <Grid item xs={12} sm={6}>
-                                <FormControl fullWidth>
-                                    <InputLabel htmlFor="statusTF" size="small">
-                                        Status
-                                    </InputLabel>
-                                    <Select
-                                        id="statusTF"
-                                        name="statusTF"
-                                        label="Status"
-                                        size="small"
-                                        value={formik.values.statusTF}
-                                        onChange={formik.handleChange}
-                                        error={formik.touched.statusTF && Boolean(formik.errors.statusTF)}
+                                    <Grid
+                                        item
+                                        xs={12}
+                                        sm={!eventID || !isRecurrentEvent ? 5 : 12}
+                                        style={{
+                                            display: 'flex',
+                                            justifyContent: isSmUp ? 'flex-start' : 'flex-start',
+                                            paddingBlock: 15
+                                        }}
                                     >
-                                        <MenuItem value="PENDING">Pendente</MenuItem>
-                                        <MenuItem value="SCHEDULED">Agendado</MenuItem>
-                                        <MenuItem value="COMPLETED">Concluído</MenuItem>
-                                        <MenuItem value="CANCELLED">Cancelado</MenuItem>
-                                    </Select>
-                                    {formik.touched.statusTF && formik.errors.statusTF && (
-                                        <Typography variant="caption" color="error">
-                                            {formik.errors.statusTF}
-                                        </Typography>
-                                    )}
-                                </FormControl>
-                            </Grid>
-                        </Grid>
-
-                        <FormControl fullWidth>
-                            <InputLabel htmlFor="nameTF" size="small">
-                                Nome do evento
-                            </InputLabel>
-                            <OutlinedInput
-                                id="nameTF"
-                                name="nameTF"
-                                label="Nome do evento"
-                                size="small"
-                                value={formik.values.nameTF}
-                                onChange={formik.handleChange}
-                                error={formik.touched.nameTF && Boolean(formik.errors.nameTF)}
-                            />
-                            {formik.touched.nameTF && formik.errors.nameTF && (
-                                <Typography variant="caption" color="error">
-                                    {formik.errors.nameTF}
-                                </Typography>
-                            )}
-                        </FormControl>
-
-                        <FormControl fullWidth>
-                            <InputLabel htmlFor="tagTF" size="small">
-                                Etiqueta
-                            </InputLabel>
-                            <Select id="tagTF" name="tagTF" label="Etiqueta" size="small" value={formik.values.tagTF} onChange={formik.handleChange}>
-                                <MenuItem value="">
-                                    <em>Nenhuma</em>
-                                </MenuItem>
-                                {tagsList.map((tag) => (
-                                    <MenuItem key={tag.id} value={tag.id}>
-                                        <Box
-                                            component="span"
-                                            sx={{
-                                                display: 'inline-block',
-                                                width: 12,
-                                                height: 12,
-                                                bgcolor: tag.color,
-                                                borderRadius: '50%',
-                                                mr: 1,
-                                                verticalAlign: 'middle'
-                                            }}
-                                        />
-                                        {tag.name}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-
-                        {/* Campo de Descrição */}
-                        <FormControl fullWidth>
-                            <InputLabel htmlFor="descriptionTF" size="small">
-                                Descrição
-                            </InputLabel>
-                            <OutlinedInput
-                                id="descriptionTF"
-                                name="descriptionTF"
-                                label="Descrição"
-                                size="small"
-                                multiline
-                                rows={3}
-                                value={formik.values.descriptionTF}
-                                onChange={formik.handleChange}
-                                error={formik.touched.descriptionTF && Boolean(formik.errors.descriptionTF)}
-                                endAdornment={
-                                    <InputAdornment position="end">
-                                        <StyledTooltip
-                                            style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                backgroundColor: '#1976D2',
-                                                borderRadius: '50%',
-                                                padding: 2
-                                            }}
-                                            placement="bottom-start"
-                                            title={`Quantas pessoas irão participar? Faz parte de algum ministério? Sobre o que será o evento?`}
-                                        >
-                                            <IconButton>
-                                                <FaRegCircleQuestion fontSize={16} style={{ color: '#ffffff', cursor: 'pointer' }} />
-                                            </IconButton>
-                                        </StyledTooltip>
-                                    </InputAdornment>
-                                }
-                            />
-                            {formik.touched.descriptionTF && formik.errors.descriptionTF && (
-                                <Typography variant="caption" color="error">
-                                    {formik.errors.descriptionTF}
-                                </Typography>
-                            )}
-                        </FormControl>
-
-                        {/* Data do agendamento e exibição do horário */}
-                        <FormControl className={clsx(classes.formControl, classes.formControlFlex)}>
-                            <Grid container spacing={2} alignItems="center">
-                                {(!eventID || !isRecurrentEvent) && (
-                                    <Grid item xs={12} sm={7} style={{ paddingBlock: 15 }}>
                                         <div
                                             style={{
                                                 display: 'flex',
                                                 flexDirection: 'column',
-                                                gap: 10
+                                                gap: 10,
+                                                width: '100%'
                                             }}
                                         >
-                                            <Typography>Data do agendamento</Typography>
-                                            <div
-                                                style={{
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: 10
-                                                }}
-                                            >
-                                                <Datepicker
-                                                    styleCls={classes.datepicker}
-                                                    dateFormat="dd/MM/yyyy"
-                                                    originalValue={
-                                                        formik.values.beginDate && !isNaN(new Date(formik.values.beginDate).getTime()) ? new Date(formik.values.beginDate) : null
-                                                    }
-                                                    onChange={(datePicked) => {
-                                                        formik.setFieldValue('beginDate', datePicked);
-                                                        setStateCalendar({
-                                                            ...stateCalendar,
-                                                            eventBeginDate: datePicked
-                                                        });
+                                            <Typography>Horário</Typography>
+                                            <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                                                <TimeSelect
+                                                    placeholder={''}
+                                                    options={timeOptions(
+                                                        getInitialAndEndTime(
+                                                            scheduleState,
+                                                            format(new Date(formik.values.beginDate), 'eeee', {
+                                                                locale: ptBR
+                                                            })
+                                                        )
+                                                    )}
+                                                    originalValue={{
+                                                        value: formik.values.beginTime.value,
+                                                        label: formik.values.beginTime.label
                                                     }}
+                                                    onChange={(e) => formik.setFieldValue('beginTime', e)}
                                                 />
-                                                <Typography className={classes.dayOfWeek}>
-                                                    {formik.values.beginDate !== null &&
-                                                        format(new Date(formik.values.beginDate), 'eeee', {
-                                                            locale: ptBR
-                                                        })}
-                                                </Typography>
+                                                -
+                                                <TimeSelect
+                                                    placeholder={''}
+                                                    options={timeOptions(
+                                                        getInitialAndEndTime(
+                                                            scheduleState,
+                                                            format(new Date(formik.values.beginDate), 'eeee', {
+                                                                locale: ptBR
+                                                            })
+                                                        )
+                                                    )}
+                                                    originalValue={{
+                                                        value: formik.values.endTime.value,
+                                                        label: formik.values.endTime.label
+                                                    }}
+                                                    onChange={(e) => formik.setFieldValue('endTime', e)}
+                                                />
+                                                <IoMdTime />
                                             </div>
-                                            {formik.touched.beginDate && formik.errors.beginDate && (
+                                            {formik.touched.beginTime && formik.errors.beginTime && (
                                                 <Typography variant="caption" color="error">
-                                                    {formik.errors.beginDate}
+                                                    {formik.errors.beginTime}
                                                 </Typography>
                                             )}
                                         </div>
                                     </Grid>
-                                )}
-                                <Grid
-                                    item
-                                    xs={12}
-                                    sm={!eventID || !isRecurrentEvent ? 5 : 12}
-                                    style={{
-                                        display: 'flex',
-                                        justifyContent: isSmUp ? 'flex-start' : 'flex-start',
-                                        paddingBlock: 15
-                                    }}
-                                >
-                                    <div
+                                </Grid>
+                            </FormControl>
+
+                            <Grid container spacing={2} alignItems="center">
+                                <Grid item xs={12} sm={4}>
+                                    <FormControl
+                                        className={clsx(classes.formControl, classes.formControlFlex)}
                                         style={{
                                             display: 'flex',
-                                            flexDirection: 'column',
-                                            gap: 10,
-                                            width: '100%'
+                                            justifyContent: 'flex-start',
+                                            paddingTop: 0
                                         }}
                                     >
-                                        <Typography>Horário</Typography>
-                                        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                                            <TimeSelect
-                                                placeholder={''}
-                                                options={timeOptions(
-                                                    getInitialAndEndTime(
-                                                        scheduleState,
-                                                        format(new Date(formik.values.beginDate), 'eeee', {
-                                                            locale: ptBR
-                                                        })
-                                                    )
-                                                )}
-                                                originalValue={{
-                                                    value: formik.values.beginTime.value,
-                                                    label: formik.values.beginTime.label
-                                                }}
-                                                onChange={(e) => formik.setFieldValue('beginTime', e)}
-                                            />
-                                            -
-                                            <TimeSelect
-                                                placeholder={''}
-                                                options={timeOptions(
-                                                    getInitialAndEndTime(
-                                                        scheduleState,
-                                                        format(new Date(formik.values.beginDate), 'eeee', {
-                                                            locale: ptBR
-                                                        })
-                                                    )
-                                                )}
-                                                originalValue={{
-                                                    value: formik.values.endTime.value,
-                                                    label: formik.values.endTime.label
-                                                }}
-                                                onChange={(e) => formik.setFieldValue('endTime', e)}
-                                            />
-                                            <IoMdTime />
-                                        </div>
-                                        {formik.touched.beginTime && formik.errors.beginTime && (
-                                            <Typography variant="caption" color="error">
-                                                {formik.errors.beginTime}
-                                            </Typography>
-                                        )}
-                                    </div>
+                                        <Typography>Pago</Typography>
+                                        <Switch checked={formik.values.isPaidTF} onChange={(e) => formik.setFieldValue('isPaidTF', e.target.checked)} color="primary" />
+                                    </FormControl>
                                 </Grid>
                             </Grid>
-                        </FormControl>
 
-                        <Grid container spacing={2} alignItems="center">
-                            <Grid item xs={12} sm={4}>
-                                <FormControl
-                                    className={clsx(classes.formControl, classes.formControlFlex)}
-                                    style={{
-                                        display: 'flex',
-                                        justifyContent: 'flex-start',
-                                        paddingTop: 0
+                            {!eventID && (
+                                <FormControl fullWidth>
+                                    <InputLabel htmlFor="recurrenceType" size="small">
+                                        Recorrência
+                                    </InputLabel>
+                                    <Select
+                                        id="recurrenceType"
+                                        name="recurrenceType"
+                                        label="Recorrência"
+                                        size="small"
+                                        value={formik.values.recurrenceType}
+                                        onChange={formik.handleChange}
+                                    >
+                                        <MenuItem value="NONE">Não se repete</MenuItem>
+                                        <MenuItem value="DAILY">Diariamente</MenuItem>
+                                        <MenuItem value="WEEKLY">Semanalmente</MenuItem>
+                                        <MenuItem value="WEEKDAYS">Dias de semana (Seg-Sex)</MenuItem>
+                                        <MenuItem value="MONTHLY_BY_DATE">Mensal (dia exato)</MenuItem>
+                                        <MenuItem value="MONTHLY_BY_ORDINAL">Mensal (ex: 2ª Terça)</MenuItem>
+                                        <MenuItem value="YEARLY_BY_DATE">Anual (data exata)</MenuItem>
+                                        <MenuItem value="YEARLY_BY_ORDINAL">Anual (ex: 2ª Terça de Abril)</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            )}
+
+                            {formik.values.recurrenceType !== 'NONE' && (
+                                <Box sx={{ gap: '16px' }} display="flex" flexDirection="column">
+                                    <Typography variant="subtitle1" gutterBottom>
+                                        Configuração da recorrência
+                                    </Typography>
+
+                                    <Datepicker
+                                        label="Data final da recorrência"
+                                        placeholderText="Selecione até quando repetir"
+                                        dateFormat="dd/MM/yyyy"
+                                        position="top"
+                                        originalValue={formik.values.endDate}
+                                        onChange={(d) => formik.setFieldValue('endDate', d)}
+                                    />
+
+                                    {formik.values.recurrenceType === 'WEEKLY' && (
+                                        <>
+                                            <InputLabel htmlFor="weeklyRecurrence" size="small">
+                                                Dis da semana
+                                            </InputLabel>
+                                            <Select
+                                                id="weeklyRecurrence"
+                                                size="small"
+                                                fullWidth
+                                                name="dayOfWeek"
+                                                value={formik.values.dayOfWeek}
+                                                onChange={formik.handleChange}
+                                                placeholderText="Selecione o dia da semana"
+                                            >
+                                                <MenuItem value="MONDAY">Segunda-feira</MenuItem>
+                                                <MenuItem value="TUESDAY">Terça-feira</MenuItem>
+                                                <MenuItem value="WEDNESDAY">Quarta-feira</MenuItem>
+                                                <MenuItem value="THURSDAY">Quinta-feira</MenuItem>
+                                                <MenuItem value="FRIDAY">Sexta-feira</MenuItem>
+                                                <MenuItem value="SATURDAY">Sábado</MenuItem>
+                                                <MenuItem value="SUNDAY">Domingo</MenuItem>
+                                            </Select>
+                                        </>
+                                    )}
+
+                                    {formik.values.recurrenceType === 'WEEKDAYS' && (
+                                        <Typography variant="body2" color="textSecondary">
+                                            Repetirá automaticamente de <b>segunda</b> a <b>sexta-feira</b>.
+                                        </Typography>
+                                    )}
+
+                                    {formik.values.recurrenceType === 'MONTHLY_BY_DATE' && (
+                                        <TextField
+                                            fullWidth
+                                            label="Dia do mês"
+                                            placeholder="Ex: 8"
+                                            type="number"
+                                            value={formik.values.dayOfMonth || ''}
+                                            onChange={(e) => formik.setFieldValue('dayOfMonth', e.target.value)}
+                                        />
+                                    )}
+
+                                    {formik.values.recurrenceType === 'MONTHLY_BY_ORDINAL' && (
+                                        <Grid container spacing={2}>
+                                            <Grid item xs={6}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="Semana do mês"
+                                                    placeholder="Ex: 1 a 5"
+                                                    type="number"
+                                                    value={formik.values.ordinalOfWeek}
+                                                    onChange={(e) => formik.setFieldValue('ordinalOfWeek', e.target.value)}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={6}>
+                                                <Select fullWidth name="dayOfWeek" value={formik.values.dayOfWeek} onChange={formik.handleChange}>
+                                                    <MenuItem disabled value="">
+                                                        Selecione o dia da semana
+                                                    </MenuItem>
+                                                    <MenuItem value="MONDAY">Segunda-feira</MenuItem>
+                                                    <MenuItem value="TUESDAY">Terça-feira</MenuItem>
+                                                    <MenuItem value="WEDNESDAY">Quarta-feira</MenuItem>
+                                                    <MenuItem value="THURSDAY">Quinta-feira</MenuItem>
+                                                    <MenuItem value="FRIDAY">Sexta-feira</MenuItem>
+                                                    <MenuItem value="SATURDAY">Sábado</MenuItem>
+                                                    <MenuItem value="SUNDAY">Domingo</MenuItem>
+                                                </Select>
+                                            </Grid>
+                                        </Grid>
+                                    )}
+
+                                    {formik.values.recurrenceType === 'YEARLY_BY_DATE' && (
+                                        <Grid container spacing={2}>
+                                            <Grid item xs={6}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="Dia do mês"
+                                                    placeholder="Ex: 25"
+                                                    type="number"
+                                                    value={formik.values.dayOfMonth || ''}
+                                                    onChange={(e) => formik.setFieldValue('dayOfMonth', e.target.value)}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={6}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="Mês do ano"
+                                                    placeholder="Ex: 12 para Dezembro"
+                                                    type="number"
+                                                    value={formik.values.monthOfYear || ''}
+                                                    onChange={(e) => formik.setFieldValue('monthOfYear', e.target.value)}
+                                                />
+                                            </Grid>
+                                        </Grid>
+                                    )}
+
+                                    {formik.values.recurrenceType === 'YEARLY_BY_ORDINAL' && (
+                                        <Grid container spacing={2}>
+                                            <Grid item xs={4}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="Semana do mês"
+                                                    placeholder="1 a 5"
+                                                    type="number"
+                                                    value={formik.values.ordinalOfWeek}
+                                                    onChange={(e) => formik.setFieldValue('ordinalOfWeek', e.target.value)}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={4}>
+                                                <Select fullWidth name="dayOfWeek" value={formik.values.dayOfWeek} onChange={formik.handleChange} displayEmpty>
+                                                    <MenuItem disabled value="">
+                                                        Dia da semana
+                                                    </MenuItem>
+                                                    <MenuItem value="MONDAY">Segunda-feira</MenuItem>
+                                                    <MenuItem value="TUESDAY">Terça-feira</MenuItem>
+                                                    <MenuItem value="WEDNESDAY">Quarta-feira</MenuItem>
+                                                    <MenuItem value="THURSDAY">Quinta-feira</MenuItem>
+                                                    <MenuItem value="FRIDAY">Sexta-feira</MenuItem>
+                                                    <MenuItem value="SATURDAY">Sábado</MenuItem>
+                                                    <MenuItem value="SUNDAY">Domingo</MenuItem>
+                                                </Select>
+                                            </Grid>
+                                            <Grid item xs={4}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="Mês"
+                                                    placeholder="1 a 12"
+                                                    type="number"
+                                                    value={formik.values.monthOfYear || ''}
+                                                    onChange={(e) => formik.setFieldValue('monthOfYear', e.target.value)}
+                                                />
+                                            </Grid>
+                                        </Grid>
+                                    )}
+                                </Box>
+                            )}
+
+                            <DialogActions>
+                                <Button autoFocus onClick={handleClose}>
+                                    Cancelar
+                                </Button>
+                                <Button autoFocus type="submit" variant="contained">
+                                    {eventID ? 'Editar Agendamento' : 'Agendar'}
+                                </Button>
+                            </DialogActions>
+                        </Box>
+                    )}
+                    {recurrenceConflict && (
+                        <Alert severity="error" icon={false} sx={{ p: 0 }}>
+                            <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                                <Box
+                                    sx={{
+                                        display: 'grid',
+                                        gridTemplateColumns: { xs: 'auto 1fr', sm: 'auto 1fr auto' },
+                                        alignItems: 'center',
+                                        columnGap: 1.5
                                     }}
                                 >
-                                    <Typography>Pago</Typography>
-                                    <Switch checked={formik.values.isPaidTF} onChange={(e) => formik.setFieldValue('isPaidTF', e.target.checked)} color="primary" />
-                                </FormControl>
-                            </Grid>
-                        </Grid>
+                                    <Box
+                                        sx={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            width: 36,
+                                            height: 36,
+                                            borderRadius: '50%',
+                                            bgcolor: 'error.main',
+                                            color: '#fff'
+                                        }}
+                                    >
+                                        <MdErrorOutline size={20} />
+                                    </Box>
 
-                        {!eventID && (
-                            <FormControl fullWidth>
-                                <InputLabel htmlFor="recurrenceType" size="small">
-                                    Recorrência
-                                </InputLabel>
-                                <Select
-                                    id="recurrenceType"
-                                    name="recurrenceType"
-                                    label="Recorrência"
-                                    size="small"
-                                    value={formik.values.recurrenceType}
-                                    onChange={formik.handleChange}
-                                >
-                                    <MenuItem value="NONE">Não se repete</MenuItem>
-                                    <MenuItem value="DAILY">Diariamente</MenuItem>
-                                    <MenuItem value="WEEKLY">Semanalmente</MenuItem>
-                                    <MenuItem value="WEEKDAYS">Dias de semana (Seg-Sex)</MenuItem>
-                                    <MenuItem value="MONTHLY_BY_DATE">Mensal (dia exato)</MenuItem>
-                                    <MenuItem value="MONTHLY_BY_ORDINAL">Mensal (ex: 2ª Terça)</MenuItem>
-                                    <MenuItem value="YEARLY_BY_DATE">Anual (data exata)</MenuItem>
-                                    <MenuItem value="YEARLY_BY_ORDINAL">Anual (ex: 2ª Terça de Abril)</MenuItem>
-                                </Select>
-                            </FormControl>
-                        )}
-
-                        {formik.values.recurrenceType !== 'NONE' && (
-                            <Box sx={{ gap: '16px' }} display="flex" flexDirection="column">
-                                <Typography variant="subtitle1" gutterBottom>
-                                    Configuração da recorrência
-                                </Typography>
-
-                                <Datepicker
-                                    label="Data final da recorrência"
-                                    placeholderText="Selecione até quando repetir"
-                                    dateFormat="dd/MM/yyyy"
-                                    position="top"
-                                    originalValue={formik.values.endDate}
-                                    onChange={(d) => formik.setFieldValue('endDate', d)}
-                                />
-
-                                {formik.values.recurrenceType === 'WEEKLY' && (
-                                    <>
-                                        <InputLabel htmlFor="weeklyRecurrence" size="small">
-                                            Dis da semana
-                                        </InputLabel>
-                                        <Select
-                                            id="weeklyRecurrence"
-                                            size="small"
-                                            fullWidth
-                                            name="dayOfWeek"
-                                            value={formik.values.dayOfWeek}
-                                            onChange={formik.handleChange}
-                                            placeholderText="Selecione o dia da semana"
-                                        >
-                                            <MenuItem value="MONDAY">Segunda-feira</MenuItem>
-                                            <MenuItem value="TUESDAY">Terça-feira</MenuItem>
-                                            <MenuItem value="WEDNESDAY">Quarta-feira</MenuItem>
-                                            <MenuItem value="THURSDAY">Quinta-feira</MenuItem>
-                                            <MenuItem value="FRIDAY">Sexta-feira</MenuItem>
-                                            <MenuItem value="SATURDAY">Sábado</MenuItem>
-                                            <MenuItem value="SUNDAY">Domingo</MenuItem>
-                                        </Select>
-                                    </>
-                                )}
-
-                                {formik.values.recurrenceType === 'WEEKDAYS' && (
-                                    <Typography variant="body2" color="textSecondary">
-                                        Repetirá automaticamente de <b>segunda</b> a <b>sexta-feira</b>.
+                                    <Typography variant="subtitle1" sx={{ fontWeight: 600, lineHeight: 1.2 }}>
+                                        Conflito de recorrência
                                     </Typography>
+
+                                    <Typography
+                                        variant="body2"
+                                        sx={{
+                                            justifySelf: { xs: 'start', sm: 'end' },
+                                            mt: { xs: 0.5, sm: 0 },
+                                            opacity: 0.9,
+                                            whiteSpace: 'nowrap'
+                                        }}
+                                    >
+                                        {Array.isArray(recurrenceConflict.conflicts) ? recurrenceConflict.conflicts.length : 0} conflito
+                                        {(recurrenceConflict.conflicts?.length || 0) !== 1 ? 's' : ''} em {recurrenceConflict.totalOccurrences ?? '-'} ocorrência
+                                        {(recurrenceConflict.totalOccurrences || 0) !== 1 ? 's' : ''}
+                                    </Typography>
+                                </Box>
+
+                                <Box>
+                                    <Typography variant="body2" sx={{ mb: 0.5 }}>
+                                        {recurrenceConflict.message}
+                                    </Typography>
+                                    {recurrenceConflict.room?.name && (
+                                        <Typography variant="body2">
+                                            Sala: <b>{recurrenceConflict.room.name}</b>
+                                        </Typography>
+                                    )}
+                                </Box>
+
+                                {Array.isArray(recurrenceConflict.conflicts) && recurrenceConflict.conflicts.length > 0 && (
+                                    <Box
+                                        sx={{
+                                            width: '100%',
+                                            maxHeight: 200,
+                                            overflowY: 'auto',
+                                            p: 1,
+                                            bgcolor: 'rgba(0,0,0,0.03)',
+                                            borderRadius: 1,
+                                            border: '1px dashed',
+                                            borderColor: 'error.light'
+                                        }}
+                                    >
+                                        {recurrenceConflict.conflicts.map((c, i) => (
+                                            <Typography key={`${c.date}-${c?.blocker?.id}-${i}`} variant="body2" sx={{ mb: 0.5, wordBreak: 'break-word' }}>
+                                                • {dayjs(c.date).format('DD/MM/YYYY HH:mm')}–{dayjs(c.endDate).format('HH:mm')} — {c?.blocker?.title || 'Reserva existente'}
+                                                {c?.blocker?.clientName ? ` (${c.blocker.clientName})` : ''}
+                                            </Typography>
+                                        ))}
+                                    </Box>
                                 )}
 
-                                {formik.values.recurrenceType === 'MONTHLY_BY_DATE' && (
-                                    <TextField
-                                        fullWidth
-                                        label="Dia do mês"
-                                        placeholder="Ex: 8"
-                                        type="number"
-                                        value={formik.values.dayOfMonth || ''}
-                                        onChange={(e) => formik.setFieldValue('dayOfMonth', e.target.value)}
-                                    />
-                                )}
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        flexDirection: { xs: 'column-reverse', sm: 'row' },
+                                        gap: 1,
+                                        alignItems: { xs: 'stretch', sm: 'center' },
+                                        justifyContent: 'space-between'
+                                    }}
+                                >
+                                    <Button
+                                        onClick={() => setRecurrenceConflict(null)}
+                                        size="medium"
+                                        sx={{
+                                            whiteSpace: 'nowrap',
+                                            alignSelf: { xs: 'stretch', sm: 'flex-start' },
+                                            px: 2.5,
+                                            py: 1,
+                                            borderRadius: 1.5
+                                        }}
+                                    >
+                                        Voltar para editar
+                                    </Button>
 
-                                {formik.values.recurrenceType === 'MONTHLY_BY_ORDINAL' && (
-                                    <Grid container spacing={2}>
-                                        <Grid item xs={6}>
-                                            <TextField
-                                                fullWidth
-                                                label="Semana do mês"
-                                                placeholder="Ex: 1 a 5"
-                                                type="number"
-                                                value={formik.values.ordinalOfWeek}
-                                                onChange={(e) => formik.setFieldValue('ordinalOfWeek', e.target.value)}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={6}>
-                                            <Select fullWidth name="dayOfWeek" value={formik.values.dayOfWeek} onChange={formik.handleChange}>
-                                                <MenuItem disabled value="">
-                                                    Selecione o dia da semana
-                                                </MenuItem>
-                                                <MenuItem value="MONDAY">Segunda-feira</MenuItem>
-                                                <MenuItem value="TUESDAY">Terça-feira</MenuItem>
-                                                <MenuItem value="WEDNESDAY">Quarta-feira</MenuItem>
-                                                <MenuItem value="THURSDAY">Quinta-feira</MenuItem>
-                                                <MenuItem value="FRIDAY">Sexta-feira</MenuItem>
-                                                <MenuItem value="SATURDAY">Sábado</MenuItem>
-                                                <MenuItem value="SUNDAY">Domingo</MenuItem>
-                                            </Select>
-                                        </Grid>
-                                    </Grid>
-                                )}
-
-                                {formik.values.recurrenceType === 'YEARLY_BY_DATE' && (
-                                    <Grid container spacing={2}>
-                                        <Grid item xs={6}>
-                                            <TextField
-                                                fullWidth
-                                                label="Dia do mês"
-                                                placeholder="Ex: 25"
-                                                type="number"
-                                                value={formik.values.dayOfMonth || ''}
-                                                onChange={(e) => formik.setFieldValue('dayOfMonth', e.target.value)}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={6}>
-                                            <TextField
-                                                fullWidth
-                                                label="Mês do ano"
-                                                placeholder="Ex: 12 para Dezembro"
-                                                type="number"
-                                                value={formik.values.monthOfYear || ''}
-                                                onChange={(e) => formik.setFieldValue('monthOfYear', e.target.value)}
-                                            />
-                                        </Grid>
-                                    </Grid>
-                                )}
-
-                                {formik.values.recurrenceType === 'YEARLY_BY_ORDINAL' && (
-                                    <Grid container spacing={2}>
-                                        <Grid item xs={4}>
-                                            <TextField
-                                                fullWidth
-                                                label="Semana do mês"
-                                                placeholder="1 a 5"
-                                                type="number"
-                                                value={formik.values.ordinalOfWeek}
-                                                onChange={(e) => formik.setFieldValue('ordinalOfWeek', e.target.value)}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={4}>
-                                            <Select fullWidth name="dayOfWeek" value={formik.values.dayOfWeek} onChange={formik.handleChange} displayEmpty>
-                                                <MenuItem disabled value="">
-                                                    Dia da semana
-                                                </MenuItem>
-                                                <MenuItem value="MONDAY">Segunda-feira</MenuItem>
-                                                <MenuItem value="TUESDAY">Terça-feira</MenuItem>
-                                                <MenuItem value="WEDNESDAY">Quarta-feira</MenuItem>
-                                                <MenuItem value="THURSDAY">Quinta-feira</MenuItem>
-                                                <MenuItem value="FRIDAY">Sexta-feira</MenuItem>
-                                                <MenuItem value="SATURDAY">Sábado</MenuItem>
-                                                <MenuItem value="SUNDAY">Domingo</MenuItem>
-                                            </Select>
-                                        </Grid>
-                                        <Grid item xs={4}>
-                                            <TextField
-                                                fullWidth
-                                                label="Mês"
-                                                placeholder="1 a 12"
-                                                type="number"
-                                                value={formik.values.monthOfYear || ''}
-                                                onChange={(e) => formik.setFieldValue('monthOfYear', e.target.value)}
-                                            />
-                                        </Grid>
-                                    </Grid>
-                                )}
+                                    <Typography variant="caption" sx={{ opacity: 0.8, textAlign: { xs: 'left', sm: 'right' } }}>
+                                        Ajuste a data/horário, a sala, ou os parâmetros de recorrência e tente novamente.
+                                    </Typography>
+                                </Box>
                             </Box>
-                        )}
-
-                        <DialogActions>
-                            <Button autoFocus onClick={handleClose}>
-                                Cancelar
-                            </Button>
-                            <Button autoFocus type="submit" variant="contained">
-                                {eventID ? 'Editar Agendamento' : 'Agendar'}
-                            </Button>
-                        </DialogActions>
-                    </Box>
+                        </Alert>
+                    )}
                 </DialogContent>
             </StyledDialog>
 

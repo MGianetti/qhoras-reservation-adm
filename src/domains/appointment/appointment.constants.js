@@ -1,3 +1,4 @@
+//appointment.constants.js
 export const createdAppointmentSuccess = Object.freeze({
   message: "Agendamento criado com sucesso!",
   type: "success",

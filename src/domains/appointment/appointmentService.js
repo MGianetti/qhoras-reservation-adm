@@ -1,3 +1,4 @@
+//appointmentService.js
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
@@ -42,7 +43,6 @@ const { read, create, update, remove, readCalendarList, exportReservations } = {
         try {
             const response = await appointmentRepository.createAppointment(businessId, newAppointmentPayload);
 
-            // se o payload tiver recurrenceType e != 'NONE', sabemos que é recorrência
             const isRecurrence = newAppointmentPayload.recurrenceType && newAppointmentPayload.recurrenceType !== 'NONE';
 
             if (!isRecurrence) {
@@ -60,11 +60,17 @@ const { read, create, update, remove, readCalendarList, exportReservations } = {
                 await read(roomId, startOfMonth, endOfMonth);
             }
 
-            // Se chegou até aqui sem erro, agora sim dispara toast de sucesso
             notification(createdAppointmentSuccess);
 
             return true;
         } catch (error) {
+            const status = error?.response?.status;
+            const code = error?.response?.data?.code;
+
+            if (status === 409 && code === 'RECURRENCE_CONFLICT') {
+                throw error;
+            }
+
             if (error?.response?.data?.error === 'The selected time conflicts ...') {
                 notification(appointmentConflict);
             } else {
