@@ -23,14 +23,14 @@ function TabEstablishment() {
         <CompanyGroup />
       </Grid>
 
-      {/* <Grid
+      <Grid
         item
         xs={12}
         sx={{ mt: 2, boxShadow: theme.shadows[0] }}
         className={styles.cardGroup}
       >
         <WhatsappGroup />
-      </Grid> */}
+      </Grid>
     </Grid>
   );
 }
