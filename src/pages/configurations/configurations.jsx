@@ -4,11 +4,12 @@ import Box from '@mui/material/Box';
 import Tabs from '@mui/material/Tabs';
 import { useSelector } from 'react-redux';
 import React, { useState } from 'react';
-import { IoStorefrontOutline, IoPricetagOutline } from 'react-icons/io5';
+import { IoStorefrontOutline, IoPricetagOutline, IoLogoWhatsapp } from 'react-icons/io5';
 
 import TabEstablishment from './tabEstablishment/tabEstablishment';
 import LoggedLayout from '../../common/layouts/loggedLayout/loggedLayout';
 import TabTags from './tabTags/tabTags';
+import TabWhatsappManagement from './tabWhatsapp/tabWhatsappManagement';
 
 function CustomTabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -72,6 +73,19 @@ export default function Configurations() {
                             }}
                             {...a11yProps(1)}
                         />
+
+                        {/* <Tab
+                            icon={<IoLogoWhatsapp size={17} />}
+                            iconPosition="start"
+                            label="WhatsApp"
+                            sx={{
+                                fontSize: 14,
+                                textTransform: 'none',
+                                minHeight: 20,
+                                fontWeight: 'unset'
+                            }}
+                            {...a11yProps(2)}
+                        /> */}
                     </Tabs>
                 </Box>
                 <CustomTabPanel value={value} index={0}>
@@ -80,6 +94,9 @@ export default function Configurations() {
                 <CustomTabPanel value={value} index={1}>
                     <TabEstablishment />
                 </CustomTabPanel>
+                <CustomTabPanel value={value} index={2}>
+          <TabWhatsappManagement />
+        </CustomTabPanel>
             </Box>
         </LoggedLayout>
     );

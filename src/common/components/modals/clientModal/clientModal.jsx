@@ -1,4 +1,5 @@
 import { useFormik } from 'formik';
+import PhoneInput from 'mui-phone-input';
 import { useSelector } from 'react-redux';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -7,7 +8,6 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import { FormControl, Box, InputLabel, OutlinedInput, Typography, Grid } from '@mui/material';
 
-import phoneMask from '../../../masks/phoneMask';
 import clientService from '../../../../domains/client/clientService';
 import { validationSchema } from './clientModal.constants';
 
@@ -21,7 +21,7 @@ const ClientModal = (props) => {
     const formik = useFormik({
         initialValues: {
             name: valuesLine?.name || '',
-            phoneNumber: phoneMask(valuesLine?.phoneNumber) || '',
+            phoneNumber: valuesLine?.phoneNumber,
             email: valuesLine?.email || ''
         },
         enableReinitialize: true,
@@ -34,7 +34,7 @@ const ClientModal = (props) => {
     };
 
     const handleSubmit = (values) => {
-        const phoneOnlyNumbers = values.phoneNumber.replace(/\D/g, '');
+        const phoneOnlyNumbers = values.phoneNumber.countryCode + values.phoneNumber.areaCode + values.phoneNumber.phoneNumber;
         const trimmedEmail = (values.email || '').trim();
         const payload = {
             ...values,
@@ -92,18 +92,17 @@ const ClientModal = (props) => {
 
                             <Grid item xs={12} sm={6}>
                                 <FormControl fullWidth>
-                                    <InputLabel htmlFor="phoneNumber" size="small">
-                                        Telefone
-                                    </InputLabel>
-                                    <OutlinedInput
+                                    <PhoneInput
                                         id="phoneNumber"
                                         name="phoneNumber"
-                                        label="Telefone"
-                                        size="small"
                                         value={formik.values.phoneNumber}
-                                        inputProps={{ maxLength: 15 }}
-                                        onChange={(e) => formik.setFieldValue('phoneNumber', phoneMask(e.target.value))}
-                                        error={formik.touched.phoneNumber && Boolean(formik.errors.phoneNumber)}
+                                        onChange={(val) => {
+                                            formik.setFieldValue('phoneNumber', val);
+                                        }}
+                                        label="Telefone"
+                                        variant="outlined"
+                                        fullWidth
+                                        size="small"
                                     />
                                     {formik.touched.phoneNumber && formik.errors.phoneNumber ? (
                                         <Typography variant="caption" color="error">
