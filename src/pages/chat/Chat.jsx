@@ -80,6 +80,7 @@ const RoomSelect = ({ value, onChange, rooms }) => (
         ))}
     </TextField>
 );
+
 const TimeSelect = ({ value, onChange, timeSlots }) => (
     <TextField select fullWidth value={value} onChange={(e) => onChange(e.target.value)}>
         {timeSlots.map((timeSlot, index) => (
@@ -130,7 +131,7 @@ const Chat = () => {
                 page: 1,
                 limit: 1000
             });
-            setRooms(roomsData);
+            setRooms((roomsData || []).filter((r) => r?.status === true));
         } catch (error) {
             console.error('Failed to fetch rooms:', error);
         }
