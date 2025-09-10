@@ -31,7 +31,8 @@ const chatMachine = createMachine({
         eventMinistrySelection: { on: { SUBMIT_EVENT_MINISTRY: 'eventRecurrenceSelection' } },
         eventRecurrenceSelection: { on: { SUBMIT_EVENT_RECURRENCE: 'contactPhone' } },
         contactPhone: { on: { SUBMIT_CONTACT_PHONE: 'contactName' } },
-        contactName: { on: { SUBMIT_CONTACT_NAME: 'confirmReservation' } },
+        contactName: { on: { SUBMIT_CONTACT_NAME: 'contactEmail' } },
+        contactEmail: { on: { SUBMIT_CONTACT_EMAIL: 'confirmReservation' } },
         confirmReservation: { on: { CONFIRM: 'done', EDIT: 'editChoice' } },
         editChoice: {
             on: {
@@ -45,7 +46,8 @@ const chatMachine = createMachine({
                 SUBMIT_EVENT_MINISTRY: 'eventMinistrySelection',
                 SUBMIT_EVENT_RECURRENCE: 'eventRecurrenceSelection',
                 EDIT_CONTACT_PHONE: 'contactPhone',
-                EDIT_CONTACT_NAME: 'contactName'
+                EDIT_CONTACT_NAME: 'contactName',
+                EDIT_CONTACT_EMAIL: 'contactEmail'
             }
         },
         done: { type: 'final' }
@@ -68,6 +70,7 @@ const prompts = {
         'O evento será recorrente? Se sim, informe o período, senão digite "Não".\nExemplo: Este evento terá a recorrência do dia 14/04/2025 até o dia 18/04/2025.',
     contactPhone: 'Qual o número do whatsapp para contato?',
     contactName: 'Qual o seu nome?',
+    contactEmail: 'Qual o seu e-mail para enviarmos a confirmação? (obrigatório)',
     confirmReservation: 'Confira todos os dados e confirme:'
 };
 
@@ -98,6 +101,8 @@ const Chat = () => {
     const [blocked, setBlocked] = useState(false);
     const [isTyping, setIsTyping] = useState(false);
     const containerRef = useRef(null);
+    const [contactEmailInput, setContactEmailInput] = useState('');
+    const [isEmailLocked, setIsEmailLocked] = useState(false);
 
     const [roomInput, setRoomInput] = useState('');
     const [dateInput, setDateInput] = useState('');
@@ -176,6 +181,18 @@ const Chat = () => {
             return () => clearTimeout(t);
         }
     }, [state.value, data]);
+
+    const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((email || '').trim());
+
+    const handleSubmitContactEmail = () => {
+        const val = (contactEmailInput || '').trim();
+        if (!val || !isValidEmail(val)) {
+            setMessages((m) => [...m, { from: 'bot', text: 'E-mail obrigatório e válido. Tente algo como nome@dominio.com.' }]);
+            return;
+        }
+        setData((d) => ({ ...d, Email: val.toLowerCase() }));
+        send({ type: 'SUBMIT_CONTACT_EMAIL', value: val });
+    };
 
     const handleEvent = (type, userText) => {
         if (userText) setMessages((m) => [...m, { from: 'user', text: userText }]);
@@ -296,12 +313,23 @@ const Chat = () => {
             if (user) {
                 setIsNameLocked(true);
                 setData((d) => ({ ...d, clientId: user.id, 'Nome do responsável': user.name }));
-
                 setMessages((m) => [...m, { from: 'bot', text: `Nome do responsável encontrado: ${user.name}` }]);
 
+                if (user.email) {
+                    setIsEmailLocked(true);
+                    setContactEmailInput(user.email);
+                    setData((d) => ({ ...d, Email: user.email }));
+                    setMessages((m) => [...m, { from: 'bot', text: `E-mail encontrado: ${user.email}` }]);
+                }
+
                 send({ type: 'SUBMIT_CONTACT_NAME' });
+
+                if (user.email) {
+                    send({ type: 'SUBMIT_CONTACT_EMAIL' });
+                }
             } else {
                 setIsNameLocked(false);
+                setIsEmailLocked(false);
             }
         } catch (err) {
             console.error('Erro ao buscar usuário por telefone:', err);
@@ -338,6 +366,15 @@ const Chat = () => {
             return;
         }
 
+        const emailToUse = data?.Email || (contactEmailInput || '').trim();
+        if (!emailToUse || !isValidEmail(emailToUse)) {
+            setMessages((m) => [...m, { from: 'bot', text: 'E-mail é obrigatório. Informe um e-mail válido antes de confirmar.' }]);
+            if (!isEmailLocked) {
+                send({ type: 'EDIT_CONTACT_EMAIL' });
+            }
+            return;
+        }
+
         let clientId = data.clientId;
         if (!clientId) {
             const clientName = data['Nome do responsável'] || reserverNameInput;
@@ -353,7 +390,8 @@ const Chat = () => {
 
             const clientPayload = {
                 clientName: clientName.trim(),
-                clientPhoneNumber: localPhone
+                clientPhoneNumber: localPhone,
+                clientEmail: (data?.Email || contactEmailInput || '').trim() || undefined
             };
 
             const createdClient = await chatService.createClientViaChat(businessIdQueryParams, clientPayload);
@@ -565,6 +603,7 @@ const Chat = () => {
                         <Button onClick={() => handleEvent('SUBMIT_EVENT_RECURRENCE', 'Editar Recorrência')}>Recorrência</Button>
                         <Button onClick={() => handleEvent('EDIT_CONTACT_PHONE', 'Editar telefone')}>Telefone</Button>
                         {!isNameLocked && <Button onClick={() => handleEvent('EDIT_CONTACT_NAME', 'Editar nome')}>Nome</Button>}
+                        {!isEmailLocked && <Button onClick={() => handleEvent('EDIT_CONTACT_EMAIL', 'Editar e-mail')}>E-mail</Button>}
                     </Box>
                 );
             case 'done':
@@ -576,6 +615,32 @@ const Chat = () => {
                         </Box>
                     </Box>
                 );
+            case 'contactEmail': {
+                return (
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                        <TextField
+                            type="email"
+                            required
+                            fullWidth
+                            placeholder="nome@dominio.com"
+                            value={contactEmailInput}
+                            onChange={(e) => setContactEmailInput(e.target.value)}
+                            disabled={isEmailLocked}
+                        />
+                        {!isEmailLocked && (
+                            <IconButton onClick={handleSubmitContactEmail}>
+                                <IoMdSend />
+                            </IconButton>
+                        )}
+                        {isEmailLocked && (
+                            <Button variant="outlined" onClick={() => send({ type: 'SUBMIT_CONTACT_EMAIL' })}>
+                                Continuar
+                            </Button>
+                        )}
+                    </Box>
+                );
+            }
+
             default:
                 return null;
         }
